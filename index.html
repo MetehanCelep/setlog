@@ -159,7 +159,7 @@ nav.tabs button.on{color:var(--acc)}
   <button data-a="tab" data-t="cal"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Takvim</button>
   <button data-a="tab" data-t="prog"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg>Programlar</button>
   <button data-a="tab" data-t="gel"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg>Gelişim</button>
-  <button data-a="tab" data-t="team"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.6a3 3 0 0 1 0 6M21 20c0-2.6-1.5-4.8-3.8-5.6"/></svg>Ekip</button>
+  <button data-a="tab" data-t="nutr"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.5c-1.6-1.6-5.2-1.9-6.6 1-1.3 2.7-.6 6.6 1.4 9.4 1.6 2.3 3.4 2.6 5.2 1.6 1.8 1 3.6.7 5.2-1.6 2-2.8 2.7-6.7 1.4-9.4-1.4-2.9-5-2.6-6.6-1z"/><path d="M12 7.5c0-2 .9-3.6 3-4.5"/></svg>Beslenme</button>
   <button data-a="tab" data-t="prof"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Profil</button>
 </div></nav>
 <div id="sheet"></div>
@@ -229,7 +229,7 @@ function heatBlock(h,sc,opts={}){
 
 /* ---------- state ---------- */
 const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false,tab:'cal',route:null,view:null,month:null,metric:'w',cmp:{},exq:'',mf:'weight',open:{},ai:{},loadSlow:false};
-const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],subs:false});
+const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,subs:false});
 const progOf=(uid,pid)=>U(uid).programs.find(p=>p.id===pid);
 const doneSessions=uid=>U(uid).sessions.filter(s=>s.done).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.startedAt||0)-(b.startedAt||0));
 const nameOf=uid=>U(uid).profile?.nick||'Sporcu';
@@ -434,7 +434,7 @@ function viewTeam(){
 }
 
 const MF=[['weight','Kilo','kg'],['fat','Yağ oranı','%'],['neck','Boyun','cm'],['shoulder','Omuz','cm'],['chest','Göğüs','cm'],['waist','Bel','cm'],['abdomen','Karın','cm'],['hips','Kalça','cm'],['armR','Sağ kol','cm'],['armL','Sol kol','cm'],['forearmR','Sağ ön kol','cm'],['forearmL','Sol ön kol','cm'],['thighR','Sağ bacak','cm'],['thighL','Sol bacak','cm'],['calfR','Sağ baldır','cm'],['calfL','Sol baldır','cm']];
-const viewProf=()=>viewProf0()+(isMine()?`<button class="btn block" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)" data-a="logout">Çıkış yap</button>`:'');
+const viewProf=()=>viewProf0()+(isMine()?inviteCard()+`<button class="btn block" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)" data-a="logout">Çıkış yap</button>`:'');
 function viewProf0(){
   const uid=S.view,mine=isMine(),u=U(uid),ms=u.measures,pr=u.profile||{};
   const latest={},first={},prev={};for(const m of ms)for(const[k,v]of Object.entries(m.values||{}))if(v!=null){if(first[k]==null)first[k]=v;prev[k]=latest[k];latest[k]=v}
@@ -460,6 +460,78 @@ function viewOnboard(){
   <button class="btn pri block" style="margin-top:16px;min-height:54px" data-a="obgo">Başla</button></div></div>`;
 }
 
+/* ---------- nutrition ---------- */
+const NSEED={name:'Yağ Yakım Beslenme Programı',target:{kcal:2050,p:132,c:262,f:49},note:'',meals:[
+ {name:'Kahvaltı',note:'Çavdar ekmeği tercih edilirse 170 g alınır.',items:[['Yumurta (3 orta boy)',150,215,18.8,1.1,14.3],['Tam buğday ekmeği',140,353,17.4,59.8,4.9],['Domates',150,27,1.3,5.8,0.3],['Salatalık',150,18,0.9,2.7,0.3]]},
+ {name:'Öğle',note:'',items:[['Tavuk göğsü (derisiz)',130,132,30.6,0,0.9],['Light yoğurt',200,100,9.4,14.8,0.3],['Marul',150,24,1.4,2.5,0.3],['Domates',100,18,0.9,3.9,0.2],['Zeytinyağı',10,88,0,0,10]]},
+ {name:'Akşam – antrenman sonrası',note:'Makarna günü: pirinç yerine 220 g çiğ makarna (759 kcal).',items:[['Tavuk göğsü (derisiz)',150,153,35.2,0,1.1],['Beyaz pirinç',210,756,13.9,166.6,1.2],['Salatalık',150,18,0.9,2.7,0.3],['Marul',100,16,0.9,1.7,0.2],['Zeytinyağı',15,133,0,0,15]]}]};
+const nseedPlan=()=>({name:NSEED.name,target:{...NSEED.target},note:'',updated:Date.now(),meals:NSEED.meals.map(m=>({id:uidGen(),name:m.name,note:m.note,items:m.items.map(([name,g,kcal,p,c,f])=>({id:uidGen(),name,g,kcal,p,c,f}))}))});
+const nsum=items=>items.reduce((a,i)=>({kcal:a.kcal+(+i.kcal||0),p:a.p+(+i.p||0),c:a.c+(+i.c||0),f:a.f+(+i.f||0)}),{kcal:0,p:0,c:0,f:0});
+const MACROS=[['p','Protein','#2a6fe5',4],['c','Karbonhidrat','#e58a14',4],['f','Yağ','#13a06b',9]];
+const r1=n=>Math.round((+n||0)*10)/10;
+const savePlan=pl=>saveDoc(P(S.me,'nutrition','plan'),{...strip(pl),updated:Date.now()});
+const myPlan=()=>{const p=U(S.me).nutrition;return p?clone(p):null};
+function viewNutr(){
+  const uid=S.view,mine=isMine(),pl=U(uid).nutrition;
+  const head=`<div class="top"><h1>Beslenme</h1>${mine&&pl?`<button class="ibtn bg" data-a="ntarget" aria-label="Planı düzenle">${ic('edit',20)}</button>`:''}</div>${whoBar()}`;
+  if(!pl)return head+`<div class="card empty">${ic('flame',36)}<p>${mine?'Henüz beslenme planın yok. Öğünlerini, besinleri ve gramajlarını ekleyerek planını oluştur.':esc(nameOf(uid))+' henüz beslenme planı eklemedi.'}</p>${mine?'<button class="btn pri" data-a="nnew">Plan oluştur</button>':''}</div>`;
+  const all=pl.meals.flatMap(m=>m.items),tot=nsum(all),t=pl.target||{};
+  const ek=MACROS.map(([k,,,m])=>tot[k]*m),eks=ek.reduce((a,b)=>a+b,0)||1;
+  const pct=t.kcal?Math.min(100,tot.kcal/t.kcal*100):0,diff=t.kcal?tot.kcal-t.kcal:0;
+  return head+`<p class="sub" style="margin:-6px 2px 14px;font-weight:600">${esc(pl.name||'Beslenme planı')}${mine?'':' · '+esc(nameOf(uid))}</p>
+  <div class="card"><div class="row" style="align-items:flex-end"><div class="sp"><div class="sub" style="font-weight:600">Günlük toplam</div><div class="num" style="font:850 46px/1 var(--d);font-stretch:82%">${fmtK(tot.kcal)}<span style="font-size:18px;color:var(--mute)"> kcal</span></div></div>${t.kcal?`<div style="text-align:right"><div class="sub">Hedef ${fmtK(t.kcal)}</div><span class="delta ${Math.abs(diff)<=50?'up':diff>0?'dn':''}">${diff>0?'+':''}${fmtK(diff)} kcal</span></div>`:''}</div>
+  ${t.kcal?`<div style="height:9px;border-radius:9px;background:var(--card2);overflow:hidden;margin:12px 0 4px"><i style="display:block;height:100%;width:${pct}%;background:var(--acc);border-radius:9px"></i></div>`:''}
+  <div style="display:flex;height:12px;border-radius:7px;overflow:hidden;margin:16px 0 8px;gap:2px">${MACROS.map(([k,,col],i)=>`<i style="display:block;flex:${ek[i]||0.0001};background:${col}"></i>`).join('')}</div>
+  <div class="row wrap" style="gap:12px;font-size:12px;color:var(--mute);font-weight:600">${MACROS.map(([k,n,col],i)=>`<span class="row" style="gap:5px"><i style="width:9px;height:9px;border-radius:3px;background:${col};display:block"></i>${n} %${Math.round(ek[i]/eks*100)}</span>`).join('')}</div>
+  <div style="margin-top:14px">${MACROS.map(([k,n,col])=>{const v=tot[k],g=t[k];return`<div class="mbar" style="grid-template-columns:96px minmax(0,1fr) auto"><span>${n}</span><div class="b"><i style="width:${g?Math.min(100,v/g*100):0}%;background:${col}"></i></div><span class="v" style="white-space:nowrap">${fmt(v)}${g?`<span style="color:var(--mute);font-weight:500"> / ${fmt(g)}</span>`:''} g</span></div>`}).join('')}</div></div>
+  ${pl.meals.map((m,mi)=>{const s=nsum(m.items);return`<div class="card"><div class="row" style="margin-bottom:4px"><div class="sp"><h2>${esc(m.name)}</h2><div class="sub">${fmtK(s.kcal)} kcal · P ${fmt(s.p)} · K ${fmt(s.c)} · Y ${fmt(s.f)} g</div></div>${mine?`<button class="ibtn" data-a="nmeal" data-i="${mi}" aria-label="Öğün seçenekleri">${ic('dots',22)}</button>`:''}</div>
+    <div class="list">${m.items.map((it,j)=>`<${mine?'button':'div'} class="li ${mine?'press':''}" ${mine?`data-a="nitem" data-i="${mi}" data-j="${j}"`:''} style="text-align:left"><div class="sp"><h3>${esc(it.name)}</h3><div class="sub">${fmt(it.g)} g · P ${fmt(it.p)} · K ${fmt(it.c)} · Y ${fmt(it.f)}</div></div><b class="num" style="font-size:18px;white-space:nowrap">${fmtK(it.kcal)} <span class="sub" style="font:500 12px var(--f)">kcal</span></b></${mine?'button':'div'}>`).join('')||'<p class="sub" style="padding:10px 0">Bu öğünde besin yok.</p>'}</div>
+    ${m.note?`<p class="sub" style="margin:8px 0 0;padding:10px 12px;background:var(--card2);border-radius:12px">${esc(m.note)}</p>`:''}
+    ${mine?`<button class="btn ghost" style="margin-top:6px" data-a="nitem" data-i="${mi}" data-j="-1">${ic('plus',18)} Besin ekle</button>`:''}</div>`}).join('')}
+  ${pl.note?`<div class="card"><h3>Notlar</h3><p class="sub" style="margin:6px 0 0;white-space:pre-wrap">${esc(pl.note)}</p></div>`:''}
+  ${mine?`<button class="btn block" data-a="nmealnew">${ic('plus',18)} Öğün ekle</button>`:`<button class="btn pri block" data-a="ncopy">${ic('copy',18)} Bu planı kendime kopyala</button>`}
+  <p class="sub" style="margin:12px 2px 0;font-size:12px">Gramajlar çiğ ağırlıktır. Değerler planı yazan kaynaktan alınmıştır.</p>`;
+}
+function openNItem(mi,j){const pl=myPlan();const it=j>=0?pl.meals[mi].items[j]:{id:uidGen(),name:'',g:100,kcal:null,p:null,c:null,f:null};ED={kind:'nitem',mi,j,it:{...it},base:{...it},scale:true};
+  const fld=(k,l)=>`<div><label class="l" for="ni_${k}">${l}</label><input class="f" id="ni_${k}" inputmode="decimal" data-ed="it.${k}" data-num="1" value="${it[k]??''}"></div>`;
+  openSheet(()=>`${sheetHead(j>=0?'Besini düzenle':'Besin ekle',esc(pl.meals[mi].name))}<label class="l" for="ni_name">Besin</label><input class="f" id="ni_name" data-ed="it.name" value="${esc(ED.it.name)}" placeholder="Örn. Yulaf ezmesi">
+  <div class="mg">${fld('g','Çiğ gramaj (g)')}${fld('kcal','Kalori (kcal)')}${fld('p','Protein (g)')}${fld('c','Karbonhidrat (g)')}${fld('f','Yağ (g)')}</div>
+  <label class="row" style="gap:10px;margin:14px 2px 0;font-size:14px"><input type="checkbox" id="ni_scale" ${ED.scale?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"> Gramaj değişince değerleri orantılı güncelle</label>
+  <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="nitemsave">Kaydet</button>${j>=0?`<button class="btn danger block" style="margin-top:8px" data-a="nitemdel">${ic('trash',18)} Besini sil</button>`:''}`);
+  if(j<0)setTimeout(()=>$('#ni_name')?.focus(),80)}
+function openNMeal(mi){const pl=myPlan();const m=mi>=0?pl.meals[mi]:{name:'',note:''};ED={kind:'nmeal',mi,name:m.name,note:m.note||''};
+  openSheet(()=>`${sheetHead(mi>=0?'Öğünü düzenle':'Öğün ekle')}<label class="l" for="nm_n">Öğün adı</label><input class="f" id="nm_n" data-ed="name" value="${esc(ED.name)}" placeholder="Örn. Ara öğün"><label class="l" for="nm_t">Not</label><textarea class="f" id="nm_t" data-ed="note" style="font-family:var(--f);min-height:80px" placeholder="İsteğe bağlı, örn. alternatif besinler">${esc(ED.note)}</textarea>
+  ${mi>=0?`<div class="row" style="margin-top:12px"><button class="btn sm" data-a="nmealmv" data-v="-1" ${mi?'':'disabled style="opacity:.4"'}>${ic('up',16)} Yukarı</button><button class="btn sm" data-a="nmealmv" data-v="1" ${mi<pl.meals.length-1?'':'disabled style="opacity:.4"'}>${ic('down',16)} Aşağı</button></div>`:''}
+  <button class="btn pri block" style="margin-top:16px" data-a="nmealsave">Kaydet</button>${mi>=0?`<button class="btn danger block" style="margin-top:8px" data-a="nmealdel">${ic('trash',18)} Öğünü sil</button>`:''}`);if(mi<0)setTimeout(()=>$('#nm_n')?.focus(),80)}
+function openNTarget(){const pl=myPlan();ED={kind:'ntarget',name:pl.name||'',note:pl.note||'',t:{...(pl.target||{})}};
+  openSheet(()=>`${sheetHead('Plan ve hedefler')}<label class="l" for="nt_n">Plan adı</label><input class="f" id="nt_n" data-ed="name" value="${esc(ED.name)}">
+  <div class="mg">${[['kcal','Kalori hedefi (kcal)'],['p','Protein (g)'],['c','Karbonhidrat (g)'],['f','Yağ (g)']].map(([k,l])=>`<div><label class="l" for="nt_${k}">${l}</label><input class="f" id="nt_${k}" inputmode="decimal" data-ed="t.${k}" data-num="1" value="${ED.t[k]??''}"></div>`).join('')}</div>
+  <label class="l" for="nt_note">Genel notlar</label><textarea class="f" id="nt_note" data-ed="note" style="font-family:var(--f);min-height:80px">${esc(ED.note)}</textarea>
+  <button class="btn pri block" style="margin-top:16px" data-a="ntsave">Kaydet</button><button class="btn danger block" style="margin-top:8px" data-a="nplandel">${ic('trash',18)} Planı sil</button>`)}
+document.addEventListener('input',ev=>setTimeout(()=>{if(ED?.kind!=='nitem')return;const t=ev.target,k=t.dataset.ed;if(!k)return;
+  if(k==='it.g'){if(ED.scale&&+ED.base.g>0&&+ED.it.g>0){const r=ED.it.g/ED.base.g;for(const x of['kcal','p','c','f'])if(ED.base[x]!=null){ED.it[x]=x==='kcal'?Math.round(ED.base[x]*r):r1(ED.base[x]*r);const el=$('#ni_'+x);if(el)el.value=ED.it[x]}}}
+  else if(['it.kcal','it.p','it.c','it.f'].includes(k))ED.base={...ED.it}},0));
+document.addEventListener('change',ev=>{if(ev.target.id==='ni_scale'&&ED){ED.scale=ev.target.checked;ED.base={...ED.it}}});
+document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,ds=el.dataset;
+  switch(a){
+  case'nnew':if(await savePlan({name:'Beslenme planım',target:{kcal:2000,p:130,c:250,f:60},note:'',meals:['Kahvaltı','Öğle','Akşam'].map(n=>({id:uidGen(),name:n,note:'',items:[]}))}))toast('Plan oluşturuldu');break;
+  case'nitem':openNItem(+ds.i,+ds.j);break;
+  case'nitemsave':{const it=ED.it;it.name=(it.name||'').trim();if(!it.name){toast('Besin adını gir.');break}for(const x of['g','kcal','p','c','f'])it[x]=r1(it[x]);const pl=myPlan(),items=pl.meals[ED.mi].items;if(ED.j>=0)items[ED.j]=it;else items.push(it);if(await savePlan(pl)){closeSheet();toast('Kaydedildi')}break}
+  case'nitemdel':{const pl=myPlan();pl.meals[ED.mi].items.splice(ED.j,1);if(await savePlan(pl)){closeSheet();toast('Besin silindi')}break}
+  case'nmeal':openNMeal(+ds.i);break;
+  case'nmealnew':openNMeal(-1);break;
+  case'nmealsave':{const n=(ED.name||'').trim();if(!n){toast('Öğün adını gir.');break}const pl=myPlan();if(ED.mi>=0)Object.assign(pl.meals[ED.mi],{name:n,note:(ED.note||'').trim()});else pl.meals.push({id:uidGen(),name:n,note:(ED.note||'').trim(),items:[]});if(await savePlan(pl))closeSheet();break}
+  case'nmealmv':{const pl=myPlan(),i=ED.mi,j=i+(+ds.v);if(j<0||j>=pl.meals.length)break;[pl.meals[i],pl.meals[j]]=[pl.meals[j],pl.meals[i]];if(await savePlan(pl))closeSheet();break}
+  case'nmealdel':{const mi=ED.mi;const pl=myPlan();confirmSheet('Öğün silinsin mi?',`"${esc(pl.meals[mi].name)}" ve içindeki ${pl.meals[mi].items.length} besin silinecek.`,'Sil',async()=>{const p=myPlan();p.meals.splice(mi,1);await savePlan(p)});break}
+  case'ntarget':openNTarget();break;
+  case'ntsave':{const pl=myPlan();pl.name=(ED.name||'').trim()||'Beslenme planı';pl.note=(ED.note||'').trim();pl.target={};for(const k of['kcal','p','c','f'])if(ED.t[k]!=null)pl.target[k]=ED.t[k];if(await savePlan(pl)){closeSheet();toast('Kaydedildi')}break}
+  case'nplandel':confirmSheet('Beslenme planı silinsin mi?','Tüm öğünler ve besinler kalıcı olarak silinecek.','Sil',()=>delDoc(P(S.me,'nutrition','plan')));break;
+  case'ncopy':{const src=U(S.view).nutrition;if(!src)break;const go_=async()=>{const c=clone(src);delete c.id;c.meals=c.meals.map(m=>({...m,id:uidGen(),items:m.items.map(i=>({...i,id:uidGen()}))}));if(await savePlan(c)){S.view=S.me;render();toast('Plan kopyalandı')}};
+    if(U(S.me).nutrition)confirmSheet('Planın değiştirilsin mi?','Kendi beslenme planının yerine bu plan gelecek.','Değiştir',go_);else go_();break}
+  }
+});
+const inviteCard=()=>S.demo?'':`<div class="card" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını davet et</h3><p class="sub" style="margin:6px 0 10px">Bu sitenin adresini ve davet kodunu gönder. Kayıt olup kodu girdiğinde, üstteki isim seçicisinden onun takvimini, gelişimini, programlarını ve beslenmesini görebilirsin.</p>${S.invite?`<div class="row wrap"><span class="num sp" style="font-size:24px;font-weight:800;letter-spacing:.04em">${esc(S.invite)}</span><button class="btn sm pri" data-a="invcopy">${ic('copy',16)} Davet metnini kopyala</button></div>`:'<button class="btn sm" data-a="invget">Davet kodunu göster</button>'}</div>`;
+
 /* ---------- render ---------- */
 let rq=0,pendingRender=false;
 function render(){
@@ -467,7 +539,7 @@ function render(){
   if(!S.ready){main.innerHTML=`<div class="empty" style="padding-top:40vh">${S.loadSlow?'Veriler henüz alınamadı. Bağlantını kontrol et; geldiğinde sayfa kendiliğinden güncellenir.':'Yükleniyor…'}</div>`;return}
   if(S.onboard){nav.hidden=true;main.innerHTML=viewOnboard();return}
   const r=S.route;let h;
-  try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():{cal:viewCal,prog:viewProg,gel:viewGel,team:viewTeam,prof:viewProf}[S.tab]()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
+  try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():({cal:viewCal,prog:viewProg,gel:viewGel,nutr:viewNutr,prof:viewProf}[S.tab]||viewCal)()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
   nav.hidden=r?.name==='live';
   nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
   main.innerHTML=(S.demo?'<div class="banner">Önizleme modu: veriler kaydedilmez.</div>':'')+h;
@@ -632,6 +704,7 @@ document.addEventListener('click',async ev=>{
     const ok=await saveDoc(`ud/${me}`,{nick:n.slice(0,40),height:h,created:Date.now()});
     if(!ok){el.disabled=false;el.textContent='Başla';break}
     if(first)await saveDoc(P(me,'programs',uidGen()),seedProgram());
+    if(first&&S.demo)await saveDoc(P(me,'nutrition','plan'),nseedPlan());
     S.onboard=false;S.view=me;go('cal');if(first)toast('Hoş geldin! pplul programın hazır.');break}
   }
 });
@@ -742,6 +815,7 @@ function startData(db,uid,email){
 function subUser(uid){const u=U(uid);if(u.subs)return;u.subs=true;const map=s=>s.docs.map(d=>({id:d.id,...d.data()}));const onErr=()=>{};
   S.db.collection(`ud/${uid}/programs`).onSnapshot(s=>{u.programs=map(s).sort((a,b)=>(b.star?1:0)-(a.star?1:0)||(a.created||0)-(b.created||0));rebuildMap();soft()},onErr);
   S.db.collection(`ud/${uid}/sessions`).onSnapshot(s=>{u.sessions=map(s);soft()},onErr);
+  S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='plan');u.nutrition=d?{...d.data()}:null;soft()},onErr);
   S.db.collection(`ud/${uid}/measures`).onSnapshot(s=>{u.measures=map(s).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);soft()},onErr);
 }
 rebuildMap();boot();
