@@ -274,8 +274,11 @@ async function ensureMap(uid,pid){
 /* ---------- history ---------- */
 function hist(uid){const m={};for(const s of doneSessions(uid))for(const e of s.exercises||[]){const sets=(e.sets||[]).filter(x=>x.r>0&&x.w!=null);if(!sets.length)continue;const k=key(e.name);const top=sets.reduce((a,b)=>b.w>a.w||(b.w===a.w&&b.r>a.r)?b:a);(m[k]||(m[k]={name:e.name,ents:[]})).ents.push({date:s.date,wname:s.workoutName,sets,top,e1:Math.max(...sets.map(x=>x.w*(1+x.r/30))),vol:sets.reduce((a,x)=>a+x.w*x.r,0),reps:sets.reduce((a,x)=>a+x.r,0)})}return m}
 const METRICS={w:['En ağır set','kg',e=>e.top.w],e1:['Tahmini 1RM','kg',e=>e.e1],vol:['Hacim','kg',e=>e.vol],reps:['Toplam tekrar','',e=>e.reps]};
-function prevSets(name,excl){const k=key(name);const ss=doneSessions(S.me).filter(s=>s.id!==excl);for(let i=ss.length-1;i>=0;i--){const e=(ss[i].exercises||[]).find(x=>key(x.name)===k);if(e&&e.sets?.some(x=>x.r>0))return e.sets.filter(x=>x.r>0)}return null}
-const lastTop=(uid,name)=>{const e=hist(uid)[key(name)];return e?e.ents.at(-1).top:null};
+/* Aynı gün (workout) içindeki son kaydı tercih et; yoksa herhangi bir günün son kaydına düş */
+function prevSets(name,excl,wid){const k=key(name);const ss=doneSessions(S.me).filter(s=>s.id!==excl);
+  const find=only=>{for(let i=ss.length-1;i>=0;i--){if(only&&ss[i].workoutId!==wid)continue;const e=(ss[i].exercises||[]).find(x=>key(x.name)===k);if(e&&e.sets?.some(x=>x.r>0))return e.sets.filter(x=>x.r>0)}return null};
+  return(wid&&find(true))||find(false)}
+function lastTop(uid,name,wid){const k=key(name);let any=null;const ss=doneSessions(uid);for(let i=ss.length-1;i>=0;i--){const e=(ss[i].exercises||[]).find(x=>key(x.name)===k);const sets=(e?.sets||[]).filter(x=>x.r>0&&x.w!=null);if(!sets.length)continue;const top=sets.reduce((a,b)=>b.w>a.w||(b.w===a.w&&b.r>a.r)?b:a);if(!wid||ss[i].workoutId===wid)return top;any=any||top}return any}
 
 /* ---------- charts ---------- */
 const CH={};let ROs=[];
@@ -354,7 +357,7 @@ function viewWorkout(){
   if(pending&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button>${mine?`<button class="ibtn bg" data-a="wedit" data-p="${pid}" data-w="${wid}" aria-label="Düzenle">${ic('edit',20)}</button>`:''}</div>
   <h1 style="text-transform:lowercase">${esc(w.name)}</h1><p class="sub" style="margin:6px 0 16px">${esc(p.name)}${w.day!=null?' · '+DAYS_FULL[w.day]:''} · ${w.exercises.length} hareket · ${workoutSets(w)} set${mine?'':' · '+esc(nameOf(uid))}</p>
-  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e.name);return`<div class="exi"><span class="exn">${i+1}</span><div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(key(e.name))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
+  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e.name,w.id);return`<div class="exi"><span class="exn">${i+1}</span><div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(key(e.name))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
   <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Kas ısı haritası</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(h,'w')}</div>
   <div class="row" style="position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));gap:8px">${mine?`<button class="btn pri block" style="flex:1;min-height:54px;font-size:17px;box-shadow:0 8px 24px rgba(229,53,42,.35)" data-a="startw" data-p="${pid}" data-w="${wid}" data-d="${ymd(new Date())}">${ic('play',18,1)} Antrenmana Başla</button>`:`<button class="btn pri block" data-a="pcopy" data-u="${uid}" data-p="${pid}">${ic('copy',18)} Programı kopyala</button>`}</div>`;
 }
@@ -370,7 +373,7 @@ function viewPHeat(){
 
 function viewLive(){
   const s=LIVE.doc;
-  const ex=s.exercises.map((e,ei)=>{const pv=prevSets(e.name,LIVE.id);
+  const ex=s.exercises.map((e,ei)=>{const pv=prevSets(e.name,LIVE.id,s.workoutId);
     return`<div class="card"><div class="row" style="margin-bottom:6px"><div class="sp"><h3 style="font-size:17px">${esc(e.name)}</h3><div class="sub">${e.target?`Hedef: ${e.target.sets} × ${e.target.min===e.target.max?e.target.min:e.target.min+'–'+e.target.max}`:'Serbest'}</div></div><button class="ibtn" data-a="lexdel" data-i="${ei}" aria-label="Hareketi kaldır" style="color:var(--mute)">${ic('x',19)}</button></div>
     <div class="st"><span class="h">Set</span><span class="h">Önceki</span><span class="h" style="text-align:center">kg</span><span class="h" style="text-align:center">Tekrar</span><span></span></div>
     ${e.sets.map((x,si)=>{const p=pv?.[si]||pv?.at(-1);return`<div class="st ${x.d?'ok':''}"><span class="num" style="font-weight:700;color:var(--mute)">${si+1}</span><span class="pv">${pv?.[si]?`${fmt(pv[si].w)} × ${pv[si].r}`:'—'}</span><input inputmode="decimal" enterkeyhint="next" aria-label="Set ${si+1} kilo" data-lv="${ei}:${si}:w" value="${x.w??''}" placeholder="${p?p.w:''}"><input inputmode="numeric" enterkeyhint="done" aria-label="Set ${si+1} tekrar" data-lv="${ei}:${si}:r" value="${x.r??''}" placeholder="${p?p.r:(e.target?.max||'0')}"><button class="ck" data-a="lck" data-i="${ei}" data-j="${si}" aria-label="Seti tamamla">${ic('check',20)}</button></div>`}).join('')}
