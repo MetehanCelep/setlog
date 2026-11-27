@@ -1154,40 +1154,50 @@ const BAL_PREF={calves:['c_stcalf','c_lpcalf','Seated_Calf_Raise'],side_delts:['
 const BAL_REG={push:['chest','front_delts','side_delts','triceps'],pull:['lats','upper_back','rear_delts','biceps','forearms','traps'],legs:['quads','hamstrings','glutes','calves','adductors','abductors','lower_back'],core:['abs','obliques']};
 const regOf=m=>Object.keys(BAL_REG).find(r=>BAL_REG[r].includes(m));
 const bmp=e=>mapOf(e.name,e.xid||exId(e));
-function balVol(ws){const tot={},prim=ws.map(()=>({}));ws.forEach((w,i)=>w.exercises.forEach(e=>{const s=+e.sets||0,m=bmp(e);m.p.forEach(k=>{tot[k]=(tot[k]||0)+s;prim[i][k]=(prim[i][k]||0)+s});m.s.forEach(k=>{tot[k]=(tot[k]||0)+s*.5})}));return{tot,prim,sets:ws.map(w=>w.exercises.reduce((a,e)=>a+(+e.sets||0),0))}}
 function balBand(o,m){const G=BAL_G[o.goal];if(o.pri.includes(m))return[Math.max(G[1]-2,G[0]),Math.min(G[1]+4,22)];return BAL_MAJ.includes(m)?[G[0],G[1]]:[0,Math.max(G[1],20)]}
+const BAL_SMALL=new Set(['side_delts','rear_delts','front_delts','biceps','triceps','calves','abs','obliques','forearms','traps','adductors','abductors']);
+const BAL_UP=new Set([...BAL_REG.push,...BAL_REG.pull]),BAL_LOW=new Set(BAL_REG.legs);
+const balCap=(o,m)=>BAL_SMALL.has(m)?6:(o.pri.includes(m)?10:8);
+const balMaxEx=(o,m)=>BAL_SMALL.has(m)?1:(o.pri.includes(m)?3:2);
+function balVol(ws){const tot={},prim=ws.map(()=>({})),ses=ws.map(()=>({})),cnt=ws.map(()=>({}));ws.forEach((w,i)=>w.exercises.forEach(e=>{const s=+e.sets||0,m=bmp(e);m.p.forEach(k=>{tot[k]=(tot[k]||0)+s;prim[i][k]=(prim[i][k]||0)+s;ses[i][k]=(ses[i][k]||0)+s;cnt[i][k]=(cnt[i][k]||0)+1});m.s.forEach(k=>{tot[k]=(tot[k]||0)+s*.5;ses[i][k]=(ses[i][k]||0)+s*.5})}));return{tot,prim,ses,cnt,sets:ws.map(w=>w.exercises.reduce((a,e)=>a+(+e.sets||0),0))}}
 function balance(prog,o){
   const ws=clone(prog.workouts).map(w=>({...w,exercises:w.exercises.map(e=>({...e,sets:+e.sets||1,_o:+e.sets||1,_r:[]}))}));
-  const band=m=>balBand(o,m),tag=(e,t)=>{if(!e._r.includes(t))e._r.push(t)};let V=balVol(ws);const re=()=>V=balVol(ws);
-  const RIR=rirOn(S.me);
+  const band=m=>balBand(o,m),cap=m=>balCap(o,m),tag=(e,t)=>{if(!e._r.includes(t))e._r.push(t)};let V=balVol(ws);const re=()=>V=balVol(ws);const RIR=rirOn(S.me);
+  const fits=(e,i,d)=>{const m=bmp(e);return m.p.every(k=>(V.ses[i][k]||0)+d<=cap(k)+.01&&(V.tot[k]||0)+d<=band(k)[1]+.01)&&m.s.every(k=>(V.ses[i][k]||0)+d*.5<=cap(k)+2.01&&(V.tot[k]||0)+d*.5<=band(k)[1]+2.01)};
+  const dayFit=(i,m)=>{const ov=(R)=>ws[i].exercises.filter(e=>bmp(e).p.some(k=>R.has(k))).length;const sub=new Set(BAL_REG[regOf(m)]||[]);const big=BAL_UP.has(m)?BAL_UP:BAL_LOW.has(m)?BAL_LOW:null;return{sub:ov(sub),big:big?ov(big):ws[i].exercises.length}};
   function reduce(){for(let g=0;g<300;g++){re();const over=Object.keys(MUS).filter(m=>(V.tot[m]||0)>band(m)[1]+.01).sort((a,b)=>(V.tot[b]-band(b)[1])-(V.tot[a]-band(a)[1]));let did=false;
-    for(const m of over){const pool=[];ws.forEach(w=>w.exercises.forEach(e=>{if(e.sets>1&&bmp(e).p.includes(m)&&bmp(e).p.every(k=>k===m||(V.tot[k]||0)-1>=band(k)[0]))pool.push(e)}));if(!pool.length)continue;
-      pool.sort((a,b)=>b.sets-a.sets);pool[0].sets--;tag(pool[0],'over:'+m);did=true;break}
+    for(const m of over){const pool=[];ws.forEach(w=>w.exercises.forEach(e=>{if(e.sets>1&&bmp(e).p.includes(m)&&bmp(e).p.every(k=>k===m||(V.tot[k]||0)-1>=band(k)[0]))pool.push(e)}));if(!pool.length)continue;pool.sort((a,b)=>b.sets-a.sets);pool[0].sets--;tag(pool[0],'over:'+m);did=true;break}
     if(!did)return}}
-  function add(m){const ids=(BAL_PREF[m]||[]).filter(id=>LIB.exById[id]);if(!ids.length)return false;const R=BAL_REG[regOf(m)]||[];
-    const days=ws.map((w,i)=>({i,ov:w.exercises.filter(e=>bmp(e).p.some(k=>R.includes(k))).length,has:(V.prim[i][m]||0)>0})).filter(d=>V.sets[d.i]+2<=o.maxDay);if(!days.length)return false;
-    const sc=d=>Math.min(d.ov,3)*2-(d.has&&o.freq?1.5:0)-(V.prim[d.i][m]||0)/2-V.sets[d.i]/10;days.sort((a,b)=>sc(b)-sc(a));const di=days[0].i,w=ws[di];
-    const id=ids.find(x=>!ws.some(z=>z.exercises.some(e=>exId(e)===x)))||ids.find(x=>!w.exercises.some(e=>exId(e)===x));if(!id)return false;const x=LIB.exById[id];
-    const ne={id:uidGen(),name:x.n,xid:x.i,sets:2,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(RIR?{rir:1}:{}),_o:0,_r:['add:'+m],_new:true};
-    let at=-1;w.exercises.forEach((e,j)=>{if(bmp(e).p.some(k=>R.includes(k)))at=j});w.exercises.splice(at<0?w.exercises.length:at+1,0,ne);return true}
-  function increase(){for(let g=0;g<300;g++){re();const list=[...new Set(BAL_MAJ.concat(o.pri))].filter(m=>(V.tot[m]||0)<band(m)[0]-.01).sort((a,b)=>(V.tot[a]||0)-band(a)[0]-((V.tot[b]||0)-band(b)[0]));if(!list.length)return;let did=false;
-    for(const m of list){const c=[];ws.forEach((w,i)=>w.exercises.forEach(e=>{if(bmp(e).p.includes(m)&&e.sets<4&&(V.prim[i][m]||0)+1<=10&&V.sets[i]<o.maxDay&&bmp(e).p.every(k=>k===m||(V.tot[k]||0)+1<=band(k)[1]))c.push({e,i})}));
-      if(c.length){c.sort((a,b)=>a.e.sets-b.e.sets||V.sets[a.i]-V.sets[b.i]);c[0].e.sets++;tag(c[0].e,'under:'+m);did=true;break}
-      if(add(m)){did=true;break}}
+  function sessFix(){for(let g=0;g<300;g++){re();let did=false;
+    for(let i=0;i<ws.length&&!did;i++)for(const m of Object.keys(V.ses[i])){if((V.ses[i][m]||0)<=cap(m)+.01)continue;const c=ws[i].exercises.filter(e=>e.sets>1&&bmp(e).p.includes(m)).sort((a,b)=>b.sets-a.sets);if(!c.length)continue;c[0].sets--;tag(c[0],'sess:'+m);did=true;break}
     if(!did)return}}
-  function freq(){if(!o.freq||ws.length<2)return;for(const m of BAL_MAJ){re();const days=V.prim.map((d,i)=>[i,d[m]||0]).filter(x=>x[1]>0);if(days.length!==1)continue;const[di,ds]=days[0];if(ds<4)continue;const R=BAL_REG[regOf(m)]||[];
-    const cand=ws.map((w,i)=>i).filter(i=>i!==di&&V.sets[i]+2<=o.maxDay).map(i=>({i,sc:ws[i].exercises.filter(e=>bmp(e).p.some(k=>R.includes(k))).length})).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc||V.sets[a.i]-V.sets[b.i]);if(!cand.length)continue;
+  function add(m){const ids=(BAL_PREF[m]||[]).filter(id=>LIB.exById[id]);if(!ids.length)return false;
+    const core=regOf(m)==='core';let days=ws.map((w,i)=>({i,...dayFit(i,m)})).filter(d=>(core?d.big:d.sub)>0&&(V.cnt[d.i][m]||0)<balMaxEx(o,m)&&cap(m)-(V.ses[d.i][m]||0)>=2&&V.sets[d.i]+2<=o.maxDay);if(days.some(d=>d.sub>0))days=days.filter(d=>d.sub>0);if(!days.length)return false;
+    const sc=d=>Math.min(d.sub,3)*2+Math.min(d.big,4)*.5-(V.ses[d.i][m]||0)-V.sets[d.i]/12;days.sort((a,b)=>sc(b)-sc(a));
+    for(const d of days){const w=ws[d.i];const id=ids.find(x=>!w.exercises.some(e=>exId(e)===x));if(!id)continue;const x=LIB.exById[id];
+      const room=Math.floor(Math.min(cap(m)-(V.ses[d.i][m]||0),band(m)[1]-(V.tot[m]||0),o.maxDay-V.sets[d.i]));const need=Math.ceil(band(m)[0]-(V.tot[m]||0));const sets=Math.max(2,Math.min(3,room,Math.max(2,need)));if(room<2)continue;
+      const ne={id:uidGen(),name:x.n,xid:x.i,sets,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(RIR?{rir:1}:{}),_o:0,_r:['add:'+m],_new:true};
+      if(!fits(ne,d.i,sets))continue;const R=new Set(BAL_REG[regOf(m)]||[]);let at=-1;w.exercises.forEach((e,j)=>{if(bmp(e).p.some(k=>R.has(k)))at=j});w.exercises.splice(at<0?w.exercises.length:at+1,0,ne);return true}
+    return false}
+  function increase(){const stuck=new Set();for(let g=0;g<300;g++){re();const list=[...new Set(BAL_MAJ.concat(o.pri))].filter(m=>!stuck.has(m)&&(V.tot[m]||0)<band(m)[0]-.01).sort((a,b)=>(V.tot[a]||0)-band(a)[0]-((V.tot[b]||0)-band(b)[0]));if(!list.length)return;const m=list[0];
+    const c=[];ws.forEach((w,i)=>w.exercises.forEach(e=>{if(bmp(e).p.includes(m)&&e.sets<4&&V.sets[i]<o.maxDay&&fits(e,i,1))c.push({e,i})}));
+    if(c.length){c.sort((a,b)=>a.e.sets-b.e.sets||(V.ses[a.i][m]||0)-(V.ses[b.i][m]||0));c[0].e.sets++;tag(c[0].e,'under:'+m);continue}
+    if(!add(m))stuck.add(m)}}
+  function freq(){if(!o.freq||ws.length<2)return;for(const m of BAL_MAJ){re();const days=V.prim.map((d,i)=>[i,d[m]||0]).filter(x=>x[1]>0);if(days.length!==1)continue;const[di,ds]=days[0];if(ds<4)continue;
+    const cand=ws.map((w,i)=>({i,...dayFit(i,m)})).filter(d=>d.i!==di&&(regOf(m)==='core'?d.big:d.sub)>0&&V.sets[d.i]+2<=o.maxDay&&cap(m)-(V.ses[d.i][m]||0)>=2).sort((a,b)=>b.sub-a.sub||V.sets[a.i]-V.sets[b.i]);if(!cand.length)continue;
     const ti=cand[0].i,mv=Math.min(2,Math.floor(ds/2));let left=mv,base=null;
     for(const e of ws[di].exercises.filter(e=>bmp(e).p.includes(m)).sort((a,b)=>b.sets-a.sets)){base=base||e;while(left>0&&e.sets>1){e.sets--;left--;tag(e,'freq:'+m)}}
     const moved=mv-left;if(!moved||!base)continue;
-    const ex=ws[ti].exercises.find(e=>bmp(e).p.includes(m));if(ex){ex.sets+=moved;tag(ex,'freq:'+m)}
-    else ws[ti].exercises.push({id:uidGen(),name:base.name,xid:base.xid||exId(base)||null,sets:moved,min:base.min,max:base.max,...(base.rir!=null?{rir:base.rir}:{}),_o:0,_r:['freq:'+m],_new:true})}}
-  function cap(){for(let g=0;g<300;g++){re();const i=V.sets.findIndex(n=>n>o.maxDay);if(i<0)return;const c=ws[i].exercises.filter(e=>e.sets>1).map(e=>({e,s:Math.min(...bmp(e).p.map(k=>(V.tot[k]||0)-band(k)[0]),99)})).sort((a,b)=>b.s-a.s);if(!c.length)return;c[0].e.sets--;tag(c[0].e,'cap')}}
-  reduce();increase();freq();cap();reduce();increase();re();
+    const ex=ws[ti].exercises.find(e=>bmp(e).p.includes(m));if(ex&&ex.sets+moved<=4){ex.sets+=moved;tag(ex,'freq:'+m)}
+    else if(!ex)ws[ti].exercises.push({id:uidGen(),name:base.name,xid:base.xid||exId(base)||null,sets:moved,min:base.min,max:base.max,...(base.rir!=null?{rir:base.rir}:{}),_o:0,_r:['freq:'+m],_new:true});
+    else base.sets+=moved}}
+  function dayCap(){for(let g=0;g<300;g++){re();const i=V.sets.findIndex(n=>n>o.maxDay);if(i<0)return;const c=ws[i].exercises.filter(e=>e.sets>1).map(e=>({e,s:Math.min(...bmp(e).p.map(k=>(V.tot[k]||0)-band(k)[0]),99)})).sort((a,b)=>b.s-a.s);if(!c.length)return;c[0].e.sets--;tag(c[0].e,'cap')}}
+  sessFix();reduce();freq();increase();dayCap();reduce();increase();re();
   const changes=[];ws.forEach((w,wi)=>w.exercises.forEach(e=>{if(e._new||e.sets!==e._o)changes.push({k:w.id+':'+e.id,wi,wname:w.name,id:e.id,name:e.name,from:e._o,to:e.sets,add:!!e._new,r:e._r})}));
-  const warn=[];BAL_MAJ.concat(o.pri).forEach(m=>{const v=V.tot[m]||0,b=band(m);if(v<b[0]-.01)warn.push(`${MUS[m]} hedefin altında kaldı (${fmt(v)} set): uygun gün ya da yer bulunamadı.`);else if(v>b[1]+.01)warn.push(`${MUS[m]} hâlâ yüksek (${fmt(v)} set): azaltılabilecek hareket kalmadı.`)});
+  const warn=[];[...new Set(BAL_MAJ.concat(o.pri))].forEach(m=>{const v=V.tot[m]||0,b=band(m);if(v<b[0]-.01){const d=V.ses.filter(x=>(x[m]||0)>0).length;warn.push(`${MUS[m]}: ${fmt(v)} set (hedef ${b[0]}+). Seans başına sınırlar (bir harekete en fazla 4 set, seansta en fazla ${cap(m)} etkili set${BAL_SMALL.has(m)?', tek izolasyon hareketi':''}) nedeniyle şu an ${d} günde çalışan bu kas için bu kadarına çıkılabildi. Daha fazlası için bu kası bir güne daha eklemen gerekir.`)}else if(v>b[1]+.01)warn.push(`${MUS[m]} hâlâ yüksek (${fmt(v)} set): azaltılabilecek hareket kalmadı.`)});
   ws.forEach((w,i)=>{if(V.sets[i]>o.maxDay)warn.push(`${w.name} günü ${V.sets[i]} set; sınırın üstünde.`)});
   return{ws,changes,warn:[...new Set(warn)]}}
+
 function balFinal(){const B=S.bal;return B.res.ws.map(w=>({...w,exercises:w.exercises.filter(e=>!(e._new&&B.off[w.id+':'+e.id])).map(e=>({...e,sets:B.off[w.id+':'+e.id]?e._o:e.sets}))}))}
 const balClean=ws=>ws.map(w=>({...w,id:uidGen(),exercises:w.exercises.map(e=>{const c={...e,id:uidGen()};delete c._o;delete c._r;delete c._new;if(!c.xid)delete c.xid;return c})}));
 const balItems=ws=>ws.flatMap(w=>w.exercises.map(e=>({name:e.name,xid:e.xid||exId(e),sets:+e.sets||0})));
@@ -1197,7 +1207,7 @@ function openBal(uid,pid){loadEx();const p=progOf(uid,pid);if(!p)return;ED={kind
   <label class="l">Öncelikli kaslar <span style="font-weight:500">(isteğe bağlı, en fazla 3)</span></label><div class="row wrap" style="gap:8px">${BAL_MAJ.map(k=>`<button class="chip ${ED.pri.includes(k)?'on':''}" data-a="balp" data-k="${k}">${MUS[k]}</button>`).join('')}</div>
   <label class="row" style="gap:10px;margin:16px 2px 0;font-size:14px"><input type="checkbox" id="balf" ${ED.freq?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"><span>Her ana kası haftada en az 2 gün çalıştır</span></label>
   <label class="l" for="balm">Bir günde en fazla set</label><input class="f" id="balm" inputmode="numeric" data-ed="maxDay" data-num="1" value="${ED.maxDay}" style="max-width:120px">
-  <p class="sub" style="margin:10px 2px 0;font-size:12.5px">Ana kaslar hedef aralığa çekilir. Ön kol, bel, trapez, iç/dış bacak, yan karın ve ön omuz gibi yardımcı kaslar zaten dolaylı çalıştığı için yalnızca çok fazlaysa azaltılır.</p>
+  <p class="sub" style="margin:10px 2px 0;font-size:12.5px">Bir seansta küçük kaslar (omuz, kol, baldır, karın) için en fazla 6, büyük kaslar için 8 etkili set planlanır; bir harekete en fazla 4 set verilir ve aynı küçük kas için seansa ikinci bir izolasyon hareketi eklenmez (öncelikli kaslarda en fazla 2). Basma ve çekme hareketlerinin yardımcı kaslara katkısı (ör. omuz presinin yan omuza) yarım set olarak hesaba katılır. Ön kol, bel, trapez, iç/dış bacak, yan karın ve ön omuz gibi yardımcı kaslar zaten dolaylı çalıştığı için yalnızca çok fazlaysa azaltılır.</p>
   <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="balgo">Önizle</button>`)}
 document.addEventListener('change',ev=>{if(ev.target.id==='balf'&&ED?.kind==='bal')ED.freq=ev.target.checked});
 function viewBal(){const B=S.bal;const back=`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button><button class="btn sm" data-a="balset">${ic('edit',16)} Ayarlar</button></div>`;if(!B)return back;
@@ -1206,7 +1216,7 @@ function viewBal(){const B=S.bal;const back=`<div class="top"><button class="ibt
   const fig=(h,side)=>figure(side,h,'week','bal',null);
   const ms=Object.keys(MUS).filter(m=>BAL_MAJ.includes(m)||B.o.pri.includes(m)||Math.abs((after[m]||0)-(before[m]||0))>.01).sort((a,b)=>Math.abs((after[b]||0)-(before[b]||0))-Math.abs((after[a]||0)-(before[a]||0)));
   const dot=v=>`<i class="dk" style="background:${heatColor(v,'week')};display:inline-block;margin-right:5px"></i>`;
-  const RT={over:'fazlaydı',under:'eksikti',add:'eksikti, yeni hareket',freq:'haftada 2 gün için',cap:'gün çok uzundu'};
+  const RT={over:'haftalık fazlaydı',under:'eksikti',add:'eksikti, yeni hareket',freq:'haftada 2 gün için',sess:'tek seansta fazlaydı',cap:'gün çok uzundu'};
   const rtxt=r=>{const [t,m]=r.split(':');return t==='cap'?RT.cap:`${MUS[m]} ${RT[t]}`};
   const byDay={};B.res.changes.forEach(c=>(byDay[c.wi]||(byDay[c.wi]=[])).push(c));
   const sumS=ws=>ws.reduce((a,w)=>a+w.exercises.reduce((b,e)=>b+(+e.sets||0),0),0);
