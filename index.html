@@ -1169,18 +1169,21 @@ function balance(prog,o){
   const tag=(e,t)=>{if(!e._r.includes(t))e._r.push(t)};
   const keep=e=>bmp(e).p.some(m=>tr[m]?.st==='up');
   const canAdd=(e,i,V)=>!keep(e)&&e.sets<4&&e.sets-e._o<2&&!(e._new&&e.sets>=3)&&V.sets[i]<maxDay&&bmp(e).p.every(k=>(V.ses[i][k]||0)+1<=cap(k)+.01);
-  const canRem=e=>{if(!(e.sets>Math.min(2,e._o)&&e._o-e.sets<2))return false;const V=balVol(ws);if(keep(e)&&bmp(e).p.every(m=>(V.tot[m]||0)<=ce(m)))return false;return bmp(e).p.every(m=>(V.tot[m]||0)-1>=fl(m)-.01)};
+  const canRem=e=>{if(e._new||bmp(e).p.some(m=>o.pri.includes(m)))return false;if(!(e.sets>Math.min(2,e._o)&&e._o-e.sets<2))return false;const V=balVol(ws);if(keep(e)&&bmp(e).p.every(m=>(V.tot[m]||0)<=ce(m)))return false;return bmp(e).p.every(m=>(V.tot[m]||0)-1>=fl(m)-.01)};
   const why=(e,add)=>{const V=balVol(ws),ps=bmp(e).p;const m=ps.slice().sort((a,b)=>add?((V.tot[a]||0)-fl(a))-((V.tot[b]||0)-fl(b)):((V.tot[b]||0)-ce(b))-((V.tot[a]||0)-ce(a)))[0];if(!m)return add?'add:gain:':'rem:low:';const v=V.tot[m]||0,t=tr[m]?.st;
     return add?(v<fl(m)?`add:min:${m}`:t==='flat'?`add:flat:${m}`:o.pri.includes(m)?`add:pri:${m}`:`add:gain:${m}`):(t==='tired'?`rem:tired:${m}`:v>ce(m)?`rem:high:${m}`:`rem:low:${m}`)};
   function best(kind){const V=balVol(ws),u0=util();let bst=null;
     ws.forEach((w,i)=>w.exercises.forEach(e=>{if(kind==='add'?!canAdd(e,i,V):!canRem(e))return;e.sets+=kind==='add'?1:-1;const d=util()-u0;e.sets-=kind==='add'?1:-1;if(!bst||d>bst.d)bst={e,d}}));return bst}
   function step(kind){const b=best(kind);if(!b)return null;tag(b.e,why(b.e,kind==='add'));b.e.sets+=kind==='add'?1:-1;return b}
-  function coverage(){for(const m of [...new Set(BAL_MAJ.concat(o.pri))]){const V=balVol(ws);if((V.tot[m]||0)>=fl(m)-.01)continue;
+  const adj=(a,b)=>a!=null&&b!=null&&(Math.abs(a-b)===1||Math.abs(a-b)===6);
+  const noDay=new Set();
+  function coverage(late){for(const m of [...new Set(BAL_MAJ.concat(o.pri))]){const V=balVol(ws);if((V.tot[m]||0)>=fl(m)-.01)continue;
       const grow=ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&canAdd(e,i,V)));if(grow)continue;
       const ids=(BAL_PREF[m]||[]).filter(id=>LIB.exById[id]);const R=new Set(BAL_REG[regOf(m)]||[]),core=regOf(m)==='core';
-      const days=ws.map((w,i)=>({i,ov:w.exercises.filter(e=>bmp(e).p.some(k=>R.has(k))).length})).filter(d=>(core||d.ov>0)&&(V.cnt[d.i][m]||0)<(BAL_SMALL.has(m)?1:2)&&cap(m)-(V.ses[d.i][m]||0)>=2&&V.sets[d.i]+2<=maxDay).sort((a,b)=>(V.ses[a.i][m]||0)-(V.ses[b.i][m]||0)||b.ov-a.ov||V.sets[a.i]-V.sets[b.i]);
+      const days=ws.map((w,i)=>({i,ov:w.exercises.filter(e=>bmp(e).p.some(k=>R.has(k))).length})).filter(d=>(core||d.ov>0||(late&&BAL_SMALL.has(m)))&&(V.cnt[d.i][m]||0)<(BAL_SMALL.has(m)?1:2)&&cap(m)-(V.ses[d.i][m]||0)>=2&&V.sets[d.i]+2<=maxDay).map(d=>({...d,near:ws.some((w,j)=>j!==d.i&&(V.ses[j][m]||0)>=3&&adj(w.day,ws[d.i].day))})).sort((a,b)=>(a.near-b.near)||(V.ses[a.i][m]||0)-(V.ses[b.i][m]||0)||b.ov-a.ov||V.sets[a.i]-V.sets[b.i]);
+      if(late&&!days.length)noDay.add(m);
       for(const d of days){const w=ws[d.i],id=ids.find(x=>!w.exercises.some(e=>exId(e)===x));if(!id)continue;const x=LIB.exById[id];let at=-1;w.exercises.forEach((e,j)=>{if(bmp(e).p.some(k=>R.has(k)))at=j});
-        w.exercises.splice(at<0?w.exercises.length:at+1,0,{id:uidGen(),name:x.n,xid:x.i,sets:2,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(rirOn(S.me)?{rir:1}:{}),_o:0,_r:[`add:min:${m}`],_new:true});break}}}
+        w.exercises.splice(at<0?w.exercises.length:at+1,0,{id:uidGen(),name:x.n,xid:x.i,sets:2,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(rirOn(S.me)?{rir:1}:{}),_o:0,_r:[late?`add:spread:${m}`:`add:min:${m}`],_new:true});break}}}
   coverage();
   if(o.mode!=='eff')for(let g=0;g<200&&total()>bud;g++)if(!step('rem'))break;
   const thr=o.mode==='eff'?.02:0;
@@ -1189,19 +1192,22 @@ function balance(prog,o){
   for(let g=0;g<60;g++){const u0=util();let bp=null;for(const r of remList()){r.e.sets--;const V=balVol(ws),u1=util();let ba=null;ws.forEach((w,i)=>w.exercises.forEach(e=>{if(e===r.e||!canAdd(e,i,V))return;e.sets++;const d=util()-u1;e.sets--;if(!ba||d>ba.d)ba={e,d}}));r.e.sets++;if(ba){const d=r.d+ba.d;if(!bp||d>bp.d)bp={r:r.e,a:ba.e,d}}}
     if(!bp||bp.d<=.015)break;tag(bp.r,why(bp.r,false));bp.r.sets--;tag(bp.a,why(bp.a,true));bp.a.sets++;void u0}
   
-  if(o.mode==='eff')for(let g=0;g<200&&total()>bud;g++)if(!step('rem'))break;
+  coverage(true);
+  for(let g=0;g<200&&total()>bud;g++)if(!step('rem'))break;
+  for(let g=0;g<10&&total()>bud;g++){let bx=null;const u0=util();ws.forEach(w=>w.exercises.forEach((e,j)=>{if(!(e._new&&e._r.some(r=>r.startsWith('add:spread'))))return;const keepS=e.sets;e.sets=0;const d=util()-u0;e.sets=keepS;if(!bx||d>bx.d)bx={w,j,d}}));if(!bx)break;bx.w.exercises.splice(bx.j,1)}
+  for(let g=0;g<40;g++){const V=balVol(ws);const m=[...new Set(BAL_MAJ.concat(o.pri))].find(k=>(V.tot[k]||0)<fl(k)-.01&&ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(k)&&canAdd(e,i,V))));if(!m)break;let bx=null;ws.forEach((w,i)=>w.exercises.forEach(e=>{if(bmp(e).p.includes(m)&&canAdd(e,i,V)&&(!bx||e.sets<bx.sets))bx=e}));if(total()>=bud){let br=null;const u0=util();ws.forEach(w=>w.exercises.forEach(e=>{if(e===bx||bmp(e).p.includes(m)||bmp(e).s.includes(m)||!canRem(e))return;e.sets--;const d=util()-u0;e.sets++;if(!br||d>br.d)br={e,d}}));if(!br)break;tag(br.e,why(br.e,false));br.e.sets--}tag(bx,`add:min:${m}`);bx.sets++}
   for(const w of ws)w.exercises=w.exercises.filter(e=>!(e._new&&e.sets<1));
   const V=balVol(ws);
   const changes=[];ws.forEach((w,wi)=>w.exercises.forEach(e=>{if(e._new||e.sets!==e._o)changes.push({k:w.id+':'+e.id,wi,id:e.id,name:e.name,from:e._o,to:e.sets,add:!!e._new,r:e._r})}));
   const fit0=(e,i)=>e.sets<4&&V.sets[i]<maxDay&&bmp(e).p.every(k=>(V.ses[i][k]||0)+1<=cap(k)+.01);
   const warn=[],short=[],T1=total();
   for(const m of [...new Set(BAL_MAJ.concat(o.pri))]){const v=V.tot[m]||0;if(v>=fl(m)-.01)continue;
-    const room=ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&fit0(e,i)));
-    if(!room)warn.push({c:v<4,t:`${MUS[m]} ${fmt(v)} sette kaldı. Bu kası çalıştıran günlerde hareket ve seans sınırı doldu; daha fazlası için bu kası bir güne daha eklemen gerekir.`});
-    else if(v<4)warn.push({c:true,t:`${MUS[m]} ${fmt(v)} sette; haftada 4 setlik minimum etkili dozun altında.`});
+    const room=!noDay.has(m)||ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&fit0(e,i)));
+    if(!room)warn.push({c:v<4,t:`${MUS[m]} haftada ${fmt(v)} sette kaldı. Bu kası çalıştıran günlerin hepsi dolu (bir harekette en fazla 4 set, günde en fazla ${maxDay} set) ve onu dinlenmiş haliyle ekleyebileceğim başka bir gün yok. Daha fazlası için programa yeni bir gün eklemek gerekir.`});
+    else if(v<4)warn.push({c:true,t:`${MUS[m]} haftada sadece ${fmt(v)} set çalışıyor. Gelişim için haftada en az 4 set gerekir.`});
     else short.push(m)}
-  if(short.length){const lim=o.mode==='up'?`toplam +${bud-T0} set artış sınırı`:o.mode==='bal'?'sabit toplam set kuralı':'toplamı artırmama kuralı';
-    warn.unshift({c:false,t:`Bu turda ${lim} ve hareket başına ±2 set adım sınırı doldu. Hedefin altında kalanlar: ${short.map(m=>`${MUS[m]} ${fmt(V.tot[m]||0)}/${fl(m)}`).join(', ')}. 3–4 hafta sonra tekrar dengelersen artış devam eder${o.mode==='up'?'':'; ya da “Artır” modunu seçebilirsin'}.`})}
+  if(short.length){const lim=o.mode==='up'?`toplamı ${T1-T0} set artırdım (en fazla %15)`:T1===T0?'toplam seti aynı tuttum':T1<T0?`toplam seti ${T0-T1} set azalttım`:`toplam seti yalnızca ${T1-T0} set artırdım`;
+    warn.unshift({c:false,t:`Programı bir anda çok değiştirmemek için ${lim} ve her hareketi en fazla 2 set değiştirdim. Bu yüzden şu kaslar henüz hedefe ulaşmadı: ${short.map(m=>`${MUS[m]} ${fmt(V.tot[m]||0)} set (hedef ${fl(m)})`).join(', ')}. Bu programı 3–4 hafta uygula, sonra tekrar dengele; eksik kalanlar o zaman tamamlanır.`})}
   return{ws,changes,warn,T0,fl,ce}}
 function balFinal(){const B=S.bal;return B.res.ws.map(w=>({...w,exercises:w.exercises.filter(e=>!(e._new&&B.off[w.id+':'+e.id])).map(e=>({...e,sets:B.off[w.id+':'+e.id]?e._o:e.sets}))}))}
 const balClean=ws=>ws.map(w=>({...w,id:uidGen(),exercises:w.exercises.map(e=>{const c={...e,id:uidGen()};delete c._o;delete c._r;delete c._new;if(!c.xid)delete c.xid;return c})}));
@@ -1220,7 +1226,7 @@ function viewBal(){const B=S.bal;const back=`<div class="top"><button class="ibt
   const fig=(h,side)=>figure(side,h,'week','bal',null);
   const ms=Object.keys(MUS).filter(m=>BAL_MAJ.includes(m)||B.o.pri.includes(m)).sort((a,b)=>Math.abs((after[b]||0)-(before[b]||0))-Math.abs((after[a]||0)-(before[a]||0)));
   const dot=v=>`<i class="dk" style="background:${heatColor(v,'week')};display:inline-block;margin-right:5px"></i>`;
-  const RT={min:'önerilen minimumun altındaydı',pri:'öncelikli kas',flat:'son haftalarda yerinde sayıyor',gain:'eklenen set en çok burada fayda sağlıyor',high:'zaten yüksekti',low:'bu set az ek fayda sağlıyordu',tired:'yorgunluk belirtisi (performans düşüyor, RIR ≈ 0)'};
+  const RT={spread:'diğer günler dolu olduğu için dinlenmiş olduğu bu güne eklendi',min:'önerilen minimumun altındaydı',pri:'öncelikli kas',flat:'son haftalarda yerinde sayıyor',gain:'eklenen set en çok burada fayda sağlıyor',high:'zaten yüksekti',low:'bu set az ek fayda sağlıyordu',tired:'yorgunluk belirtisi (performans düşüyor, RIR ≈ 0)'};
   const rtxt=r=>{const[t,c,m]=r.split(':');return(m?MUS[m]+': ':'')+RT[c]};
   const byDay={};B.res.changes.forEach(c=>(byDay[c.wi]||(byDay[c.wi]=[])).push(c));
   const T1=balSum(fin),tr=B.o.trend||{},q=B.q||[];
