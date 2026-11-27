@@ -282,8 +282,8 @@ const known=e=>!!libOf(e)||!!MAP[key(e.name)];
 
 /* ---------- heat (zones) ---------- */
 const ZC=['var(--h0)','var(--z1)','var(--z2)','var(--z3)','var(--z4)'];
-const ZN={week:{n:['Çalışılmadı','Düşük','Bakım','Gelişim','Çok yüksek'],r:['0','0,5–5,5','6–9,5','10–20','20+'],t:[6,10,20],band:[10,20],max:26,unit:'set / hafta',
-  tip:['Bu kas hiç çalışmıyor.','Az. Kası korumak için haftada en az 6 set hedefle.','Kası korumaya yeter. Büyüme için 10 sete çıkarmayı dene.','Kas gelişimi için ideal aralıkta (haftada 10–20 set).','20 setin üstü toparlanmayı zorlayabilir; bir kısmını azaltmayı düşün.']},
+const ZN={week:{n:['Çalışılmadı','Az','Etkili','Yüksek','Çok yüksek'],r:['0','0,5–3,5','4–9,5','10–20','20+'],t:[4,10,20],band:[4,10],max:24,unit:'set / hafta',
+  tip:['Bu kas hiç çalışmıyor.','Haftada 4 setin altında; gelişim için gereken minimum dozun altında kalıyor.','Kazanımın büyük kısmı bu aralıkta elde edilir; set başına verim en yüksek.','Daha fazla gelişim sağlayabilir ama her ek setin getirisi giderek azalır.','20 setin üstünde ek fayda belirsiz; toparlanmayı zorlayabilir, bir kısmını azaltmayı düşün.']},
  w:{n:['Yok','Hafif','Orta','Yoğun','Çok yoğun'],r:['0','0,5–1,5','2–3,5','4–8','8+'],t:[2,4,8],band:null,max:10,unit:'set',
   tip:['Bu antrenmanda çalışmıyor.','Hafif uyarı; çoğunlukla yardımcı kas olarak çalışıyor.','Orta düzey uyarı.','Tek seans için güçlü uyarı.','Tek seansta çok fazla set; bir kısmını başka güne kaydırmayı düşün.']}};
 function zoneOf(v,sc){if(!(v>0))return 0;const t=ZN[sc].t;return v<t[0]?1:v<t[1]?2:v<=t[2]?3:4}
@@ -314,18 +314,18 @@ function heatBlock(items,sc,opts={}){
   const bar=(k,v)=>{const z=zoneOf(v,sc);return`<button class="mbar press${sel===k?' on':''}" data-a="hsel" data-b="${bid}" data-k="${k}"><span>${MUS[k]}</span><div class="b">${Z.band?`<u style="left:${Z.band[0]/Z.max*100}%;width:${(Z.band[1]-Z.band[0])/Z.max*100}%"></u>`:''}<i style="width:${Math.min(100,v/Z.max*100)}%;background:${ZC[z]}"></i></div><span class="v">${fmt(v)}</span></button>`};
   let det;
   if(sel){const v=h[sel]||0,z=zoneOf(v,sc),src=(by[sel]||[]).sort((a,b)=>b.v-a.v);
-    const need=sc==='week'&&z<3?Math.ceil((10-v)*2)/2:0;
+    const need=sc==='week'&&z<2?Math.ceil((4-v)*2)/2:0;
     det=`<div class="hdet"><div class="row"><h3 class="sp">${MUS[sel]}</h3>${pill(z)}<button class="ibtn" style="width:32px;height:32px" data-a="hsel" data-b="${bid}" data-k="${sel}" aria-label="Seçimi kaldır">${ic('x',16)}</button></div>
     <div class="num" style="font:800 30px/1.1 var(--d);margin:4px 0">${fmt(v)} <span class="sub" style="font:600 14px var(--f)">${Z.unit}</span></div>
-    <p class="sub" style="margin:0 0 8px">${Z.tip[z]}${need>0?` İdeal aralığa girmek için <b style="color:var(--ink)">+${fmt(need)} set</b> gerekiyor.`:''}</p>
+    <p class="sub" style="margin:0 0 8px">${Z.tip[z]}${need>0?` Etkili aralığa girmek için <b style="color:var(--ink)">+${fmt(need)} set</b> gerekiyor.`:''}</p>
     ${src.length?`<div class="list">${src.map(x=>`<div class="row" style="padding:7px 0;font-size:14px"><span class="sp">${esc(x.n)}</span><span class="sub">${x.r}</span><b class="num" style="min-width:42px;text-align:right">${fmt(x.v)}</b></div>`).join('')}</div><p class="sub" style="font-size:12px;margin:6px 0 0">Ana kas olarak çalışan hareketin her seti 1, yardımcı kas olarak 0,5 set sayılır.</p>`:''}</div>`}
   else det=`<p class="sub hhint">${ic('spark',13)} Bir kasa dokun: kaç set aldığını ve hangi hareketlerden geldiğini gör.</p>`;
   const miss=keys.filter(k=>!(h[k]>0));
-  return `${sc==='week'?`<div class="zsum">${[3,2,1,4].filter(z=>cnt[z]).map(z=>`<span class="zp z${z}">${Z.n[z]} <b>${cnt[z]}</b></span>`).join('')}${cnt[0]?`<span class="zp z0">${Z.n[0]} <b>${cnt[0]}</b></span>`:''}</div>`:''}
+  return `${sc==='week'?`<div class="zsum">${[2,3,1,4].filter(z=>cnt[z]).map(z=>`<span class="zp z${z}">${Z.n[z]} <b>${cnt[z]}</b></span>`).join('')}${cnt[0]?`<span class="zp z0">${Z.n[0]} <b>${cnt[0]}</b></span>`:''}</div>`:''}
   <div class="bodyfig${sel?' hassel':''}"><figure style="margin:0">${figure('f',h,sc,bid,sel)}<figcaption>Ön</figcaption></figure><figure style="margin:0">${figure('b',h,sc,bid,sel)}<figcaption>Arka</figcaption></figure></div>
   <div class="zleg">${[1,2,3,4].map(z=>`<span><i style="background:${ZC[z]}"></i><b>${Z.n[z]}</b><small>${Z.r[z]}</small></span>`).join('')}</div>
   ${det}
-  ${top.length?`<div style="margin-top:10px">${top.slice(0,opts.all?19:8).map(([k,v])=>bar(k,v)).join('')}</div>${Z.band?`<p class="sub" style="font-size:12px;margin:6px 2px 0"><span class="bandk"></span> Taralı alan: kas gelişimi için ideal haftalık set aralığı (10–20).</p>`:''}`:'<p class="sub" style="text-align:center">Henüz veri yok.</p>'}
+  ${top.length?`<div style="margin-top:10px">${top.slice(0,opts.all?19:8).map(([k,v])=>bar(k,v)).join('')}</div>${Z.band?`<p class="sub" style="font-size:12px;margin:6px 2px 0"><span class="bandk"></span> Taralı alan: set başına en verimli haftalık aralık (4–10). Üstü ek gelişim sağlayabilir ama getirisi azalır.</p>`:''}`:'<p class="sub" style="text-align:center">Henüz veri yok.</p>'}
   ${opts.all&&miss.length&&top.length?`<p class="sub" style="margin:10px 2px 0"><b style="color:var(--ink)">Hiç çalışmayan:</b> ${miss.map(k=>MUS[k]).join(', ')}</p>`:''}`;
 }
 
@@ -447,6 +447,7 @@ function viewProg(){
   const uid=S.view,mine=isMine(),u=U(uid);
   const cards=u.programs.map(p=>{const open=S.open[p.id]??p.star;
     return`<div class="card"><div class="ph">${mine?`<button class="ibtn" data-a="pstar" data-p="${p.id}" aria-label="Aktif program" style="color:${p.star?'var(--acc)':'var(--mute)'}">${ic('star',24,p.star)}</button>`:p.star?`<span class="ibtn" style="color:var(--acc)">${ic('star',24,1)}</span>`:''}<button class="sp" data-a="popen" data-p="${p.id}" style="text-align:left"><h2>${esc(p.name)}</h2><div class="sub">${p.workouts.length} gün · ${p.workouts.reduce((a,w)=>a+workoutSets(w),0)} set / hafta</div></button>${mine?`<button class="ibtn" data-a="pmenu" data-p="${p.id}" aria-label="Seçenekler">${ic('dots',22)}</button>`:''}<button class="ibtn" data-a="popen" data-p="${p.id}" aria-label="Aç/kapat" style="color:var(--acc)">${ic(open?'up':'down',22)}</button></div>
+    ${mine&&p.reviewAt&&Date.now()>p.reviewAt?`<button class="banner press" style="display:flex;gap:8px;align-items:center;width:100%;text-align:left;margin:8px 0 0" data-a="balopen" data-p="${p.id}">${ic('spark',16)}<span class="sp">Bu programı dengeleyeli 4 hafta oldu. Gelişimine göre tekrar değerlendir.</span>${ic('chev',16)}</button>`:''}
     ${open?`<div>${p.workouts.map(w=>`<button class="wrow press" data-a="openw" data-p="${p.id}" data-w="${w.id}"><span class="daytag">${w.day!=null?DAYS[w.day]:'—'}</span><span class="sp" style="text-align:left"><h3 style="font-size:18px">${esc(w.name)}</h3><span class="sub">${w.exercises.length} hareket · ${workoutSets(w)} set</span></span><span style="color:var(--mute)">${ic('chev',18)}</span></button>`).join('')||'<p class="sub">Henüz gün eklenmedi.</p>'}
     <div class="pfoot">${mine?`<button class="btn ghost" data-a="wnew" data-p="${p.id}">${ic('plus',18)} Gün Ekle</button>`:`<button class="btn ghost" data-a="pcopy" data-u="${uid}" data-p="${p.id}">${ic('copy',18)} Programlarıma kopyala</button>`}<button class="btn ghost" data-a="pheat" data-p="${p.id}">${ic('spark',18)} Analizi görüntüle</button></div></div>`:''}</div>`}).join('');
   return`<div class="top"><h1>Programlar</h1>${mine?`<div class="row"><button class="ibtn bg" data-a="pimport" aria-label="Kodla içe aktar">${ic('import',20)}</button><button class="ibtn" style="background:var(--acc);color:#fff" data-a="pnew" aria-label="Yeni program">${ic('plus',22)}</button></div>`:''}</div>${whoBar()}
@@ -462,7 +463,7 @@ function viewWorkout(){
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button>${mine?`<button class="ibtn bg" data-a="wedit" data-p="${pid}" data-w="${wid}" aria-label="Düzenle">${ic('edit',20)}</button>`:''}</div>
   <h1 style="text-transform:lowercase">${esc(w.name)}</h1><p class="sub" style="margin:6px 0 16px">${esc(p.name)}${w.day!=null?' · '+DAYS_FULL[w.day]:''} · ${w.exercises.length} hareket · ${workoutSets(w)} set${mine?'':' · '+esc(nameOf(uid))}</p>
   <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e,w.id),lx=libOf(e);return`<div class="exi">${lx?.img?thumb(lx,42):`<span class="exn">${i+1}</span>`}<div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${rirOn(uid)&&e.rir!=null?` · ${fmt(e.rir)} RIR`:''}${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(hk(e))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
-  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Bu antrenmanda çalışan kaslar</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(hitems,'w',{id:'w'})}</div>
+  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Bu antrenmanda çalışan kaslar</h2></div>${heatBlock(hitems,'w',{id:'w'})}</div>
   <div class="row" style="position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));gap:8px">${mine?`<button class="btn pri block" style="flex:1;min-height:54px;font-size:17px;box-shadow:0 8px 24px rgba(229,53,42,.35)" data-a="startw" data-p="${pid}" data-w="${wid}" data-d="${ymd(new Date())}">${ic('play',18,1)} Antrenmana Başla</button>`:`<button class="btn pri block" data-a="pcopy" data-u="${uid}" data-p="${pid}">${ic('copy',18)} Programı kopyala</button>`}</div>`;
 }
 
@@ -471,7 +472,7 @@ function viewPHeat(){
   const items=p.workouts.flatMap(w=>w.exercises.map(e=>({name:e.name,xid:exId(e),sets:+e.sets||0})));
   if(LIB.ex&&items.some(e=>!known(e))&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button></div><h1>${esc(p.name)} analizi</h1><p class="sub" style="margin:6px 0 16px">Programı bir hafta boyunca uygularsan her kasın alacağı set sayısı. Renkler kas gelişimi için önerilen haftalık aralıklara göre.</p>
-  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Haftalık yük</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(items,'week',{all:1,id:'ph'})}</div>
+  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Haftalık yük</h2></div>${heatBlock(items,'week',{all:1,id:'ph'})}</div>
   <button class="card press row" style="width:100%;text-align:left;box-shadow:inset 0 0 0 1.5px var(--acc)" data-a="balopen" data-u="${uid}" data-p="${pid}"><span class="xth ph" style="width:44px;height:44px;background:var(--accSoft);color:var(--acc)">${ic('spark',22)}</span><span class="sp"><h3>Programı dengele</h3><span class="sub" style="font-size:13px">Fazla çalışan kasları azaltıp eksikleri ideal aralığa çeker; sonucu yeni program olarak kaydeder.</span></span>${ic('chev',18)}</button>
   <div class="sec"><h2>Günlere göre</h2></div>${p.workouts.map(w=>{const hw=heatOf(w.exercises.map(e=>({name:e.name,xid:exId(e),sets:+e.sets||0})));const top=Object.entries(hw).sort((a,b)=>b[1]-a[1]).slice(0,4);return`<button class="card press row" style="width:100%" data-a="openw" data-p="${pid}" data-w="${w.id}"><span class="daytag">${w.day!=null?DAYS[w.day]:'—'}</span><span class="sp" style="text-align:left"><h3>${esc(w.name)}</h3><span class="sub">${top.map(([k,v])=>MUS[k]+' '+fmt(v)).join(' · ')||'—'}</span></span>${ic('chev',18)}</button>`}).join('')}`;
 }
@@ -532,15 +533,6 @@ function viewEx(){
   <div class="sec"><h2>Geçmiş</h2></div><div class="card list" style="padding:2px 16px">${e.ents.slice().reverse().map(x=>`<div style="padding:12px 0"><div class="row"><h3 class="sp">${dLong(x.date)}</h3><span class="sub">${esc(x.wname||'')}</span></div><div class="setchips">${x.sets.map(s=>`<span class="sc ${s===x.top?'best':''}">${fmt(s.w)} kg × ${s.r}</span>`).join('')}</div></div>`).join('')}</div>`;
 }
 
-function viewTeam(){
-  const ids=userIds(),now=new Date(),ws=weekStart(now);
-  return`<div class="top"><h1>Ekip</h1></div><p class="sub" style="margin:-6px 2px 16px">Uygulamayı kullanan herkes birbirinin takvimini, gelişimini, programlarını ve ölçülerini görür.</p>
-  ${ids.map(id=>{const ss=doneSessions(id),last=ss.at(-1),dates=new Set(ss.map(s=>s.date));const mk=ymd(now).slice(0,7);const vol=ss.filter(s=>s.date.startsWith(mk)).reduce((a,s)=>a+s.exercises.reduce((b,e)=>b+e.sets.filter(x=>x.r>0).reduce((c,x)=>c+(x.w||0)*x.r,0),0),0);
-    return`<div class="card"><div class="row">${av(id,48)}<div class="sp"><h2>${esc(nameOf(id))}${id===S.me?' <span class="sub" style="font:600 13px var(--f)">· Sen</span>':''}</h2><div class="sub">${last?`Son: ${esc(last.workoutName)} · ${dShort(last.date)}`:'Henüz antrenman yok'}</div></div></div>
-    <div class="row" style="margin:14px 0 4px;justify-content:space-between"><div class="dots">${DAYS.map((d,i)=>{const x=new Date(ws);x.setDate(ws.getDate()+i);return`<i class="${dates.has(ymd(x))?'on':''}" title="${DAYS_FULL[i]}">${d[0]}</i>`}).join('')}</div><div style="text-align:right"><div class="num" style="font-weight:800;font-size:18px">${fmtK(vol)} kg</div><div class="sub" style="font-size:12px">bu ay hacim</div></div></div>
-    <div class="chips" style="margin-top:12px">${[['cal','Takvim','cal'],['gel','Gelişim','chart'],['prog','Programlar','dumb'],['prof','Ölçüler','ruler']].map(([t,n,i])=>`<button class="chip" data-a="goto" data-u="${id}" data-t="${t}">${ic(i,16)} ${n}</button>`).join('')}</div></div>`}).join('')}
-  <div class="card" style="background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını ekle</h3><p class="sub" style="margin:6px 0 10px">Bu sitenin adresini ve davet kodunu gönder. E-posta ve parolayla kayıt olup kodu girdiğinde burada görünür.</p>${S.invite?`<div class="row"><span class="num sp" style="font-size:24px;font-weight:800;letter-spacing:.04em">${esc(S.invite)}</span><button class="btn sm pri" data-a="invcopy">${ic('copy',16)} Davet metnini kopyala</button></div>`:S.demo?'':'<button class="btn sm" data-a="invget">Davet kodunu göster</button>'}</div>`;
-}
 
 const MF=[['weight','Kilo','kg'],['fat','Yağ oranı','%'],['neck','Boyun','cm'],['shoulder','Omuz','cm'],['chest','Göğüs','cm'],['waist','Bel','cm'],['abdomen','Karın','cm'],['hips','Kalça','cm'],['armR','Sağ kol','cm'],['armL','Sol kol','cm'],['forearmR','Sağ ön kol','cm'],['forearmL','Sol ön kol','cm'],['thighR','Sağ bacak','cm'],['thighL','Sol bacak','cm'],['calfR','Sağ baldır','cm'],['calfL','Sol baldır','cm']];
 const viewProf=()=>viewProf0()+(isMine()?inviteCard()+`<button class="btn block" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)" data-a="logout">Çıkış yap</button>`:'');
@@ -596,7 +588,7 @@ function openNewPlan(){ED={kind:'npl',name:'',src:myPlan()?'copy':'empty'};openS
 function openNItem(mi,j){const pl=myPlan();const it=j>=0?pl.meals[mi].items[j]:{id:uidGen(),name:'',g:100,kcal:null,p:null,c:null,f:null};ED={kind:'nitem',mi,j,it:{...it},base:{...it},scale:true};
   const fld=(k,l)=>`<div><label class="l" for="ni_${k}">${l}</label><input class="f" id="ni_${k}" inputmode="decimal" data-ed="it.${k}" data-num="1" value="${it[k]??''}"></div>`;
   openSheet(()=>`${sheetHead(j>=0?'Besini düzenle':'Besin ekle',esc(pl.meals[mi].name))}<label class="l" for="ni_name">Besin</label><input class="f" id="ni_name" data-ed="it.name" value="${esc(ED.it.name)}" placeholder="Örn. Yulaf ezmesi">
-  <div class="mg">${fld('g','Çiğ gramaj (g)')}${fld('kcal','Kalori (kcal)')}${fld('p','Protein (g)')}${fld('c','Karbonhidrat (g)')}${fld('f','Yağ (g)')}</div>
+  <div class="mg">${fld('g','Miktar (g)')}${fld('kcal','Kalori (kcal)')}${fld('p','Protein (g)')}${fld('c','Karbonhidrat (g)')}${fld('f','Yağ (g)')}</div>
   <label class="row" style="gap:10px;margin:14px 2px 0;font-size:14px"><input type="checkbox" id="ni_scale" ${ED.scale?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"> Gramaj değişince değerleri orantılı güncelle</label>
   <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="nitemsave">Kaydet</button>${j>=0?`<button class="btn block" style="margin-top:8px" data-a="nitplan">${ic('copy',18)} Başka bir besinle değiştir</button>`:''}${j>=0?`<button class="btn danger block" style="margin-top:8px" data-a="nitemdel">${ic('trash',18)} Besini sil</button>`:''}`);
   if(j<0)setTimeout(()=>$('#ni_name')?.focus(),80)}
@@ -658,8 +650,6 @@ function closeSheet(){SSTK.length=0;sheetEl.innerHTML='';sheetRender=null;ED=nul
 const sheetHead=(t,s)=>`<div class="row" style="margin-bottom:8px"><div class="sp"><h2>${t}</h2>${s?`<div class="sub">${s}</div>`:''}</div><button class="ibtn bg" data-a="sclose" aria-label="Kapat">${ic('x',20)}</button></div>`;
 function confirmSheet(title,text,yes,fn){openSheet(()=>`${sheetHead(title)}<p class="sub">${text}</p><div class="row" style="margin-top:16px"><button class="btn block" style="flex:1" data-a="sclose">Vazgeç</button><button class="btn pri block" style="flex:1" data-a="cyes">${yes}</button></div>`);ED={kind:'confirm',fn}}
 
-function knownNames(){const s=new Set(Object.values(SEEDMAP).length?SEED.flatMap(w=>w[2].map(e=>e[0])):[]);for(const u of Object.values(S.users)){u.programs.forEach(p=>p.workouts.forEach(w=>w.exercises.forEach(e=>s.add(e.name))));u.sessions.forEach(x=>(x.exercises||[]).forEach(e=>s.add(e.name)))}return[...s].sort((a,b)=>a.localeCompare(b,'tr'))}
-const datalist=()=>`<datalist id="exnames">${knownNames().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`;
 
 function openPicker(date){
   const u=U(S.me),act=u.sessions.find(s=>!s.done),isToday=date===ymd(new Date());
@@ -680,7 +670,7 @@ const b64e=s=>btoa(unescape(encodeURIComponent(s))),b64d=s=>decodeURIComponent(e
 function openShare(pid){const p=progOf(S.me,pid);const data={n:p.name,w:p.workouts.map(w=>({n:w.name,d:w.day,e:w.exercises.map(e=>e.rir!=null?[e.name,e.sets,e.min,e.max,e.rir]:[e.name,e.sets,e.min,e.max])}))};const code='SETLOG1:'+b64e(JSON.stringify(data));
   const text=`${p.name}\n`+p.workouts.map(w=>`\n${w.name}${w.day!=null?' ('+DAYS_FULL[w.day]+')':''}\n`+w.exercises.map(e=>`• ${e.name} — ${e.sets} set × ${e.min===e.max?e.min:e.min+'-'+e.max}${e.rir!=null?' · '+fmt(e.rir)+' RIR':''}`).join('\n')).join('\n')+`\n\nSetlog kodu:\n${code}`;
   ED={kind:'share',code,text};
-  openSheet(()=>`${sheetHead('Programı paylaş',esc(p.name))}<p class="sub">Uygulamayı kullanan herkes programını zaten Ekip ekranından görüp kopyalayabilir. Başkalarıyla paylaşmak için metni veya kodu gönder; kodu alan kişi Programlar → İçe aktar ile ekler.</p>
+  openSheet(()=>`${sheetHead('Programı paylaş',esc(p.name))}<p class="sub">Uygulamadaki arkadaşların programını zaten Programlar ekranında isminden görüp kopyalayabilir. Başkalarıyla paylaşmak için metni veya kodu gönder; kodu alan kişi Programlar → İçe aktar ile ekler.</p>
   <label class="l">Okunabilir metin + kod</label><textarea class="f" readonly rows="8">${esc(text)}</textarea>
   <div class="row" style="margin-top:12px"><button class="btn block" style="flex:1" data-a="cpy" data-x="code">${ic('copy',18)} Kodu kopyala</button><button class="btn pri block" style="flex:1" data-a="cpy" data-x="text">${ic('copy',18)} Metni kopyala</button></div>`)}
 function openImport(){ED={kind:'imp',txt:''};openSheet(()=>`${sheetHead('Programı içe aktar')}<p class="sub">Sana gönderilen metni ya da SETLOG1: ile başlayan kodu yapıştır.</p><textarea class="f" data-ed="txt" placeholder="SETLOG1:..." style="margin-top:10px"></textarea><button class="btn pri block" style="margin-top:12px" data-a="impgo">İçe aktar</button>`)}
@@ -703,7 +693,6 @@ function openMeas(mid){const m=mid?U(S.me).measures.find(x=>x.id===mid):null;con
   <label class="l" for="mn">Not</label><input class="f" id="mn" data-ed="m.note" value="${esc(ED.m.note)}" placeholder="İsteğe bağlı">
   <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="msave">Kaydet</button>${mid?`<button class="btn danger block" style="margin-top:8px" data-a="mdel">${ic('trash',18)} Ölçümü sil</button>`:''}`)}
 function openNick(){const p=U(S.me).profile||{};ED={kind:'nick',nick:p.nick||'',height:p.height??null};openSheet(()=>`${sheetHead('Profili düzenle')}<label class="l" for="nn">Adın</label><input class="f" id="nn" data-ed="nick" value="${esc(ED.nick)}"><label class="l" for="nh">Boy (cm)</label><input class="f" id="nh" inputmode="numeric" data-ed="height" data-num="1" value="${ED.height??''}"><button class="btn pri block" style="margin-top:16px" data-a="nsave">Kaydet</button>`)}
-function openAddEx(){ED={kind:'lex',name:'',sets:3};openSheet(()=>`${sheetHead('Hareket ekle')}${datalist()}<label class="l" for="xn">Hareket adı</label><input class="f" id="xn" list="exnames" data-ed="name" placeholder="Örn. Bench Press"><label class="l" for="xs">Set sayısı</label><input class="f" id="xs" inputmode="numeric" data-ed="sets" data-num="1" value="3"><button class="btn pri block" style="margin-top:16px" data-a="lexgo">Ekle</button>`);setTimeout(()=>$('#xn')?.focus(),80)}
 
 /* ---------- live workout ---------- */
 let LIVE=null,liveT=0;
@@ -716,8 +705,8 @@ async function startWorkout(pid,wid,date){const act=U(S.me).sessions.find(s=>!s.
 }
 function resume(sid){const s=U(S.me).sessions.find(x=>x.id===sid);if(!s)return;if(!LIVE||LIVE.id!==sid)LIVE={id:sid,doc:clone(s)};delete LIVE.doc.id;closeSheet();S.route={name:'live'};render();scrollTo(0,0)}
 async function finishLive(){const d=LIVE.doc;
-  const valid=d.exercises.map(e=>({...e,sets:e.sets.filter(x=>x.r>0&&x.w!=null)})).filter(e=>e.sets.length);
-  if(!valid.length){toast('En az bir set için kilo ve tekrar gir.');return}
+  const valid=d.exercises.map(e=>({...e,sets:e.sets.filter(x=>x.r>0&&(x.w!=null||x.d)).map(x=>({...x,w:x.w??0}))})).filter(e=>e.sets.length);
+  if(!valid.length){toast('En az bir set için tekrar gir (vücut ağırlığı hareketlerinde kg boş kalabilir).');return}
   const before=hist(S.me);const prs=valid.filter(e=>{const h=before[hk(e)];if(!h)return false;const best=Math.max(...h.ents.map(x=>x.top.w));return Math.max(...e.sets.map(x=>x.w))>best});
   const out={...d,exercises:valid.map(e=>({...e,sets:e.sets.map(x=>({...x,d:true}))})),done:true,finishedAt:Date.now()};
   const id=LIVE.id;clearTimeout(liveT);LIVE=null;S.route=null;S.tab='cal';
@@ -785,7 +774,6 @@ document.addEventListener('click',async ev=>{
   case'lsdel':LIVE.doc.exercises[ds.i].sets.pop();liveSave();render();break;
   case'lexdel':LIVE.doc.exercises.splice(+ds.i,1);liveSave();render();break;
   case'lexadd':openExPicker({multi:true,title:'Hareket ekle',onDone:items=>{if(!items.length||!LIVE)return;for(const it of items)LIVE.doc.exercises.push({name:it.name,xid:it.xid||null,target:null,sets:Array.from({length:3},()=>({w:null,r:null,d:false}))});rememberCustom(LIVE.doc.programId,items);liveSave();render();setTimeout(()=>scrollTo(0,document.body.scrollHeight),50)}});break;
-  case'lexgo':{const n=(ED.name||'').trim();if(!n){toast('Hareket adı gir.');break}const s=Math.max(1,Math.min(12,Math.round(+ED.sets||3)));LIVE.doc.exercises.push({name:n,target:null,sets:Array.from({length:s},()=>({w:null,r:null,d:false}))});closeSheet();liveSave();render();setTimeout(()=>scrollTo(0,document.body.scrollHeight),50);break}
   case'lmin':liveSave(true);S.route=null;S.tab='cal';render();break;
   case'lfin':finishLive();break;
   case'lcancel':confirmSheet('Antrenman iptal edilsin mi?','Bu antrenmanda girdiğin setler silinecek.','İptal et',async()=>{const id=LIVE.id;clearTimeout(liveT);LIVE=null;S.route=null;S.tab='cal';render();await delDoc(P(me,'sessions',id))});break;
@@ -1147,101 +1135,116 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'npadd':{const mi=+ds.i;openFoodPicker({title:'Plana besin ekle',sub:myPlan()?.meals[mi]?.name,onPick:async items=>{if(!items.length)return;const pl=myPlan();pl.meals[mi].items.push(...items);await savePlan(pl);render()}});break}
   }});
 
-/* ---------- program balancer ---------- */
+/* ---------- program balancer (set budget + diminishing returns) ---------- */
 const BAL_MAJ=['chest','lats','upper_back','side_delts','rear_delts','biceps','triceps','quads','hamstrings','glutes','calves','abs'];
-const BAL_G={m:[6,9,'Bakım','Kası korumaya yetecek hacim; daha kısa antrenmanlar.'],g:[10,16,'Gelişim','Çoğu kişi için kas gelişiminin verimli aralığı.'],h:[14,20,'Yüksek hacim','Deneyimliler için; toparlanma ve uyku iyi olmalı.']};
+const BAL_MODE={eff:{n:'Verimli',d:'Az ama etkili: her ana kas 6–10 set. Toplam set yaklaşık %15 azalır.',fl:6,ce:10,pfl:10,pce:14,bud:.85},bal:{n:'Dengeli',d:'Toplam set aynı kalır; setler fazla olan kaslardan eksik olanlara kaydırılır.',fl:6,ce:16,pfl:10,pce:20,bud:1},up:{n:'Artır',d:'Toplam en fazla %15 artar; artış önce eksik ve öncelikli kaslara gider.',fl:8,ce:18,pfl:12,pce:22,bud:1.15}};
 const BAL_PREF={calves:['c_stcalf','c_lpcalf','Seated_Calf_Raise'],side_delts:['c_cablelat','Side_Lateral_Raise','c_mlat'],rear_delts:['c_revfly','Face_Pull','c_cablerear'],biceps:['c_cablecurl','Hammer_Curls','c_mpreacher'],triceps:['c_pushdown','c_cableohe'],chest:['c_mchest','c_pecdeck','Incline_Dumbbell_Press'],lats:['c_latwide','c_pullover'],upper_back:['c_rowclose','c_csrow'],quads:['c_legext','c_legpress','c_hack'],hamstrings:['c_slc','c_llc','Romanian_Deadlift'],glutes:['c_hipthrustm','c_kickback','Barbell_Hip_Thrust'],abs:['c_ropecrunch','c_hkr','c_abmachine']};
 const BAL_REG={push:['chest','front_delts','side_delts','triceps'],pull:['lats','upper_back','rear_delts','biceps','forearms','traps'],legs:['quads','hamstrings','glutes','calves','adductors','abductors','lower_back'],core:['abs','obliques']};
+const BAL_SMALL=new Set(['side_delts','rear_delts','front_delts','biceps','triceps','calves','abs','obliques','forearms','traps','adductors','abductors']);
 const regOf=m=>Object.keys(BAL_REG).find(r=>BAL_REG[r].includes(m));
 const bmp=e=>mapOf(e.name,e.xid||exId(e));
-function balBand(o,m){const G=BAL_G[o.goal];if(o.pri.includes(m))return[Math.max(G[1]-2,G[0]),Math.min(G[1]+4,22)];return BAL_MAJ.includes(m)?[G[0],G[1]]:[0,Math.max(G[1],20)]}
-const BAL_SMALL=new Set(['side_delts','rear_delts','front_delts','biceps','triceps','calves','abs','obliques','forearms','traps','adductors','abductors']);
-const BAL_UP=new Set([...BAL_REG.push,...BAL_REG.pull]),BAL_LOW=new Set(BAL_REG.legs);
-const balCap=(o,m)=>BAL_SMALL.has(m)?6:(o.pri.includes(m)?10:8);
-const balMaxEx=(o,m)=>BAL_SMALL.has(m)?1:(o.pri.includes(m)?3:2);
-function balVol(ws){const tot={},prim=ws.map(()=>({})),ses=ws.map(()=>({})),cnt=ws.map(()=>({}));ws.forEach((w,i)=>w.exercises.forEach(e=>{const s=+e.sets||0,m=bmp(e);m.p.forEach(k=>{tot[k]=(tot[k]||0)+s;prim[i][k]=(prim[i][k]||0)+s;ses[i][k]=(ses[i][k]||0)+s;cnt[i][k]=(cnt[i][k]||0)+1});m.s.forEach(k=>{tot[k]=(tot[k]||0)+s*.5;ses[i][k]=(ses[i][k]||0)+s*.5})}));return{tot,prim,ses,cnt,sets:ws.map(w=>w.exercises.reduce((a,e)=>a+(+e.sets||0),0))}}
+const balG=v=>1-Math.exp(-Math.max(0,v)/8);
+function balVol(ws){const tot={},ses=ws.map(()=>({})),cnt=ws.map(()=>({}));ws.forEach((w,i)=>w.exercises.forEach(e=>{const s=+e.sets||0,m=bmp(e);m.p.forEach(k=>{tot[k]=(tot[k]||0)+s;ses[i][k]=(ses[i][k]||0)+s;cnt[i][k]=(cnt[i][k]||0)+1});m.s.forEach(k=>{tot[k]=(tot[k]||0)+s*.5;ses[i][k]=(ses[i][k]||0)+s*.5})}));return{tot,ses,cnt,sets:ws.map(w=>w.exercises.reduce((a,e)=>a+(+e.sets||0),0))}}
+const balSum=ws=>ws.reduce((a,w)=>a+w.exercises.reduce((b,e)=>b+(+e.sets||0),0),0);
+/* performance trend from logged sessions (last 6 weeks) */
+function balTrend(uid){const H=hist(uid),from=addDays(todayS(),-42),byM={};
+  for(const[k,h]of Object.entries(H)){const en=h.ents.filter(e=>e.date>=from);if(en.length<3||(pd(en.at(-1).date)-pd(en[0].date))/864e5<21)continue;
+    const a=(en[0].e1+en[1].e1)/2,b=(en.at(-1).e1+en.at(-2).e1)/2;if(!(a>0))continue;const rr=en.slice(-3).flatMap(e=>e.sets.map(x=>x.rir).filter(v=>v!=null));
+    const it={n:h.name,ch:(b-a)/a*100,rir:rr.length?rr.reduce((x,y)=>x+y,0)/rr.length:null};for(const m of mapOf(h.name,LIB.exById[k]?k:null).p)(byM[m]||(byM[m]=[])).push(it)}
+  const out={};for(const[m,a]of Object.entries(byM)){const c=a.map(x=>x.ch).sort((x,y)=>x-y),med=c[Math.floor(c.length/2)],rs=a.map(x=>x.rir).filter(v=>v!=null),rir=rs.length?rs.reduce((x,y)=>x+y,0)/rs.length:null;
+    out[m]={ch:med,rir,st:med>2?'up':med<-2&&rir!=null&&rir<=.5?'tired':Math.abs(med)<=2?'flat':'down',ex:a}}return out}
+function balQuality(uid,prog){if(!rirOn(uid))return[];const H=hist(uid),from=addDays(todayS(),-28),out=[];const seen=new Set();
+  for(const w of prog.workouts)for(const e of w.exercises){const k=hk(e);if(seen.has(k))continue;seen.add(k);const h=H[k];if(!h)continue;const rr=h.ents.filter(x=>x.date>=from).flatMap(x=>x.sets.map(s=>s.rir).filter(v=>v!=null));if(rr.length>=4){const av=rr.reduce((a,b)=>a+b,0)/rr.length;if(av>=4)out.push({n:e.name,rir:av})}}return out}
 function balance(prog,o){
+  const M=BAL_MODE[o.mode],T0=balSum(prog.workouts);
   const ws=clone(prog.workouts).map(w=>({...w,exercises:w.exercises.map(e=>({...e,sets:+e.sets||1,_o:+e.sets||1,_r:[]}))}));
-  const band=m=>balBand(o,m),cap=m=>balCap(o,m),tag=(e,t)=>{if(!e._r.includes(t))e._r.push(t)};let V=balVol(ws);const re=()=>V=balVol(ws);const RIR=rirOn(S.me);
-  const fits=(e,i,d)=>{const m=bmp(e);return m.p.every(k=>(V.ses[i][k]||0)+d<=cap(k)+.01&&(V.tot[k]||0)+d<=band(k)[1]+.01)&&m.s.every(k=>(V.ses[i][k]||0)+d*.5<=cap(k)+2.01&&(V.tot[k]||0)+d*.5<=band(k)[1]+2.01)};
-  const dayFit=(i,m)=>{const ov=(R)=>ws[i].exercises.filter(e=>bmp(e).p.some(k=>R.has(k))).length;const sub=new Set(BAL_REG[regOf(m)]||[]);const big=BAL_UP.has(m)?BAL_UP:BAL_LOW.has(m)?BAL_LOW:null;return{sub:ov(sub),big:big?ov(big):ws[i].exercises.length}};
-  function reduce(){for(let g=0;g<300;g++){re();const over=Object.keys(MUS).filter(m=>(V.tot[m]||0)>band(m)[1]+.01).sort((a,b)=>(V.tot[b]-band(b)[1])-(V.tot[a]-band(a)[1]));let did=false;
-    for(const m of over){const pool=[];ws.forEach(w=>w.exercises.forEach(e=>{if(e.sets>1&&bmp(e).p.includes(m)&&bmp(e).p.every(k=>k===m||(V.tot[k]||0)-1>=band(k)[0]))pool.push(e)}));if(!pool.length)continue;pool.sort((a,b)=>b.sets-a.sets);pool[0].sets--;tag(pool[0],'over:'+m);did=true;break}
-    if(!did)return}}
-  function sessFix(){for(let g=0;g<300;g++){re();let did=false;
-    for(let i=0;i<ws.length&&!did;i++)for(const m of Object.keys(V.ses[i])){if((V.ses[i][m]||0)<=cap(m)+.01)continue;const c=ws[i].exercises.filter(e=>e.sets>1&&bmp(e).p.includes(m)).sort((a,b)=>b.sets-a.sets);if(!c.length)continue;c[0].sets--;tag(c[0],'sess:'+m);did=true;break}
-    if(!did)return}}
-  function add(m){const ids=(BAL_PREF[m]||[]).filter(id=>LIB.exById[id]);if(!ids.length)return false;
-    const core=regOf(m)==='core';let days=ws.map((w,i)=>({i,...dayFit(i,m)})).filter(d=>(core?d.big:d.sub)>0&&(V.cnt[d.i][m]||0)<balMaxEx(o,m)&&cap(m)-(V.ses[d.i][m]||0)>=2&&V.sets[d.i]+2<=o.maxDay);if(days.some(d=>d.sub>0))days=days.filter(d=>d.sub>0);if(!days.length)return false;
-    const sc=d=>Math.min(d.sub,3)*2+Math.min(d.big,4)*.5-(V.ses[d.i][m]||0)-V.sets[d.i]/12;days.sort((a,b)=>sc(b)-sc(a));
-    for(const d of days){const w=ws[d.i];const id=ids.find(x=>!w.exercises.some(e=>exId(e)===x));if(!id)continue;const x=LIB.exById[id];
-      const room=Math.floor(Math.min(cap(m)-(V.ses[d.i][m]||0),band(m)[1]-(V.tot[m]||0),o.maxDay-V.sets[d.i]));const need=Math.ceil(band(m)[0]-(V.tot[m]||0));const sets=Math.max(2,Math.min(3,room,Math.max(2,need)));if(room<2)continue;
-      const ne={id:uidGen(),name:x.n,xid:x.i,sets,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(RIR?{rir:1}:{}),_o:0,_r:['add:'+m],_new:true};
-      if(!fits(ne,d.i,sets))continue;const R=new Set(BAL_REG[regOf(m)]||[]);let at=-1;w.exercises.forEach((e,j)=>{if(bmp(e).p.some(k=>R.has(k)))at=j});w.exercises.splice(at<0?w.exercises.length:at+1,0,ne);return true}
-    return false}
-  function increase(){const stuck=new Set();for(let g=0;g<300;g++){re();const list=[...new Set(BAL_MAJ.concat(o.pri))].filter(m=>!stuck.has(m)&&(V.tot[m]||0)<band(m)[0]-.01).sort((a,b)=>(V.tot[a]||0)-band(a)[0]-((V.tot[b]||0)-band(b)[0]));if(!list.length)return;const m=list[0];
-    const c=[];ws.forEach((w,i)=>w.exercises.forEach(e=>{if(bmp(e).p.includes(m)&&e.sets<4&&V.sets[i]<o.maxDay&&fits(e,i,1))c.push({e,i})}));
-    if(c.length){c.sort((a,b)=>a.e.sets-b.e.sets||(V.ses[a.i][m]||0)-(V.ses[b.i][m]||0));c[0].e.sets++;tag(c[0].e,'under:'+m);continue}
-    if(!add(m))stuck.add(m)}}
-  function freq(){if(!o.freq||ws.length<2)return;for(const m of BAL_MAJ){re();const days=V.prim.map((d,i)=>[i,d[m]||0]).filter(x=>x[1]>0);if(days.length!==1)continue;const[di,ds]=days[0];if(ds<4)continue;
-    const cand=ws.map((w,i)=>({i,...dayFit(i,m)})).filter(d=>d.i!==di&&(regOf(m)==='core'?d.big:d.sub)>0&&V.sets[d.i]+2<=o.maxDay&&cap(m)-(V.ses[d.i][m]||0)>=2).sort((a,b)=>b.sub-a.sub||V.sets[a.i]-V.sets[b.i]);if(!cand.length)continue;
-    const ti=cand[0].i,mv=Math.min(2,Math.floor(ds/2));let left=mv,base=null;
-    for(const e of ws[di].exercises.filter(e=>bmp(e).p.includes(m)).sort((a,b)=>b.sets-a.sets)){base=base||e;while(left>0&&e.sets>1){e.sets--;left--;tag(e,'freq:'+m)}}
-    const moved=mv-left;if(!moved||!base)continue;
-    const ex=ws[ti].exercises.find(e=>bmp(e).p.includes(m));if(ex&&ex.sets+moved<=4){ex.sets+=moved;tag(ex,'freq:'+m)}
-    else if(!ex)ws[ti].exercises.push({id:uidGen(),name:base.name,xid:base.xid||exId(base)||null,sets:moved,min:base.min,max:base.max,...(base.rir!=null?{rir:base.rir}:{}),_o:0,_r:['freq:'+m],_new:true});
-    else base.sets+=moved}}
-  function dayCap(){for(let g=0;g<300;g++){re();const i=V.sets.findIndex(n=>n>o.maxDay);if(i<0)return;const c=ws[i].exercises.filter(e=>e.sets>1).map(e=>({e,s:Math.min(...bmp(e).p.map(k=>(V.tot[k]||0)-band(k)[0]),99)})).sort((a,b)=>b.s-a.s);if(!c.length)return;c[0].e.sets--;tag(c[0].e,'cap')}}
-  sessFix();reduce();freq();increase();dayCap();reduce();increase();re();
-  const changes=[];ws.forEach((w,wi)=>w.exercises.forEach(e=>{if(e._new||e.sets!==e._o)changes.push({k:w.id+':'+e.id,wi,wname:w.name,id:e.id,name:e.name,from:e._o,to:e.sets,add:!!e._new,r:e._r})}));
-  const warn=[];[...new Set(BAL_MAJ.concat(o.pri))].forEach(m=>{const v=V.tot[m]||0,b=band(m);if(v<b[0]-.01){const d=V.ses.filter(x=>(x[m]||0)>0).length;warn.push(`${MUS[m]}: ${fmt(v)} set (hedef ${b[0]}+). Seans başına sınırlar (bir harekete en fazla 4 set, seansta en fazla ${cap(m)} etkili set${BAL_SMALL.has(m)?', tek izolasyon hareketi':''}) nedeniyle şu an ${d} günde çalışan bu kas için bu kadarına çıkılabildi. Daha fazlası için bu kası bir güne daha eklemen gerekir.`)}else if(v>b[1]+.01)warn.push(`${MUS[m]} hâlâ yüksek (${fmt(v)} set): azaltılabilecek hareket kalmadı.`)});
-  ws.forEach((w,i)=>{if(V.sets[i]>o.maxDay)warn.push(`${w.name} günü ${V.sets[i]} set; sınırın üstünde.`)});
-  return{ws,changes,warn:[...new Set(warn)]}}
-
+  const V0=balVol(ws).tot,maxDay=Math.max(25,...balVol(ws).sets),tr=o.trend||{};
+  const fl=m=>o.pri.includes(m)?M.pfl:BAL_MAJ.includes(m)?M.fl:0;
+  const ce=m=>{let c=o.pri.includes(m)?M.pce:BAL_MAJ.includes(m)?M.ce:20;if(tr[m]?.st==='tired')c=Math.min(c,Math.max(fl(m),(V0[m]||0)-2));return c};
+  const wt=m=>{let w=BAL_MAJ.includes(m)||o.pri.includes(m)?(o.pri.includes(m)?1.6:1):.25;const t=tr[m]?.st;if(t==='flat')w*=1.35;if(t==='tired')w*=.6;return w};
+  const cap=m=>BAL_SMALL.has(m)?6:(o.pri.includes(m)?10:8);
+  const util=()=>{const V=balVol(ws);let u=0;for(const m of Object.keys(MUS)){const v=V.tot[m]||0;u+=wt(m)*balG(v)-.06*Math.max(0,fl(m)-v)-.06*Math.max(0,v-ce(m));if(tr[m]?.st==='up')u-=.02*Math.abs(v-(V0[m]||0))}
+    V.ses.forEach(s=>{for(const[m,v]of Object.entries(s))u-=.08*Math.max(0,v-cap(m))});return u};
+  const total=()=>balSum(ws),lo=Math.floor(T0*.8),hi=Math.ceil(T0*1.2),bud=Math.min(hi,Math.round(T0*M.bud));
+  const tag=(e,t)=>{if(!e._r.includes(t))e._r.push(t)};
+  const keep=e=>bmp(e).p.some(m=>tr[m]?.st==='up');
+  const canAdd=(e,i,V)=>!keep(e)&&e.sets<4&&e.sets-e._o<2&&!(e._new&&e.sets>=3)&&V.sets[i]<maxDay&&bmp(e).p.every(k=>(V.ses[i][k]||0)+1<=cap(k)+.01);
+  const canRem=e=>{if(!(e.sets>Math.min(2,e._o)&&e._o-e.sets<2))return false;const V=balVol(ws);if(keep(e)&&bmp(e).p.every(m=>(V.tot[m]||0)<=ce(m)))return false;return bmp(e).p.every(m=>(V.tot[m]||0)-1>=fl(m)-.01)};
+  const why=(e,add)=>{const V=balVol(ws),ps=bmp(e).p;const m=ps.slice().sort((a,b)=>add?((V.tot[a]||0)-fl(a))-((V.tot[b]||0)-fl(b)):((V.tot[b]||0)-ce(b))-((V.tot[a]||0)-ce(a)))[0];if(!m)return add?'add:gain:':'rem:low:';const v=V.tot[m]||0,t=tr[m]?.st;
+    return add?(v<fl(m)?`add:min:${m}`:t==='flat'?`add:flat:${m}`:o.pri.includes(m)?`add:pri:${m}`:`add:gain:${m}`):(t==='tired'?`rem:tired:${m}`:v>ce(m)?`rem:high:${m}`:`rem:low:${m}`)};
+  function best(kind){const V=balVol(ws),u0=util();let bst=null;
+    ws.forEach((w,i)=>w.exercises.forEach(e=>{if(kind==='add'?!canAdd(e,i,V):!canRem(e))return;e.sets+=kind==='add'?1:-1;const d=util()-u0;e.sets-=kind==='add'?1:-1;if(!bst||d>bst.d)bst={e,d}}));return bst}
+  function step(kind){const b=best(kind);if(!b)return null;tag(b.e,why(b.e,kind==='add'));b.e.sets+=kind==='add'?1:-1;return b}
+  function coverage(){for(const m of [...new Set(BAL_MAJ.concat(o.pri))]){const V=balVol(ws);if((V.tot[m]||0)>=fl(m)-.01)continue;
+      const grow=ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&canAdd(e,i,V)));if(grow)continue;
+      const ids=(BAL_PREF[m]||[]).filter(id=>LIB.exById[id]);const R=new Set(BAL_REG[regOf(m)]||[]),core=regOf(m)==='core';
+      const days=ws.map((w,i)=>({i,ov:w.exercises.filter(e=>bmp(e).p.some(k=>R.has(k))).length})).filter(d=>(core||d.ov>0)&&(V.cnt[d.i][m]||0)<(BAL_SMALL.has(m)?1:2)&&cap(m)-(V.ses[d.i][m]||0)>=2&&V.sets[d.i]+2<=maxDay).sort((a,b)=>(V.ses[a.i][m]||0)-(V.ses[b.i][m]||0)||b.ov-a.ov||V.sets[a.i]-V.sets[b.i]);
+      for(const d of days){const w=ws[d.i],id=ids.find(x=>!w.exercises.some(e=>exId(e)===x));if(!id)continue;const x=LIB.exById[id];let at=-1;w.exercises.forEach((e,j)=>{if(bmp(e).p.some(k=>R.has(k)))at=j});
+        w.exercises.splice(at<0?w.exercises.length:at+1,0,{id:uidGen(),name:x.n,xid:x.i,sets:2,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(rirOn(S.me)?{rir:1}:{}),_o:0,_r:[`add:min:${m}`],_new:true});break}}}
+  coverage();
+  if(o.mode!=='eff')for(let g=0;g<200&&total()>bud;g++)if(!step('rem'))break;
+  const thr=o.mode==='eff'?.02:0;
+  for(let g=0;g<200&&total()<bud;g++){const b=best('add');if(!b||b.d<=thr)break;step('add')}
+  const remList=()=>{const out=[],u0=util();ws.forEach(w=>w.exercises.forEach(e=>{if(!canRem(e))return;e.sets--;out.push({e,d:util()-u0});e.sets++}));return out.sort((a,b)=>b.d-a.d).slice(0,6)};
+  for(let g=0;g<60;g++){const u0=util();let bp=null;for(const r of remList()){r.e.sets--;const V=balVol(ws),u1=util();let ba=null;ws.forEach((w,i)=>w.exercises.forEach(e=>{if(e===r.e||!canAdd(e,i,V))return;e.sets++;const d=util()-u1;e.sets--;if(!ba||d>ba.d)ba={e,d}}));r.e.sets++;if(ba){const d=r.d+ba.d;if(!bp||d>bp.d)bp={r:r.e,a:ba.e,d}}}
+    if(!bp||bp.d<=.015)break;tag(bp.r,why(bp.r,false));bp.r.sets--;tag(bp.a,why(bp.a,true));bp.a.sets++;void u0}
+  
+  if(o.mode==='eff')for(let g=0;g<200&&total()>bud;g++)if(!step('rem'))break;
+  for(const w of ws)w.exercises=w.exercises.filter(e=>!(e._new&&e.sets<1));
+  const V=balVol(ws);
+  const changes=[];ws.forEach((w,wi)=>w.exercises.forEach(e=>{if(e._new||e.sets!==e._o)changes.push({k:w.id+':'+e.id,wi,id:e.id,name:e.name,from:e._o,to:e.sets,add:!!e._new,r:e._r})}));
+  const warn=[];[...new Set(BAL_MAJ.concat(o.pri))].forEach(m=>{const v=V.tot[m]||0;if(v>=fl(m)-.01)return;const grow=ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&canAdd(e,i,V)));warn.push(grow&&o.mode!=='up'?`${MUS[m]} ${fmt(v)} sette kaldı (önerilen en az ${fl(m)}). ${M.n} modunda toplam set sabit tutulduğu ve diğer kaslardan alınabilecek set kalmadığı için daha fazla eklenmedi. “Artır” modu ya da daha az öncelikli kas seçmek bunu çözer.`:`${MUS[m]} ${fmt(v)} sette kaldı (önerilen en az ${fl(m)}). Hareket ve seans sınırları içinde daha fazlası için bu kası bir güne daha eklemek gerekir.`)});
+  return{ws,changes,warn,T0,fl,ce}}
 function balFinal(){const B=S.bal;return B.res.ws.map(w=>({...w,exercises:w.exercises.filter(e=>!(e._new&&B.off[w.id+':'+e.id])).map(e=>({...e,sets:B.off[w.id+':'+e.id]?e._o:e.sets}))}))}
 const balClean=ws=>ws.map(w=>({...w,id:uidGen(),exercises:w.exercises.map(e=>{const c={...e,id:uidGen()};delete c._o;delete c._r;delete c._new;if(!c.xid)delete c.xid;return c})}));
 const balItems=ws=>ws.flatMap(w=>w.exercises.map(e=>({name:e.name,xid:e.xid||exId(e),sets:+e.sets||0})));
-function openBal(uid,pid){loadEx();const p=progOf(uid,pid);if(!p)return;ED={kind:'bal',uid,pid,goal:S.bal?.o?.goal||'g',pri:S.bal?.pid===pid?S.bal.o.pri.slice():[],freq:S.bal?.o?.freq??true,maxDay:S.bal?.o?.maxDay||25};
-  openSheet(()=>`${sheetHead('Programı dengele',esc(p.name)+' · mevcut programın değişmez')}
-  <label class="l">Hedefin</label><div class="list card" style="padding:0 14px;margin:0">${Object.entries(BAL_G).map(([k,[a,b,n,d]])=>`<button class="li press" data-a="balg" data-k="${k}" style="text-align:left"><span class="xck" style="${ED.goal===k?'background:var(--acc);border-color:var(--acc)':''}">${ED.goal===k?ic('check',16):''}</span><span class="sp"><h3 style="font-size:15px">${n} <span class="sub" style="font-weight:600">· ${a}–${b} set/hafta</span></h3><span class="sub" style="font-size:12.5px">${d}</span></span></button>`).join('')}</div>
+function openBal(uid,pid){loadEx();const p=progOf(uid,pid);if(!p)return;const tr=balTrend(uid),nT=Object.keys(tr).length;
+  ED={kind:'bal',uid,pid,mode:S.bal?.o?.mode||'bal',pri:S.bal?.pid===pid?S.bal.o.pri.slice():[],logs:nT>0,nT};
+  openSheet(()=>`${sheetHead('Programı dengele',esc(p.name)+' değişmez, sonuç yeni program olur')}
+  <div class="list card" style="padding:0 14px;margin:0">${Object.entries(BAL_MODE).map(([k,m])=>`<button class="li press" data-a="balg" data-k="${k}" style="text-align:left"><span class="xck" style="${ED.mode===k?'background:var(--acc);border-color:var(--acc)':''}">${ED.mode===k?ic('check',16):''}</span><span class="sp"><h3 style="font-size:15px">${m.n}</h3><span class="sub" style="font-size:12.5px">${m.d}</span></span></button>`).join('')}</div>
   <label class="l">Öncelikli kaslar <span style="font-weight:500">(isteğe bağlı, en fazla 3)</span></label><div class="row wrap" style="gap:8px">${BAL_MAJ.map(k=>`<button class="chip ${ED.pri.includes(k)?'on':''}" data-a="balp" data-k="${k}">${MUS[k]}</button>`).join('')}</div>
-  <label class="row" style="gap:10px;margin:16px 2px 0;font-size:14px"><input type="checkbox" id="balf" ${ED.freq?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"><span>Her ana kası haftada en az 2 gün çalıştır</span></label>
-  <label class="l" for="balm">Bir günde en fazla set</label><input class="f" id="balm" inputmode="numeric" data-ed="maxDay" data-num="1" value="${ED.maxDay}" style="max-width:120px">
-  <p class="sub" style="margin:10px 2px 0;font-size:12.5px">Bir seansta küçük kaslar (omuz, kol, baldır, karın) için en fazla 6, büyük kaslar için 8 etkili set planlanır; bir harekete en fazla 4 set verilir ve aynı küçük kas için seansa ikinci bir izolasyon hareketi eklenmez (öncelikli kaslarda en fazla 2). Basma ve çekme hareketlerinin yardımcı kaslara katkısı (ör. omuz presinin yan omuza) yarım set olarak hesaba katılır. Ön kol, bel, trapez, iç/dış bacak, yan karın ve ön omuz gibi yardımcı kaslar zaten dolaylı çalıştığı için yalnızca çok fazlaysa azaltılır.</p>
+  ${ED.nT?`<label class="row" style="gap:10px;margin:16px 2px 0;font-size:14px"><input type="checkbox" id="ball" ${ED.logs?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"><span>Antrenman kayıtlarımı kullan <span class="sub">(${ED.nT} kasta son 6 haftanın gelişimi var)</span></span></label>`:`<p class="sub" style="margin:14px 2px 0;font-size:12.5px">En az 3 hafta düzenli kayıt olunca, yerinde sayan kaslara set eklemek gibi kararlar gerçek gelişimine göre de verilir.</p>`}
   <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="balgo">Önizle</button>`)}
-document.addEventListener('change',ev=>{if(ev.target.id==='balf'&&ED?.kind==='bal')ED.freq=ev.target.checked});
+document.addEventListener('change',ev=>{if(ev.target.id==='ball'&&ED?.kind==='bal')ED.logs=ev.target.checked});
 function viewBal(){const B=S.bal;const back=`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button><button class="btn sm" data-a="balset">${ic('edit',16)} Ayarlar</button></div>`;if(!B)return back;
   const p=progOf(B.uid,B.pid);if(!p)return back+'<div class="empty">Program bulunamadı.</div>';
-  const fin=balFinal(),before=heatDetail(balItems(p.workouts)).h,after=heatDetail(balItems(fin)).h,G=BAL_G[B.o.goal];
+  const fin=balFinal(),before=heatDetail(balItems(p.workouts)).h,after=heatDetail(balItems(fin)).h,Mo=BAL_MODE[B.o.mode];
   const fig=(h,side)=>figure(side,h,'week','bal',null);
-  const ms=Object.keys(MUS).filter(m=>BAL_MAJ.includes(m)||B.o.pri.includes(m)||Math.abs((after[m]||0)-(before[m]||0))>.01).sort((a,b)=>Math.abs((after[b]||0)-(before[b]||0))-Math.abs((after[a]||0)-(before[a]||0)));
+  const ms=Object.keys(MUS).filter(m=>BAL_MAJ.includes(m)||B.o.pri.includes(m)).sort((a,b)=>Math.abs((after[b]||0)-(before[b]||0))-Math.abs((after[a]||0)-(before[a]||0)));
   const dot=v=>`<i class="dk" style="background:${heatColor(v,'week')};display:inline-block;margin-right:5px"></i>`;
-  const RT={over:'haftalık fazlaydı',under:'eksikti',add:'eksikti, yeni hareket',freq:'haftada 2 gün için',sess:'tek seansta fazlaydı',cap:'gün çok uzundu'};
-  const rtxt=r=>{const [t,m]=r.split(':');return t==='cap'?RT.cap:`${MUS[m]} ${RT[t]}`};
+  const RT={min:'önerilen minimumun altındaydı',pri:'öncelikli kas',flat:'son haftalarda yerinde sayıyor',gain:'eklenen set en çok burada fayda sağlıyor',high:'zaten yüksekti',low:'bu set az ek fayda sağlıyordu',tired:'yorgunluk belirtisi (performans düşüyor, RIR ≈ 0)'};
+  const rtxt=r=>{const[t,c,m]=r.split(':');return(m?MUS[m]+': ':'')+RT[c]};
   const byDay={};B.res.changes.forEach(c=>(byDay[c.wi]||(byDay[c.wi]=[])).push(c));
-  const sumS=ws=>ws.reduce((a,w)=>a+w.exercises.reduce((b,e)=>b+(+e.sets||0),0),0);
-  return back+`<h1>Programı dengele</h1><p class="sub" style="margin:6px 0 14px">${esc(p.name)} · hedef: <b style="color:var(--ink)">${G[2]} (${G[0]}–${G[1]} set/hafta)</b>${B.o.pri.length?' · öncelik: '+B.o.pri.map(k=>MUS[k]).join(', '):''}</p>
-  <div class="card"><div class="bfig"><div><div class="bfh">Önce · ${sumS(p.workouts)} set</div><div class="bodyfig">${fig(before,'f')}${fig(before,'b')}</div></div><div><div class="bfh">Sonra · ${sumS(fin)} set</div><div class="bodyfig">${fig(after,'f')}${fig(after,'b')}</div></div></div>
+  const T1=balSum(fin),tr=B.o.trend||{},q=B.q||[];
+  const trend=Object.entries(tr).filter(([m])=>MUS[m]&&(BAL_MAJ.includes(m)||B.o.pri.includes(m)));
+  const TS={up:['gelişiyor · dokunulmadı','var(--good)'],flat:['yerinde sayıyor','var(--z2)'],down:['düşüşte','var(--acc)'],tired:['yorgunluk','var(--acc)']};
+  return back+`<h1>Programı dengele</h1><p class="sub" style="margin:6px 0 14px">${esc(p.name)} · <b style="color:var(--ink)">${Mo.n}</b>${B.o.pri.length?' · öncelik: '+B.o.pri.map(k=>MUS[k]).join(', '):''}</p>
+  <div class="card"><div class="row" style="margin-bottom:10px"><span class="sp sub">Haftalık toplam</span><b class="num" style="font-size:20px">${B.res.T0} → ${T1} set</b><span class="delta ${T1>B.res.T0?'dn':T1<B.res.T0?'up':''}" style="margin-left:6px">${T1>B.res.T0?'+':''}${T1-B.res.T0}</span></div>
+   <div class="bfig"><div><div class="bfh">Önce</div><div class="bodyfig">${fig(before,'f')}${fig(before,'b')}</div></div><div><div class="bfh">Sonra</div><div class="bodyfig">${fig(after,'f')}${fig(after,'b')}</div></div></div>
    <div class="zleg">${[1,2,3,4].map(z=>`<span><i style="background:${ZC[z]}"></i><b>${ZN.week.n[z]}</b><small>${ZN.week.r[z]}</small></span>`).join('')}</div>
-   <div class="list" style="margin-top:8px">${ms.map(m=>{const a=before[m]||0,b=after[m]||0,bd=balBand(B.o,m),okb=b>=bd[0]-.01&&b<=bd[1]+.01;return`<div class="row" style="padding:8px 0;font-size:14px"><span class="sp">${MUS[m]}${B.o.pri.includes(m)?' <span class="xtag" style="color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)">öncelik</span>':''}</span><span class="num sub" style="min-width:52px;text-align:right">${dot(a)}${fmt(a)}</span><span class="sub">→</span><b class="num" style="min-width:52px;text-align:right">${dot(b)}${fmt(b)}</b><span style="width:20px;color:${BAL_MAJ.includes(m)||B.o.pri.includes(m)?(okb?'var(--good)':'var(--acc)'):'var(--mute)'}">${BAL_MAJ.includes(m)||B.o.pri.includes(m)?(okb?ic('check',16):'!'):''}</span></div>`}).join('')}</div></div>
-  ${B.res.warn.length?`<div class="banner">${B.res.warn.map(esc).join('<br>')}</div>`:''}
+   <div class="list" style="margin-top:8px">${ms.map(m=>{const a=before[m]||0,b=after[m]||0;return`<div class="row" style="padding:8px 0;font-size:14px"><span class="sp">${MUS[m]}${B.o.pri.includes(m)?' <span class="xtag" style="color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)">öncelik</span>':''}</span><span class="num sub" style="min-width:52px;text-align:right">${dot(a)}${fmt(a)}</span><span class="sub">→</span><b class="num" style="min-width:52px;text-align:right">${dot(b)}${fmt(b)}</b></div>`}).join('')}</div>
+   <p class="sub" style="font-size:12px;margin:8px 0 0">Ana kas setleri 1, yardımcı kas setleri 0,5 sayılır. Her ek set bir öncekinden daha az kazandırdığı için setler en çok fayda sağlayacakları kaslara dağıtılır.</p></div>
+  ${trend.length||q.length||B.res.warn.length?`<div class="card"><h3 style="margin-bottom:6px">Notlar</h3>
+   ${trend.map(([m,t])=>`<div class="row" style="padding:5px 0;font-size:14px"><span class="sp">${MUS[m]}</span><span class="sub">${t.ch>0?'+':''}${fmt(t.ch)}% · 6 hafta</span><b style="color:${TS[t.st][1]};text-align:right;font-size:13px">${TS[t.st][0]}</b></div>`).join('')}
+   ${q.map(x=>`<p class="sub" style="margin:8px 0 0;font-size:13px"><b style="color:var(--ink)">${esc(x.n)}:</b> setleri ortalama RIR ${fmt(x.rir)} ile bitiriyorsun. Tükenişe 1–3 tekrar kalana kadar zorlamak, set eklemekten daha etkili olabilir.</p>`).join('')}
+   ${B.res.warn.map(w=>`<p class="sub" style="margin:8px 0 0;font-size:13px;color:var(--acc)">${esc(w)}</p>`).join('')}</div>`:''}
   <div class="sec"><h2>Değişiklikler</h2><span class="sub">${B.res.changes.length-Object.values(B.off).filter(Boolean).length}/${B.res.changes.length} seçili</span></div>
-  ${B.res.changes.length?Object.entries(byDay).map(([wi,cs])=>`<div class="card"><h3 style="text-transform:lowercase;margin-bottom:4px">${esc(B.res.ws[wi].name)}</h3><div class="list">${cs.map(c=>{const off=!!B.off[c.k];return`<button class="li press" data-a="balt" data-k="${esc(c.k)}" style="text-align:left;opacity:${off?.45:1}"><span class="xck" style="${off?'':'background:var(--acc);border-color:var(--acc)'}">${off?'':ic('check',16)}</span><span class="sp" style="min-width:0"><h3 style="font-size:15px">${c.add?`<span style="color:var(--good)">+ </span>`:''}${esc(c.name)}</h3><span class="sub" style="font-size:12.5px">${c.add?`Yeni · ${c.to} set`:`${c.from} → <b style="color:${c.to>c.from?'var(--good)':'var(--acc)'}">${c.to}</b> set`} · ${[...new Set(c.r.map(rtxt))].join(', ')}</span></span></button>`}).join('')}</div></div>`).join(''):'<div class="card empty">Program hedefe zaten uygun; değişiklik gerekmiyor.</div>'}
+  ${B.res.changes.length?Object.entries(byDay).map(([wi,cs])=>`<div class="card"><h3 style="text-transform:lowercase;margin-bottom:4px">${esc(B.res.ws[wi].name)}</h3><div class="list">${cs.map(c=>{const off=!!B.off[c.k];return`<button class="li press" data-a="balt" data-k="${esc(c.k)}" style="text-align:left;opacity:${off?.45:1}"><span class="xck" style="${off?'':'background:var(--acc);border-color:var(--acc)'}">${off?'':ic('check',16)}</span><span class="sp" style="min-width:0"><h3 style="font-size:15px">${c.add?`<span style="color:var(--good)">+ </span>`:''}${esc(c.name)}</h3><span class="sub" style="font-size:12.5px">${c.add?`Yeni · ${c.to} set`:`${c.from} → <b style="color:${c.to>c.from?'var(--good)':'var(--acc)'}">${c.to}</b> set`} · ${[...new Set(c.r.map(rtxt))].slice(0,2).join('; ')}</span></span></button>`}).join('')}</div></div>`).join(''):'<div class="card empty">Program bu ayarlarla zaten dengeli; değişiklik gerekmiyor.</div>'}
   <label class="l" for="baln">Yeni programın adı</label><input class="f" id="baln" value="${esc(B.name)}">
   <button class="btn pri block" style="margin-top:12px;min-height:54px" data-a="balsave" ${B.res.changes.length?'':'disabled'}>${ic('copy',18)} Yeni program olarak kaydet</button>
-  <p class="sub" style="margin:10px 2px 0;font-size:12px">“${esc(p.name)}” olduğu gibi kalır. Değişikliklerin üzerine dokunarak istemediklerini çıkarabilirsin.</p>`}
+  <p class="sub" style="margin:10px 2px 0;font-size:12px">Değişiklikler küçük adımlarla yapılır: bir harekette en fazla ±2 set, toplamda en fazla ±%20. Yeni programı 3–4 hafta uygulayıp tekrar dengelemen önerilir.</p>`}
 document.addEventListener('input',ev=>{if(ev.target.id==='baln'&&S.bal)S.bal.name=ev.target.value});
 document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,ds=el.dataset;if(!a.startsWith('bal'))return;
   switch(a){
-  case'balg':ED.goal=ds.k;drawSheet();break;
+  case'balopen':closeSheet();openBal(ds.u||S.me,ds.p);break;
+  case'balg':ED.mode=ds.k;drawSheet();break;
   case'balp':{const i=ED.pri.indexOf(ds.k);if(i>=0)ED.pri.splice(i,1);else if(ED.pri.length<3)ED.pri.push(ds.k);else toast('En fazla 3 kas seçebilirsin.');drawSheet();break}
-  case'balgo':{const E=ED;await loadEx();if(!LIB.ex){toast('Hareket kütüphanesi yüklenemedi.');break}const p=progOf(E.uid,E.pid);const o={goal:E.goal,pri:E.pri.slice(),freq:!!E.freq,maxDay:Math.max(10,Math.min(40,Math.round(+E.maxDay||25)))};
-    const res=balance(p,o);const from=S.route?.name==='bal'?S.route.from:S.route;S.bal={uid:E.uid,pid:E.pid,o,res,off:{},name:`${p.name} (dengelenmiş)`};closeSheet();S.route={name:'bal',from};render();scrollTo(0,0);break}
-  case'balopen':openBal(ds.u||S.me,ds.p);break;
+  case'balgo':{const E=ED;await loadEx();if(!LIB.ex){toast('Hareket kütüphanesi yüklenemedi.');break}const p=progOf(E.uid,E.pid);const o={mode:E.mode,pri:E.pri.slice(),trend:E.logs?balTrend(E.uid):{}};
+    const res=balance(p,o);const from=S.route?.name==='bal'?S.route.from:S.route;S.bal={uid:E.uid,pid:E.pid,o,res,q:balQuality(E.uid,p),off:{},name:`${p.name} (${BAL_MODE[o.mode].n.toLowerCase()})`};closeSheet();S.route={name:'bal',from};render();scrollTo(0,0);break}
   case'balset':if(S.bal)openBal(S.bal.uid,S.bal.pid);break;
   case'balt':S.bal.off[ds.k]=!S.bal.off[ds.k];render();break;
   case'balsave':{const B=S.bal,p=progOf(B.uid,B.pid);const n=(B.name||'').trim()||p.name+' (dengelenmiş)';const id=uidGen();
-    const doc={name:n.slice(0,60),star:false,created:Date.now(),map:{...(p.map||{})},from:p.name,workouts:balClean(balFinal())};
+    const doc={name:n.slice(0,60),star:false,created:Date.now(),map:{...(p.map||{})},from:p.name,reviewAt:Date.now()+28*864e5,workouts:balClean(balFinal())};
     if(await saveDoc(P(S.me,'programs',id),doc)){S.bal=null;S.view=S.me;S.open[id]=true;go('prog');toast('Yeni program oluşturuldu; aktif yapmak için yıldıza dokun')}break}
   }});
 
