@@ -330,7 +330,7 @@ function heatBlock(items,sc,opts={}){
 
 /* ---------- state ---------- */
 const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false,tab:'cal',route:null,view:null,month:null,metric:'w',cmp:{},exq:'',hsel:{},nt:null,nd:null,mf:'weight',open:{},ai:{},loadSlow:false};
-const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
+const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,nplans:[],nact:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
 const progOf=(uid,pid)=>U(uid).programs.find(p=>p.id===pid);
 const doneSessions=uid=>U(uid).sessions.filter(s=>s.done).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.startedAt||0)-(b.startedAt||0));
 const rirOn=uid=>!!U(uid).profile?.rir;
@@ -577,8 +577,20 @@ const nseedPlan=()=>({name:NSEED.name,target:{...NSEED.target},note:'',updated:D
 const nsum=items=>items.reduce((a,i)=>({kcal:a.kcal+(+i.kcal||0),p:a.p+(+i.p||0),c:a.c+(+i.c||0),f:a.f+(+i.f||0)}),{kcal:0,p:0,c:0,f:0});
 const MACROS=[['p','Protein','#2a6fe5',4],['c','Karbonhidrat','#e58a14',4],['f','Yağ','#13a06b',9]];
 const r1=n=>Math.round((+n||0)*10)/10;
-const savePlan=pl=>saveDoc(P(S.me,'nutrition','plan'),{...strip(pl),updated:Date.now()});
-const myPlan=()=>{const p=U(S.me).nutrition;return p?clone(p):null};
+const npv=()=>{const u=U(S.me);return u.nplans.some(p=>p.id===S.npv)?S.npv:u.nact};
+const planById=(uid,id)=>U(uid).nplans.find(p=>p.id===id)||null;
+const savePlan=pl=>saveDoc(P(S.me,'nutrition',npv()||'plan'),{...strip(pl),created:pl.created||Date.now(),updated:Date.now()});
+const myPlan=()=>{const p=planById(S.me,npv());return p?clone(p):null};
+const dPlan=d=>{const L=logOf(S.me,d);return(L?.pid&&planById(S.me,L.pid))||U(S.me).nutrition};
+const copyPlan=src=>{const c=clone(src);delete c.id;c.meals=(c.meals||[]).map(m=>({...m,id:uidGen(),items:m.items.map(i=>({...i,id:uidGen()}))}));return c};
+async function activatePlan(pid){const me=S.me;if(!(await saveDoc(P(me,'nutrition','active'),{pid,upd:Date.now()})))return;
+  const t=todayS(),L=logOf(me,t);if(L&&L.pid&&L.pid!==pid){const old=planById(me,L.pid),pl=planById(me,pid);const mapM=mid=>{const om=old?.meals.find(m=>m.id===mid);const nm=om&&pl?.meals.find(m=>nz(m.name)===nz(om.name));return nm?nm.id:'snack'};const n=clone(L);n.pid=pid;n.m={};n.x=(n.x||[]).map(x=>({...x,mid:x.mid==='snack'?'snack':mapM(x.mid)}));
+    for(const[k,v]of Object.entries(L.m||{})){const om=old?.meals.find(m=>m.id===k);const its=v.st==='ok'?(om?.items||[]):v.st==='swap'?(v.items||[]):[];n.x.push(...its.map(i=>({...clone(i),id:uidGen(),mid:mapM(k)})))}await saveLog(t,n)}
+  toast('Aktif plan: '+(planById(me,pid)?.name||'Plan'))}
+function openNewPlan(){ED={kind:'npl',name:'',src:myPlan()?'copy':'empty'};openSheet(()=>`${sheetHead('Yeni beslenme planı')}<label class="l" for="npn">Plan adı</label><input class="f" id="npn" data-ed="name" value="${esc(ED.name)}" placeholder="Örn. Kas kazanımı">
+  <label class="l">Başlangıç</label><div class="chips">${myPlan()?`<button class="chip ${ED.src==='copy'?'on':''}" data-a="nplsrc" data-k="copy">“${esc(myPlan().name||'Plan')}” kopyası</button>`:''}<button class="chip ${ED.src==='empty'?'on':''}" data-a="nplsrc" data-k="empty">Boş plan</button></div>
+  <p class="sub" style="margin:8px 2px 0">Kopyadan başlarsan öğünler ve besinler hazır gelir; sadece farkları düzenlersin.</p>
+  <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="nplnewok">Oluştur</button>`);setTimeout(()=>$('#npn')?.focus(),80)}
 function openNItem(mi,j){const pl=myPlan();const it=j>=0?pl.meals[mi].items[j]:{id:uidGen(),name:'',g:100,kcal:null,p:null,c:null,f:null};ED={kind:'nitem',mi,j,it:{...it},base:{...it},scale:true};
   const fld=(k,l)=>`<div><label class="l" for="ni_${k}">${l}</label><input class="f" id="ni_${k}" inputmode="decimal" data-ed="it.${k}" data-num="1" value="${it[k]??''}"></div>`;
   openSheet(()=>`${sheetHead(j>=0?'Besini düzenle':'Besin ekle',esc(pl.meals[mi].name))}<label class="l" for="ni_name">Besin</label><input class="f" id="ni_name" data-ed="it.name" value="${esc(ED.it.name)}" placeholder="Örn. Yulaf ezmesi">
@@ -612,9 +624,9 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'nmealdel':{const mi=ED.mi;const pl=myPlan();confirmSheet('Öğün silinsin mi?',`"${esc(pl.meals[mi].name)}" ve içindeki ${pl.meals[mi].items.length} besin silinecek.`,'Sil',async()=>{const p=myPlan();p.meals.splice(mi,1);await savePlan(p)});break}
   case'ntarget':openNTarget();break;
   case'ntsave':{const pl=myPlan();pl.name=(ED.name||'').trim()||'Beslenme planı';pl.note=(ED.note||'').trim();pl.target={};for(const k of['kcal','p','c','f'])if(ED.t[k]!=null)pl.target[k]=ED.t[k];if(await savePlan(pl)){closeSheet();toast('Kaydedildi')}break}
-  case'nplandel':confirmSheet('Beslenme planı silinsin mi?','Tüm öğünler ve besinler kalıcı olarak silinecek.','Sil',()=>delDoc(P(S.me,'nutrition','plan')));break;
-  case'ncopy':{const src=U(S.view).nutrition;if(!src)break;const go_=async()=>{const c=clone(src);delete c.id;c.meals=c.meals.map(m=>({...m,id:uidGen(),items:m.items.map(i=>({...i,id:uidGen()}))}));if(await savePlan(c)){S.view=S.me;render();toast('Plan kopyalandı')}};
-    if(U(S.me).nutrition)confirmSheet('Planın değiştirilsin mi?','Kendi beslenme planının yerine bu plan gelecek.','Değiştir',go_);else go_();break}
+  case'nplandel':{const vid=npv(),u=U(S.me),pl=planById(S.me,vid);if(!pl)break;confirmSheet('Beslenme planı silinsin mi?',`“${esc(pl.name||'Plan')}” ve içindeki tüm öğünler silinecek. Geçmiş günlük kayıtların korunur.`,'Sil',async()=>{const was=vid===u.nact;await delDoc(P(S.me,'nutrition',vid));S.npv=null;if(was){const o=u.nplans.find(p=>p.id!==vid);if(o)await saveDoc(P(S.me,'nutrition','active'),{pid:o.id,upd:Date.now()})}render()});break}
+  case'ncopy':{const src=U(S.view).nutrition;if(!src)break;const go_=async()=>{const c=copyPlan(src);c.name=(src.name||'Plan')+' ('+nameOf(S.view)+')';c.created=Date.now();const id=U(S.me).nplans.length?'p_'+uidGen():'plan';if(await saveDoc(P(S.me,'nutrition',id),c)){S.view=S.me;S.npv=id;S.nt='plan';render();toast('Plan kopyalandı; uygulamak için “Bu planı uygula”ya dokun')}};
+    go_();break}
   }
 });
 const inviteCard=()=>S.demo?'':`<div class="card" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını davet et</h3><p class="sub" style="margin:6px 0 10px">Bu sitenin adresini ve davet kodunu gönder. Kayıt olup kodu girdiğinde, üstteki isim seçicisinden onun takvimini, gelişimini, programlarını, beslenme planını ve uyum skorunu görebilirsin.</p>${S.invite?`<div class="row wrap"><span class="num sp" style="font-size:24px;font-weight:800;letter-spacing:.04em">${esc(S.invite)}</span><button class="btn sm pri" data-a="invcopy">${ic('copy',16)} Davet metnini kopyala</button></div>`:'<button class="btn sm" data-a="invget">Davet kodunu göster</button>'}</div>`;
@@ -984,7 +996,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
 /* ---------- daily log ---------- */
 const DEFMEALS=[['k','Kahvaltı'],['o','Öğle'],['a','Akşam']];
 function dayMeals(pl){const ms=pl?.meals?.length?pl.meals.map(m=>({id:m.id,name:m.name,plan:m.items})):DEFMEALS.map(([id,name])=>({id,name,plan:[]}));ms.push({id:'snack',name:'Ara öğün / plan dışı',plan:[],snack:true});return ms}
-function dayCalc(pl,log,date){log=log||{};const free=!!log.free||!pl?.meals?.length;const ms=dayMeals(pl);const xs=log.x||[];
+function dayCalc(pl,log,date){log=log||{};if(log.pid){const alt=planById(S.me,log.pid);if(alt)pl=alt}const free=!!log.free||!pl?.meals?.length;const ms=dayMeals(pl);const xs=log.x||[];
   const meals=ms.map(m=>{const st=free||m.snack?null:(log.m?.[m.id]?.st||null);const extra=xs.filter(x=>x.mid===m.id||(m.snack&&!ms.some(z=>z.id===x.mid)));const planS=nsum(m.plan);
     const base=free||m.snack?[]:st==='ok'?m.plan:st==='swap'?(log.m[m.id].items||[]):[];const eat=nsum(base.concat(extra));
     return{...m,st,extra,base,planS,eat,done:free||m.snack?true:!!st}});
@@ -996,7 +1008,7 @@ function dayCalc(pl,log,date){log=log||{};const free=!!log.free||!pl?.meals?.len
   return{free,meals,eat,planTot,ref,pending,dev,logged,ok,tol}}
 const logOf=(uid,d)=>U(uid).nlog?.[d]||null;
 let scoreT=0;
-function saveLog(date,log){const doc={...strip(log),date,upd:Date.now()};U(S.me).nlog=U(S.me).nlog||{};U(S.me).nlog[date]=doc;clearTimeout(scoreT);scoreT=setTimeout(saveScore,1500);return saveDoc(P(S.me,'nlog',date),doc)}
+function saveLog(date,log){const doc={...strip(log),date,upd:Date.now()};if(!doc.pid&&U(S.me).nact)doc.pid=U(S.me).nact;U(S.me).nlog=U(S.me).nlog||{};U(S.me).nlog[date]=doc;clearTimeout(scoreT);scoreT=setTimeout(saveScore,1500);return saveDoc(P(S.me,'nlog',date),doc)}
 const curLog=d=>clone(logOf(S.me,d)||{date:d,free:false,m:{},x:[]});
 function weekScore(uid){const pl=U(uid).nutrition,t=todayS();let n=0,ok=0;const days={};for(let i=13;i>=0;i--){const d=addDays(t,-i);const c=dayCalc(pl,logOf(uid,d),d);const v=c.ok==null?(c.logged?'part':'none'):c.ok?'ok':'off';days[d]=v;if(i<7&&c.ok!=null){n++;if(c.ok)ok++}}return{n,ok,score:n?Math.round(ok/n*100):null,days}}
 function saveScore(){const ws=weekScore(S.me);const cur=U(S.me).nscore;const doc={upd:Date.now(),score:ws.score,n:ws.n,ok:ws.ok,days:ws.days};if(cur&&cur.score===doc.score&&cur.n===doc.n&&JSON.stringify(cur.days)===JSON.stringify(doc.days))return;saveDoc(P(S.me,'nutrition','score'),doc)}
@@ -1014,7 +1026,7 @@ function viewNutr(){const uid=S.view,mine=isMine();const head=nutrHead(uid,mine)
   if(S.nt==='stats')return head+viewNStats(uid,mine);
   return head+viewNDay()}
 const stPill={ok:['Plana uydum','ok'],swap:['Değiştirildi','sw'],skip:['Atlandı','sk']};
-function viewNDay(){const d=S.nd||todayS(),pl=U(S.me).nutrition,log=logOf(S.me,d)||{},c=dayCalc(pl,log,d),t=todayS();
+function viewNDay(){const d=S.nd||todayS(),pl=dPlan(d),log=logOf(S.me,d)||{},c=dayCalc(pl,log,d),t=todayS();
   const lab=d===t?'Bugün':d===addDays(t,-1)?'Dün':d===addDays(t,1)?'Yarın':dShort(d);
   const ref=c.ref,pct=ref?Math.min(100,c.eat.kcal/ref*100):0,left=ref-c.eat.kcal;
   const pT=c.planTot,tgt=pl?.target||{};
@@ -1044,12 +1056,14 @@ function viewNDay(){const d=S.nd||todayS(),pl=U(S.me).nutrition,log=logOf(S.me,d
   if(!c.free)h+=`<button class="btn block" data-a="nmadd" data-m="snack">${ic('plus',18)} Ara öğün / plan dışı ekle</button>`;
   h+=`<p class="sub" style="margin:12px 2px 0;font-size:12px">Günlük kayıtların yalnızca sana görünür. Arkadaşların planını ve haftalık uyum skorunu görür.</p>`;
   return h}
-function viewNPlan(){const uid=S.view,mine=isMine(),pl=U(uid).nutrition;
+function viewNPlan(){const uid=S.view,mine=isMine(),pl=mine?planById(uid,npv()):U(uid).nutrition;
+  const u=U(uid),bar=mine&&u.nplans.length?`<div class="chips" style="margin:0 0 10px">${u.nplans.map(p=>`<button class="chip ${p.id===npv()?'on':''}" data-a="nplv" data-k="${p.id}">${p.id===u.nact?`<span style="color:var(--good)">${ic('check',14)}</span>`:''}${esc(p.name||'Plan')}</button>`).join('')}<button class="chip" data-a="nplnew">${ic('plus',14)} Yeni plan</button></div>
+  ${npv()===u.nact?`<p class="sub" style="margin:0 2px 12px;font-size:13px"><b style="color:var(--good)">Aktif plan.</b> Günlük sekmesi bu planı takip ediyor.</p>`:`<div class="banner" style="display:flex;gap:10px;align-items:center"><span class="sp">Bu plan şu an kullanılmıyor. Uygularsan bugünden itibaren günlük bu plandan başlar.</span><button class="btn sm pri" data-a="nplact">Bu planı uygula</button></div>`}`:'';
   if(!pl)return`<div class="card empty">${ic('flame',36)}<p>${mine?'Henüz beslenme planın yok. Öğünlerini ve besinleri ekleyerek planını oluştur; her gün bu plandan başlarsın.':esc(nameOf(uid))+' henüz beslenme planı eklemedi.'}</p>${mine?'<button class="btn pri" data-a="nnew">Plan oluştur</button>':''}</div>`;
   const all=pl.meals.flatMap(m=>m.items),tot=nsum(all),t=pl.target||{};
   const ek=MACROS.map(([k,,,m])=>tot[k]*m),eks=ek.reduce((a,b)=>a+b,0)||1;
   const pct=t.kcal?Math.min(100,tot.kcal/t.kcal*100):0,diff=t.kcal?tot.kcal-t.kcal:0;
-  return`<p class="sub" style="margin:2px 2px 14px;font-weight:600">${esc(pl.name||'Beslenme planı')}${mine?'':' · '+esc(nameOf(uid))}</p>
+  return bar+`<p class="sub" style="margin:2px 2px 14px;font-weight:600">${esc(pl.name||'Beslenme planı')}${mine?'':' · '+esc(nameOf(uid))}</p>
   <div class="card"><div class="row" style="align-items:flex-end"><div class="sp"><div class="sub" style="font-weight:600">Plan toplamı</div><div class="num" style="font:850 46px/1 var(--d);font-stretch:82%">${fmtK(tot.kcal)}<span style="font-size:18px;color:var(--mute)"> kcal</span></div></div>${t.kcal?`<div style="text-align:right"><div class="sub">Hedef ${fmtK(t.kcal)}</div><span class="delta ${Math.abs(diff)<=50?'up':diff>0?'dn':''}">${diff>0?'+':''}${fmtK(diff)} kcal</span></div>`:''}</div>
   ${t.kcal?`<div class="kbar"><i style="width:${pct}%;background:var(--acc)"></i></div>`:''}
   <div style="display:flex;height:12px;border-radius:7px;overflow:hidden;margin:16px 0 8px;gap:2px">${MACROS.map(([k,,col],i)=>`<i style="display:block;flex:${ek[i]||0.0001};background:${col}"></i>`).join('')}</div>
@@ -1083,7 +1097,7 @@ function viewNStats(uid,mine){if(!mine)return scoreCard(U(uid).nscore,'Haftalık
 /* ---------- nutrition actions ---------- */
 function nItemEdit(it,onSave){if(it.b){loadFoods();const f={id:it.fid||'man'+it.id,n:it.name,k:it.b.k,p:it.b.p,c:it.b.c,f:it.b.f,u:it.fu||[]};pushSheet(()=>fpkRender(),{kind:'fpk',ctx:{onPick:onSave},view:'amount',sel:f,unit:-1,qty:it.g||100,edit:it,ext:{},man:{}});return}
   pushSheet(()=>fpkRender(),{kind:'fpk',ctx:{onPick:items=>onSave(items)},view:'manual',q:'',list:[],ext:{},man:{name:it.name,g:it.g,kcal:it.kcal,p:it.p,c:it.c,f:it.f,save:false},editRaw:it})}
-function mealMenu(mid){const d=S.nd||todayS(),pl=U(S.me).nutrition,c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===mid);if(!m)return;const items=m.base.concat(m.extra);
+function mealMenu(mid){const d=S.nd||todayS(),pl=dPlan(d),c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===mid);if(!m)return;const items=m.base.concat(m.extra);
   openSheet(()=>`${sheetHead(esc(m.name),dLong(d))}<div class="card list" style="padding:0 14px">
   ${items.length?`<button class="li press" data-a="nmsave" data-m="${mid}">${ic('star',20)}<span class="sp">Öğünü kaydet (sonra tek dokunuşla ekle)</span></button>`:''}
   ${m.st?`<button class="li press" data-a="nmst" data-m="${mid}" data-v="">${ic('back',20)}<span class="sp">İşareti geri al</span></button>`:''}
@@ -1095,14 +1109,14 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'nt':S.nt=ds.k;closeSheet();render();break;
   case'nd':S.nd=ds.v==='0'?todayS():addDays(d,+ds.v);render();break;
   case'nmst':{const L=curLog(d);L.m=L.m||{};if(!ds.v)delete L.m[ds.m];else L.m[ds.m]={st:ds.v};closeSheet();await saveLog(d,L);render();break}
-  case'nallok':{const L=curLog(d),pl=U(S.me).nutrition;L.m=L.m||{};for(const m of pl.meals)if(!L.m[m.id]&&m.items.length)L.m[m.id]={st:'ok'};await saveLog(d,L);render();toast('Kalan öğünler işaretlendi');break}
+  case'nallok':{const L=curLog(d),pl=dPlan(d);L.m=L.m||{};for(const m of pl.meals)if(!L.m[m.id]&&m.items.length)L.m[m.id]={st:'ok'};await saveLog(d,L);render();toast('Kalan öğünler işaretlendi');break}
   case'nmswap':{const mid=ds.m;openFoodPicker({title:'Öğünü değiştir',sub:'Bugün bu öğünde ne yedin?',saved:true,onPick:async items=>{if(!items.length)return;const L=curLog(d);L.m=L.m||{};const cur=L.m[mid]?.st==='swap'?L.m[mid].items:[];L.m[mid]={st:'swap',items:cur.concat(items)};await saveLog(d,L);render()}});break}
   case'nmadd':{const mid=ds.m;const L0=logOf(S.me,d);const sw=L0?.m?.[mid]?.st==='swap';openFoodPicker({title:'Besin ekle',sub:'',saved:true,onPick:async items=>{if(!items.length)return;const L=curLog(d);if(sw&&L.m?.[mid]?.st==='swap')L.m[mid].items.push(...items);else{L.x=L.x||[];L.x.push(...items.map(i=>({...i,mid})))}await saveLog(d,L);render()}});break}
   case'nied':{const L=curLog(d),mid=ds.m,j=+ds.j;const arr=ds.w==='s'?L.m?.[mid]?.items:L.x;const it=arr?.[j];if(!it)break;nItemEdit(it,async items=>{const L2=curLog(d);const ar=ds.w==='s'?L2.m[mid].items:L2.x;const k=ar.findIndex(x=>x.id===it.id);if(k<0)return;if(!items.length)ar.splice(k,1);else ar[k]={...items[0],id:it.id,mid:it.mid};await saveLog(d,L2);render()});break}
   case'nmmenu':mealMenu(ds.m);break;
-  case'nitap':{const mid=ds.m,j=+ds.j,w=ds.w,pl=U(S.me).nutrition,L0=curLog(d);
+  case'nitap':{const mid=ds.m,j=+ds.j,w=ds.w,pl=dPlan(d),L0=curLog(d);
     const it=w==='p'?pl?.meals.find(m=>m.id===mid)?.items[j]:w==='s'?L0.m?.[mid]?.items?.[j]:L0.x?.[j];if(!it)break;
-    const apply=async fn=>{const L=curLog(d);let arr,k;if(w==='p'){const pm=U(S.me).nutrition.meals.find(m=>m.id===mid);L.m=L.m||{};L.m[mid]={st:'swap',items:pm.items.map(i=>clone(i))};arr=L.m[mid].items;k=j}else{arr=w==='s'?L.m?.[mid]?.items:L.x;k=arr?arr.findIndex(x=>x.id===it.id):-1}if(k<0)return;fn(arr,k);await saveLog(d,L);render()};
+    const apply=async fn=>{const L=curLog(d);let arr,k;if(w==='p'){const pm=dPlan(d).meals.find(m=>m.id===mid);L.m=L.m||{};L.m[mid]={st:'swap',items:pm.items.map(i=>clone(i))};arr=L.m[mid].items;k=j}else{arr=w==='s'?L.m?.[mid]?.items:L.x;k=arr?arr.findIndex(x=>x.id===it.id):-1}if(k<0)return;fn(arr,k);await saveLog(d,L);render()};
     openSheet(()=>`${sheetHead(esc(it.name),`${it.g?fmt(it.g)+' g · ':''}${fmtK(it.kcal)} kcal`)}<div class="card list" style="padding:0 14px">
       <button class="li press" data-a="nitswap">${ic('copy',20)}<span class="sp">Başka bir besinle değiştir</span>${ic('chev',18)}</button>
       <button class="li press" data-a="nitamt">${ic('edit',20)}<span class="sp">Miktarı değiştir</span>${ic('chev',18)}</button>
@@ -1113,16 +1127,21 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'nitamt':{if(ED?.kind!=='nit')break;const {it,apply}=ED;nItemEdit(it,async items=>{closeSheet();await apply((arr,k)=>{if(!items.length)arr.splice(k,1);else arr[k]={...items[0],id:arr[k].id,...(arr[k].mid?{mid:arr[k].mid}:{})}})});break}
   case'nitdel':{if(ED?.kind!=='nit')break;const {apply}=ED;closeSheet();await apply((arr,k)=>arr.splice(k,1));break}
   case'nitplan':{if(ED?.kind!=='nitem')break;const {mi,j}=ED;openFoodPicker({title:'Plandaki besini değiştir',sub:myPlan()?.meals[mi]?.items[j]?.name+' yerine',onPick:async items=>{closeSheet();if(!items.length)return;const pl=myPlan();pl.meals[mi].items[j]={...items[0]};if(await savePlan(pl))toast('Plan güncellendi')}});break}
-  case'nmsave':{const pl=U(S.me).nutrition,c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===ds.m);const items=m.base.concat(m.extra).map(i=>{const o={...i};delete o.mid;return o});const mm=clone(meta());mm.saved=[{id:uidGen(),name:`${m.name} · ${dShort(d)}`,items},...(mm.saved||[])];await saveMeta(mm);closeSheet();toast('Öğün kaydedildi; besin eklerken “Kayıtlı öğünler”de görünür');break}
-  case'nmcopyplan':{const pl=U(S.me).nutrition,pm=pl.meals.find(x=>x.id===ds.m);const L=curLog(d);L.m[ds.m].items=(L.m[ds.m].items||[]).concat(pm.items.map(i=>({...clone(i),id:uidGen()})));closeSheet();await saveLog(d,L);render();break}
+  case'nmsave':{const pl=dPlan(d),c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===ds.m);const items=m.base.concat(m.extra).map(i=>{const o={...i};delete o.mid;return o});const mm=clone(meta());mm.saved=[{id:uidGen(),name:`${m.name} · ${dShort(d)}`,items},...(mm.saved||[])];await saveMeta(mm);closeSheet();toast('Öğün kaydedildi; besin eklerken “Kayıtlı öğünler”de görünür');break}
+  case'nmcopyplan':{const pl=dPlan(d),pm=pl.meals.find(x=>x.id===ds.m);const L=curLog(d);L.m[ds.m].items=(L.m[ds.m].items||[]).concat(pm.items.map(i=>({...clone(i),id:uidGen()})));closeSheet();await saveLog(d,L);render();break}
   case'nmclrx':{const L=curLog(d);L.x=(L.x||[]).filter(x=>x.mid!==ds.m);closeSheet();await saveLog(d,L);render();break}
-  case'ndmenu':{const L=logOf(S.me,d),pl=U(S.me).nutrition;openSheet(()=>`${sheetHead('Gün seçenekleri',dLong(d))}<div class="card list" style="padding:0 14px">
+  case'ndmenu':{const L=logOf(S.me,d),pl=dPlan(d);openSheet(()=>`${sheetHead('Gün seçenekleri',dLong(d))}<div class="card list" style="padding:0 14px">
     ${pl?.meals?.length?`<button class="li press" data-a="nfree">${ic('flame',20)}<span class="sp">${L?.free?'Serbest günü kapat (plana dön)':'Serbest gün yap (planı bugün kapat)'}</span></button>`:''}
     <button class="li press" data-a="ncopyy">${ic('copy',20)}<span class="sp">Önceki günü bu güne kopyala</span></button>
     ${L?`<button class="li press" data-a="nreset" style="color:var(--acc)">${ic('trash',20)}<span class="sp">Bu günün kayıtlarını sıfırla</span></button>`:''}</div>`);break}
   case'nfree':{const L=curLog(d);L.free=!L.free;closeSheet();await saveLog(d,L);render();toast(L.free?'Serbest gün: plan bugün devre dışı':'Plana dönüldü');break}
   case'ncopyy':{const y=logOf(S.me,addDays(d,-1));closeSheet();if(!y){toast('Önceki günde kayıt yok.');break}const L=clone(y);L.m=Object.fromEntries(Object.entries(L.m||{}).map(([k,v])=>[k,{...v,items:(v.items||[]).map(i=>({...i,id:uidGen()}))}]));L.x=(L.x||[]).map(i=>({...i,id:uidGen()}));await saveLog(d,L);render();toast('Önceki gün kopyalandı');break}
   case'nreset':confirmSheet('Gün sıfırlansın mı?','Bu günün tüm işaretleri ve eklenen besinler silinecek.','Sıfırla',async()=>{await saveLog(d,{free:false,m:{},x:[]});render()});break;
+  case'nplv':S.npv=ds.k;render();break;
+  case'nplnew':openNewPlan();break;
+  case'nplsrc':ED.src=ds.k;drawSheet();break;
+  case'nplnewok':{const n=(ED.name||'').trim();if(!n){toast('Plana bir ad ver.');break}const src=ED.src==='copy'?myPlan():null;const c=src?copyPlan(src):{target:{...(myPlan()?.target||{kcal:2000,p:130,c:250,f:60})},note:'',meals:['Kahvaltı','Öğle','Akşam'].map(x=>({id:uidGen(),name:x,note:'',items:[]}))};c.name=n.slice(0,60);c.created=Date.now();const id=U(S.me).nplans.length?'p_'+uidGen():'plan';if(await saveDoc(P(S.me,'nutrition',id),c)){closeSheet();S.npv=id;render();toast('Plan oluşturuldu')}break}
+  case'nplact':await activatePlan(npv());render();break;
   case'npadd':{const mi=+ds.i;openFoodPicker({title:'Plana besin ekle',sub:myPlan()?.meals[mi]?.name,onPick:async items=>{if(!items.length)return;const pl=myPlan();pl.meals[mi].items.push(...items);await savePlan(pl);render()}});break}
   }});
 
@@ -1230,7 +1249,7 @@ function startData(db,uid,email){
 function subUser(uid){const u=U(uid);if(u.subs)return;u.subs=true;const map=s=>s.docs.map(d=>({id:d.id,...d.data()}));const onErr=()=>{};
   S.db.collection(`ud/${uid}/programs`).onSnapshot(s=>{u.programs=map(s).sort((a,b)=>(b.star?1:0)-(a.star?1:0)||(a.created||0)-(b.created||0));rebuildMap();soft()},onErr);
   S.db.collection(`ud/${uid}/sessions`).onSnapshot(s=>{u.sessions=map(s);soft()},onErr);
-  S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='plan');u.nutrition=d?{...d.data()}:null;const sc=s.docs.find(x=>x.id==='score');u.nscore=sc?{...sc.data()}:null;soft()},onErr);
+  S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{u.nplans=s.docs.filter(x=>x.id==='plan'||x.id.startsWith('p_')).map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.created||0)-(b.created||0));const ac=s.docs.find(x=>x.id==='active')?.data()?.pid;u.nact=u.nplans.some(p=>p.id===ac)?ac:(u.nplans[0]?.id||null);const ap=u.nplans.find(p=>p.id===u.nact);u.nutrition=ap?{...ap}:null;const sc=s.docs.find(x=>x.id==='score');u.nscore=sc?{...sc.data()}:null;soft()},onErr);
   S.db.collection(`ud/${uid}/foods`).onSnapshot(s=>{u.foods=map(s);soft()},onErr);
   if(uid===S.me){S.db.collection(`ud/${uid}/nlog`).onSnapshot(s=>{u.nlog=Object.fromEntries(s.docs.map(d=>[d.id,{...d.data()}]));if(!u._sc){u._sc=1;setTimeout(saveScore,4000)}soft()},onErr);S.db.collection(`ud/${uid}/nmeta`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='me');u.nmeta=d?{...d.data()}:null;soft()},onErr)}
   S.db.collection(`ud/${uid}/measures`).onSnapshot(s=>{u.measures=map(s).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);soft()},onErr);
