@@ -24,7 +24,7 @@
 --bg:light-dark(#f3f2ef,#0b0b0c);--card:light-dark(#ffffff,#161618);--card2:light-dark(#ecebe7,#222225);
 --ink:light-dark(#121212,#f4f3f0);--mute:light-dark(#75726c,#9d9b96);--line:light-dark(#e4e2dd,#2a2a2e);
 --acc:#e5352a;--accSoft:light-dark(#fde7e4,#33140f);--good:light-dark(#178a48,#45c47f);
---h0:light-dark(#dcdad4,#2c2c30);--h1:#fbd3c3;--h2:#f6a283;--h3:#ee6545;--h4:#d22a1e;--h5:#870e09;
+--h0:light-dark(#dcdad4,#2c2c30);--h1:#fbd3c3;--h2:#f6a283;--h3:#ee6545;--h4:#d22a1e;--h5:#870e09;--z1:light-dark(#fbcdb8,#6b2d1d);--z2:#f08a62;--z3:#e5352a;--z4:light-dark(#7e0f0a,#ff8a7a);
 --neu:light-dark(#c9c6bf,#3d3d42);
 --f:'Inter',system-ui,-apple-system,sans-serif;--d:'Archivo','Inter',system-ui,sans-serif}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
@@ -121,6 +121,71 @@ nav.tabs button.on{color:var(--acc)}
 /* heat */
 .bodyfig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;max-width:360px;margin:0 auto}
 .bodyfig svg{width:100%;height:auto;display:block}
+.bodyfig .mu{stroke:var(--card);stroke-width:1.3;cursor:pointer;transition:opacity .2s}
+.bodyfig.hassel .mu:not(.on){opacity:.32}
+.bodyfig .mu.on{stroke:var(--ink);stroke-width:2.2}
+.bodyfig svg{filter:drop-shadow(0 6px 14px rgba(0,0,0,.07))}
+.zsum{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.zp{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;flex:none}
+.zp b{font-weight:850}
+.zp.z0{background:var(--card2);color:var(--mute)}
+.zp.z1{background:color-mix(in srgb,var(--z1) 60%,transparent);color:light-dark(#8f3f22,#ffc2ab)}
+.zp.z2{background:color-mix(in srgb,var(--z2) 28%,transparent);color:light-dark(#a3401c,#ffb08f)}
+.zp.z3{background:color-mix(in srgb,var(--z3) 16%,transparent);color:var(--acc)}
+.zp.z4{background:var(--z4);color:light-dark(#fff,#2a0806)}
+.zleg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0 4px}
+.zleg span{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.zleg i{width:100%;height:8px;border-radius:5px;display:block}
+.zleg b{font-weight:700;font-size:12px}
+.zleg small{color:var(--mute);font-size:11px;font-variant-numeric:tabular-nums}
+.hdet{background:var(--card2);border-radius:16px;padding:12px 14px;margin-top:10px}
+.hdet .list>*+*{border-color:color-mix(in srgb,var(--ink) 9%,transparent)}
+.hhint{text-align:center;font-size:12.5px;margin:10px 0 0}
+button.mbar{width:100%;text-align:left;border-radius:10px;padding:5px 6px;margin:0 -6px;width:calc(100% + 12px)}
+.mbar.on{background:var(--card2)}
+.mbar .b{position:relative}
+.mbar .b u{position:absolute;top:0;bottom:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--good) 38%,transparent) 0 2px,transparent 2px 5px);box-shadow:inset 1.5px 0 0 var(--good),inset -1.5px 0 0 var(--good)}
+.bandk{display:inline-block;width:18px;height:9px;vertical-align:-1px;border-radius:3px;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--good) 45%,transparent) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--good)}
+.xth{border-radius:12px;object-fit:cover;background:#fff;flex:none;display:block;box-shadow:inset 0 0 0 1px var(--line)}
+.xth.ph{display:grid;place-items:center;color:var(--mute);background:var(--card2);box-shadow:none}
+.xrow{gap:12px;padding:9px 6px;margin:0 -6px;width:calc(100% + 12px);border-radius:12px}
+.xrow.on{background:var(--accSoft)}
+.xck{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff}
+.xrow.on .xck{background:var(--acc);border-color:var(--acc)}
+.list>.xsec,.list>.xsec+*{border-top:0}
+.xsec{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:750;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;padding:16px 2px 4px}
+.xbar{position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom));padding:16px 0 calc(12px + env(safe-area-inset-bottom));margin-top:6px;background:linear-gradient(transparent,var(--sheetBg,var(--bg)) 35%)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--card2);border-radius:13px;padding:3px;margin:0 0 14px}
+.seg button{display:grid;place-items:center;text-align:center;height:38px;border-radius:10px;font-weight:650;font-size:14px;color:var(--mute)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.dnav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.dlab{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.dlab b{font:800 18px var(--d)}
+.dlab .sub{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.kbar{height:9px;border-radius:9px;background:var(--card2);overflow:hidden;margin:12px 0 4px}.kbar i{display:block;height:100%;border-radius:9px;transition:width .3s}
+.pmut .li{opacity:.62;padding:9px 0}
+.mact{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;margin-top:8px}
+.zp.sok{background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good)}
+.zp.ssw{background:color-mix(in srgb,#2a6fe5 14%,transparent);color:light-dark(#2a6fe5,#8db4ff)}
+.zp.ssk,.zp.spe{background:var(--card2);color:var(--mute)}
+.xtag{font:700 10.5px var(--f);color:var(--acc);background:var(--accSoft);padding:2px 6px;border-radius:6px;vertical-align:2px;margin-left:4px;white-space:nowrap}
+.ftag{font-size:11px;font-weight:700;color:var(--mute);background:var(--card2);padding:3px 7px;border-radius:7px;flex:none}
+.famt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:14px}
+.famt div{background:var(--card2);border-radius:14px;padding:10px 4px;text-align:center}
+.famt b{display:block;font:800 20px var(--d)}
+.famt span{font-size:11.5px;color:var(--mute);font-weight:600}
+.dots{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;margin-top:14px}
+.dots span{display:flex;flex-direction:column;align-items:center;gap:3px}
+.dots i{width:100%;aspect-ratio:1;border-radius:6px;display:block}
+.dots small{font-size:10px;color:var(--mute)}
+.dk{width:9px;height:9px;border-radius:3px;display:block}
+.kbars{position:relative;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;height:140px;align-items:end;padding-bottom:16px;margin-top:18px}
+.kbars div{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}
+.kbars i{width:100%;border-radius:5px 5px 2px 2px;display:block;min-height:2px}
+.kbars small{position:absolute;bottom:-16px;font-size:10px;color:var(--mute)}
+.kbars em{position:absolute;left:0;right:0;border-top:1.5px dashed var(--ink);opacity:.55;z-index:1;pointer-events:none}
+.kbars em span{position:absolute;right:0;top:-17px;font:650 10.5px var(--f);font-style:normal;color:var(--ink)}
+
 .bodyfig figcaption{text-align:center;font-size:12px;color:var(--mute);font-weight:600}
 .bodyfig path,.bodyfig ellipse,.bodyfig rect{stroke:var(--card);stroke-width:1.4;transition:fill .4s}
 .legend{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--mute);justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
@@ -203,38 +268,69 @@ const guess=n=>{const k=key(n);for(const[r,p,s]of GUESS)if(r.test(k))return{p,s}
 const cleanMap=v=>{if(!v||typeof v!=='object')return null;const f=a=>Array.isArray(a)?[...new Set(a.filter(x=>MUS[x]))].slice(0,4):[];const p=f(v.p);if(!p.length)return null;return{p,s:f(v.s).filter(x=>!p.includes(x))}};
 let MAP={},AIMEM={};
 function rebuildMap(){const m={...SEEDMAP};for(const u of Object.values(S.users))for(const p of u.programs)for(const[k,v]of Object.entries(p.map||{})){const c=cleanMap(v);if(c)m[k]=c}MAP={...m,...AIMEM}}
-const mapOf=n=>MAP[key(n)]||guess(n);
-function heatOf(items){const h={};for(const{name,sets}of items){if(!sets)continue;const m=mapOf(name);m.p.forEach(k=>h[k]=(h[k]||0)+sets);m.s.forEach(k=>h[k]=(h[k]||0)+sets*.5)}return h}
-const TH={w:[1.5,3,4.5,6.5],week:[4,8,12,16]};
-function heatColor(v,sc){if(!v)return'var(--h0)';const i=TH[sc].findIndex(t=>v<=t);return`var(--h${i<0?5:i+1})`}
-function figure(side,h,sc){
-  const c=k=>heatColor(h[k]||0,sc),t=k=>`<title>${MUS[k]}: ${fmt(h[k]||0)} set</title>`;
-  const P=(k,d)=>`<path d="${d}" fill="${c(k)}">${t(k)}</path>`;
-  const E=(k,x,y,rx,ry)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c(k)}">${t(k)}</ellipse>`;
+const mapOf=(n,xid)=>{const x=libOf({name:n,xid});if(x)return{p:x.m,s:x.s};return MAP[key(n)]||guess(n)};
+const nz=s=>String(s||'').toLocaleLowerCase('tr').replace(/[çğıöşüâîû]/g,c=>({ç:'c',ğ:'g',ı:'i',ö:'o',ş:'s',ü:'u',â:'a',î:'i',û:'u'})[c]).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+/* ---------- exercise library ---------- */
+const LIB={ex:null,exById:{},exIdx:{},exP:null,fd:null,fdP:null};
+const EXIMG='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+function loadEx(){return LIB.exP||(LIB.exP=fetch('exercises.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{LIB.ex=d;for(const x of d){LIB.exById[x.i]=x;x._h=nz(x.n+' '+(x.a||'').replace(/\|/g,' ')+' '+x.m.concat(x.s).map(k=>MUS[k]).join(' ')+' '+x.e);x._al=(x.a||'').split('|').map(nz).filter(Boolean);for(const k of[nz(x.n),...x._al]){if(!LIB.exIdx[k])LIB.exIdx[k]=x.i;const k2=k.replace(/ /g,'');if(!LIB.exIdx[k2])LIB.exIdx[k2]=x.i}}rebuildMap();soft();return d}).catch(()=>{LIB.exP=null;return null}))}
+const exId=e=>{if(e?.xid)return e.xid;const k=nz(e?.name);return LIB.exIdx[k]||LIB.exIdx[k.replace(/ /g,'')]||null};
+const libOf=e=>{const i=exId(e);return i?LIB.exById[i]||null:null};
+const hk=e=>exId(e)||key(e?.name);
+const known=e=>!!libOf(e)||!!MAP[key(e.name)];
+
+/* ---------- heat (zones) ---------- */
+const ZC=['var(--h0)','var(--z1)','var(--z2)','var(--z3)','var(--z4)'];
+const ZN={week:{n:['Çalışılmadı','Düşük','Bakım','Gelişim','Çok yüksek'],r:['0','0,5–5,5','6–9,5','10–20','20+'],t:[6,10,20],band:[10,20],max:26,unit:'set / hafta',
+  tip:['Bu kas hiç çalışmıyor.','Az. Kası korumak için haftada en az 6 set hedefle.','Kası korumaya yeter. Büyüme için 10 sete çıkarmayı dene.','Kas gelişimi için ideal aralıkta (haftada 10–20 set).','20 setin üstü toparlanmayı zorlayabilir; bir kısmını azaltmayı düşün.']},
+ w:{n:['Yok','Hafif','Orta','Yoğun','Çok yoğun'],r:['0','0,5–1,5','2–3,5','4–8','8+'],t:[2,4,8],band:null,max:10,unit:'set',
+  tip:['Bu antrenmanda çalışmıyor.','Hafif uyarı; çoğunlukla yardımcı kas olarak çalışıyor.','Orta düzey uyarı.','Tek seans için güçlü uyarı.','Tek seansta çok fazla set; bir kısmını başka güne kaydırmayı düşün.']}};
+function zoneOf(v,sc){if(!(v>0))return 0;const t=ZN[sc].t;return v<t[0]?1:v<t[1]?2:v<=t[2]?3:4}
+const heatColor=(v,sc)=>ZC[zoneOf(v,sc)];
+function heatDetail(items){const h={},by={};for(const it of items){const sets=+it.sets||0;if(!sets)continue;const m=mapOf(it.name,it.xid);const add=(k,v,r)=>{h[k]=(h[k]||0)+v;const a=by[k]||(by[k]=[]);const ex=a.find(x=>x.n===it.name&&x.r===r);if(ex)ex.v+=v;else a.push({n:it.name,v,r})};m.p.forEach(k=>add(k,sets,'ana'));m.s.forEach(k=>add(k,sets*.5,'yardımcı'))}return{h,by}}
+function heatOf(items){return heatDetail(items).h}
+function figure(side,h,sc,bid,sel){
+  const c=k=>heatColor(h[k]||0,sc),t=k=>`<title>${MUS[k]}: ${fmt(h[k]||0)} set</title>`,at=k=>`class="mu${sel===k?' on':''}" data-a="hsel" data-b="${bid}" data-k="${k}"`;
+  const P=(k,d)=>`<path d="${d}" fill="${c(k)}" ${at(k)}>${t(k)}</path>`;
+  const E=(k,x,y,rx,ry)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c(k)}" ${at(k)}>${t(k)}</ellipse>`;
   const neuL=`<ellipse cx="45" cy="197" rx="6" ry="10"/><ellipse cx="86" cy="267" rx="7" ry="6"/><ellipse cx="85" cy="350" rx="9" ry="6"/>`;
   let L,C;
   if(side==='f'){
     L=P('traps','M93 56C87 62 79 66 71 70L85 68C90 66 94 62 95 58Z')+P('front_delts','M70 72C61 69 53 75 53 87C53 95 56 100 60 101C64 93 66 85 71 78Z')+P('side_delts','M52 80C46 85 45 97 48 105C52 102 54 94 54 86Z')+P('chest','M98 70C86 66 75 68 70 76C67 90 72 102 86 104C94 105 98 100 98 94Z')+E('biceps',52,122,7,17)+P('forearms','M46 142C40 152 40 172 44 186L50 186C54 170 56 152 54 142Z')+P('obliques','M86 108C80 112 76 122 76 136C76 150 80 162 86 168L88 108Z')+P('quads','M80 178C72 194 70 230 76 258C80 264 88 264 92 258C96 236 96 202 94 182Z')+P('adductors','M96 182C94 200 94 220 97 238L100 238L100 182Z')+P('calves','M78 276C74 292 76 320 82 340L88 340C92 320 92 294 88 276Z');
-    C=`<rect x="89" y="106" width="22" height="62" rx="8" fill="${c('abs')}">${t('abs')}</rect><path d="M89 122h22M89 138h22M89 154h22M100 106v62" stroke="var(--card)" stroke-width="1.4" fill="none"/><path d="M88 170L112 170L108 182L92 182Z" fill="var(--neu)"/>`;
+    C=`<rect x="89" y="106" width="22" height="62" rx="8" fill="${c('abs')}" ${at('abs')}>${t('abs')}</rect><path d="M89 122h22M89 138h22M89 154h22M100 106v62" stroke="var(--card)" stroke-width="1.4" fill="none" pointer-events="none"/><path d="M88 170L112 170L108 182L92 182Z" fill="var(--neu)"/>`;
   }else{
     L=P('rear_delts','M70 72C61 69 53 75 53 87C53 95 56 100 60 101C64 93 66 85 71 78Z')+P('side_delts','M52 80C46 85 45 97 48 105C52 102 54 94 54 86Z')+P('upper_back','M92 90C85 84 78 81 73 81C72 93 78 104 89 110L95 104Z')+P('lats','M73 98C68 112 70 132 80 150C85 156 90 156 93 150L94 116C86 112 78 106 73 98Z')+E('triceps',52,121,7,17)+P('forearms','M46 142C40 152 40 172 44 186L50 186C54 170 56 152 54 142Z')+P('abductors','M79 164C73 168 72 178 76 187L83 176Z')+P('glutes','M100 172C92 170 81 172 79 184C77 198 86 207 100 205Z')+P('hamstrings','M79 210C75 228 77 248 83 262L93 262C97 246 97 226 96 210Z')+P('calves','M80 274C70 292 74 318 84 332C94 318 96 292 90 274Z');
     C=P('traps','M100 50C94 56 82 64 70 70C82 74 92 86 100 104C108 86 118 74 130 70C118 64 106 56 100 50Z')+P('lower_back','M95 142L105 142L110 170L90 170Z');
   }
-  return `<svg viewBox="0 0 200 362" role="img" aria-label="${side==='f'?'Ön':'Arka'} görünüm ısı haritası"><g fill="var(--neu)"><ellipse cx="100" cy="30" rx="15" ry="19"/><rect x="93" y="46" width="14" height="14" rx="4"/>${neuL}<g transform="matrix(-1 0 0 1 200 0)">${neuL}</g></g>${L}<g transform="matrix(-1 0 0 1 200 0)">${L}</g>${C}</svg>`;
+  return `<svg viewBox="0 0 200 362" role="img" aria-label="${side==='f'?'Ön':'Arka'} görünüm kas haritası"><g fill="var(--neu)"><ellipse cx="100" cy="30" rx="15" ry="19"/><rect x="93" y="46" width="14" height="14" rx="4"/>${neuL}<g transform="matrix(-1 0 0 1 200 0)">${neuL}</g></g>${L}<g transform="matrix(-1 0 0 1 200 0)">${L}</g>${C}</svg>`;
 }
-function heatBlock(h,sc,opts={}){
-  const th=TH[sc],cols=[0,1,2,3,4,5].map(i=>`var(--h${i})`);
-  const labs=sc==='week'?['0','≤4','≤8','≤12','≤16','16+']:['0','1','3','4','6','7+'];
+function heatBlock(items,sc,opts={}){
+  const bid=opts.id||sc,{h,by}=heatDetail(items),Z=ZN[sc];
+  const sel=S.hsel[bid]&&MUS[S.hsel[bid]]?S.hsel[bid]:null;
+  const keys=Object.keys(MUS),cnt=[0,0,0,0,0];keys.forEach(k=>cnt[zoneOf(h[k]||0,sc)]++);
   const top=Object.entries(h).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]);
-  const mx=top[0]?.[1]||1;
-  return `<div class="bodyfig"><figure style="margin:0">${figure('f',h,sc)}<figcaption>Ön</figcaption></figure><figure style="margin:0">${figure('b',h,sc)}<figcaption>Arka</figcaption></figure></div>
-  <div class="legend">${labs.map((l,i)=>`<i style="background:${cols[i]}"></i>${i===0||i===5?`<span>${l}</span>`:''}`).join('')}<span style="margin-left:6px">${sc==='week'?'set / hafta':'set'}</span></div>
-  ${top.length?`<div style="margin-top:12px">${top.slice(0,opts.all?19:8).map(([k,v])=>`<div class="mbar"><span>${MUS[k]}</span><div class="b"><i style="width:${v/mx*100}%;background:${heatColor(v,sc)}"></i></div><span class="v">${fmt(v)}</span></div>`).join('')}</div>`:'<p class="sub" style="text-align:center">Henüz veri yok.</p>'}`;
+  const pill=(z)=>`<span class="zp z${z}">${Z.n[z]}</span>`;
+  const bar=(k,v)=>{const z=zoneOf(v,sc);return`<button class="mbar press${sel===k?' on':''}" data-a="hsel" data-b="${bid}" data-k="${k}"><span>${MUS[k]}</span><div class="b">${Z.band?`<u style="left:${Z.band[0]/Z.max*100}%;width:${(Z.band[1]-Z.band[0])/Z.max*100}%"></u>`:''}<i style="width:${Math.min(100,v/Z.max*100)}%;background:${ZC[z]}"></i></div><span class="v">${fmt(v)}</span></button>`};
+  let det;
+  if(sel){const v=h[sel]||0,z=zoneOf(v,sc),src=(by[sel]||[]).sort((a,b)=>b.v-a.v);
+    const need=sc==='week'&&z<3?Math.ceil((10-v)*2)/2:0;
+    det=`<div class="hdet"><div class="row"><h3 class="sp">${MUS[sel]}</h3>${pill(z)}<button class="ibtn" style="width:32px;height:32px" data-a="hsel" data-b="${bid}" data-k="${sel}" aria-label="Seçimi kaldır">${ic('x',16)}</button></div>
+    <div class="num" style="font:800 30px/1.1 var(--d);margin:4px 0">${fmt(v)} <span class="sub" style="font:600 14px var(--f)">${Z.unit}</span></div>
+    <p class="sub" style="margin:0 0 8px">${Z.tip[z]}${need>0?` İdeal aralığa girmek için <b style="color:var(--ink)">+${fmt(need)} set</b> gerekiyor.`:''}</p>
+    ${src.length?`<div class="list">${src.map(x=>`<div class="row" style="padding:7px 0;font-size:14px"><span class="sp">${esc(x.n)}</span><span class="sub">${x.r}</span><b class="num" style="min-width:42px;text-align:right">${fmt(x.v)}</b></div>`).join('')}</div><p class="sub" style="font-size:12px;margin:6px 0 0">Ana kas olarak çalışan hareketin her seti 1, yardımcı kas olarak 0,5 set sayılır.</p>`:''}</div>`}
+  else det=`<p class="sub hhint">${ic('spark',13)} Bir kasa dokun: kaç set aldığını ve hangi hareketlerden geldiğini gör.</p>`;
+  const miss=keys.filter(k=>!(h[k]>0));
+  return `${sc==='week'?`<div class="zsum">${[3,2,1,4].filter(z=>cnt[z]).map(z=>`<span class="zp z${z}">${Z.n[z]} <b>${cnt[z]}</b></span>`).join('')}${cnt[0]?`<span class="zp z0">${Z.n[0]} <b>${cnt[0]}</b></span>`:''}</div>`:''}
+  <div class="bodyfig${sel?' hassel':''}"><figure style="margin:0">${figure('f',h,sc,bid,sel)}<figcaption>Ön</figcaption></figure><figure style="margin:0">${figure('b',h,sc,bid,sel)}<figcaption>Arka</figcaption></figure></div>
+  <div class="zleg">${[1,2,3,4].map(z=>`<span><i style="background:${ZC[z]}"></i><b>${Z.n[z]}</b><small>${Z.r[z]}</small></span>`).join('')}</div>
+  ${det}
+  ${top.length?`<div style="margin-top:10px">${top.slice(0,opts.all?19:8).map(([k,v])=>bar(k,v)).join('')}</div>${Z.band?`<p class="sub" style="font-size:12px;margin:6px 2px 0"><span class="bandk"></span> Taralı alan: kas gelişimi için ideal haftalık set aralığı (10–20).</p>`:''}`:'<p class="sub" style="text-align:center">Henüz veri yok.</p>'}
+  ${opts.all&&miss.length&&top.length?`<p class="sub" style="margin:10px 2px 0"><b style="color:var(--ink)">Hiç çalışmayan:</b> ${miss.map(k=>MUS[k]).join(', ')}</p>`:''}`;
 }
 
 /* ---------- state ---------- */
-const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false,tab:'cal',route:null,view:null,month:null,metric:'w',cmp:{},exq:'',mf:'weight',open:{},ai:{},loadSlow:false};
-const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,subs:false});
+const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false,tab:'cal',route:null,view:null,month:null,metric:'w',cmp:{},exq:'',hsel:{},nt:null,nd:null,mf:'weight',open:{},ai:{},loadSlow:false};
+const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
 const progOf=(uid,pid)=>U(uid).programs.find(p=>p.id===pid);
 const doneSessions=uid=>U(uid).sessions.filter(s=>s.done).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.startedAt||0)-(b.startedAt||0));
 const rirOn=uid=>!!U(uid).profile?.rir;
@@ -261,9 +357,9 @@ const seedProgram=()=>({name:'pplul',star:true,created:Date.now(),map:{},workout
 /* ---------- AI muscle mapping ---------- */
 const getSample=()=>Promise.resolve(null);
 async function ensureMap(uid,pid){
-  const p=progOf(uid,pid);if(!p||S.ai[pid])return;
+  if(!LIB.ex){loadEx();return}const p=progOf(uid,pid);if(!p||S.ai[pid])return;
   const names=[...new Set(p.workouts.flatMap(w=>w.exercises.map(e=>e.name.trim())).filter(Boolean))];
-  const missing=names.filter(n=>!MAP[key(n)]);if(!missing.length)return;
+  const missing=names.filter(n=>!known({name:n}));if(!missing.length)return;
   S.ai[pid]=true;soft();
   const got={};const sample=await getSample();
   if(sample){try{
@@ -279,13 +375,13 @@ async function ensureMap(uid,pid){
 }
 
 /* ---------- history ---------- */
-function hist(uid){const m={};for(const s of doneSessions(uid))for(const e of s.exercises||[]){const sets=(e.sets||[]).filter(x=>x.r>0&&x.w!=null);if(!sets.length)continue;const k=key(e.name);const top=sets.reduce((a,b)=>b.w>a.w||(b.w===a.w&&b.r>a.r)?b:a);(m[k]||(m[k]={name:e.name,ents:[]})).ents.push({date:s.date,wname:s.workoutName,sets,top,e1:Math.max(...sets.map(x=>x.w*(1+x.r/30))),vol:sets.reduce((a,x)=>a+x.w*x.r,0),reps:sets.reduce((a,x)=>a+x.r,0)})}return m}
+function hist(uid){const m={};for(const s of doneSessions(uid))for(const e of s.exercises||[]){const sets=(e.sets||[]).filter(x=>x.r>0&&x.w!=null);if(!sets.length)continue;const k=hk(e);const top=sets.reduce((a,b)=>b.w>a.w||(b.w===a.w&&b.r>a.r)?b:a);(m[k]||(m[k]={name:e.name,ents:[]})).ents.push({date:s.date,wname:s.workoutName,sets,top,e1:Math.max(...sets.map(x=>x.w*(1+x.r/30))),vol:sets.reduce((a,x)=>a+x.w*x.r,0),reps:sets.reduce((a,x)=>a+x.r,0)})}return m}
 const METRICS={w:['En ağır set','kg',e=>e.top.w],e1:['Tahmini 1RM','kg',e=>e.e1],vol:['Hacim','kg',e=>e.vol],reps:['Toplam tekrar','',e=>e.reps]};
 /* Aynı gün (workout) içindeki son kaydı tercih et; yoksa herhangi bir günün son kaydına düş */
-function prevSets(name,excl,wid){const k=key(name);const ss=doneSessions(S.me).filter(s=>s.id!==excl);
-  const find=only=>{for(let i=ss.length-1;i>=0;i--){if(only&&ss[i].workoutId!==wid)continue;const e=(ss[i].exercises||[]).find(x=>key(x.name)===k);if(e&&e.sets?.some(x=>x.r>0))return e.sets.filter(x=>x.r>0)}return null};
+function prevSets(name,excl,wid){const k=hk(typeof name==='string'?{name}:name);const ss=doneSessions(S.me).filter(s=>s.id!==excl);
+  const find=only=>{for(let i=ss.length-1;i>=0;i--){if(only&&ss[i].workoutId!==wid)continue;const e=(ss[i].exercises||[]).find(x=>hk(x)===k);if(e&&e.sets?.some(x=>x.r>0))return e.sets.filter(x=>x.r>0)}return null};
   return(wid&&find(true))||find(false)}
-function lastTop(uid,name,wid){const k=key(name);let any=null;const ss=doneSessions(uid);for(let i=ss.length-1;i>=0;i--){const e=(ss[i].exercises||[]).find(x=>key(x.name)===k);const sets=(e?.sets||[]).filter(x=>x.r>0&&x.w!=null);if(!sets.length)continue;const top=sets.reduce((a,b)=>b.w>a.w||(b.w===a.w&&b.r>a.r)?b:a);if(!wid||ss[i].workoutId===wid)return top;any=any||top}return any}
+function lastTop(uid,name,wid){const k=hk(typeof name==='string'?{name}:name);let any=null;const ss=doneSessions(uid);for(let i=ss.length-1;i>=0;i--){const e=(ss[i].exercises||[]).find(x=>hk(x)===k);const sets=(e?.sets||[]).filter(x=>x.r>0&&x.w!=null);if(!sets.length)continue;const top=sets.reduce((a,b)=>b.w>a.w||(b.w===a.w&&b.r>a.r)?b:a);if(!wid||ss[i].workoutId===wid)return top;any=any||top}return any}
 
 /* ---------- charts ---------- */
 const CH={};let ROs=[];
@@ -359,29 +455,29 @@ function viewProg(){
 function viewWorkout(){
   const {uid,pid,wid}=S.route,p=progOf(uid,pid),w=p?.workouts.find(x=>x.id===wid);
   if(!w)return`<div class="top"><button class="ibtn bg" data-a="back">${ic('back')}</button></div><div class="empty">Antrenman bulunamadı.</div>`;
-  const mine=uid===S.me,h=heatOf(w.exercises.map(e=>({name:e.name,sets:+e.sets||0})));
-  const pending=w.exercises.some(e=>!MAP[key(e.name)]);
+  const mine=uid===S.me,hitems=w.exercises.map(e=>({name:e.name,xid:exId(e),sets:+e.sets||0}));
+  const pending=!!LIB.ex&&w.exercises.some(e=>!known(e));
   if(pending&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button>${mine?`<button class="ibtn bg" data-a="wedit" data-p="${pid}" data-w="${wid}" aria-label="Düzenle">${ic('edit',20)}</button>`:''}</div>
   <h1 style="text-transform:lowercase">${esc(w.name)}</h1><p class="sub" style="margin:6px 0 16px">${esc(p.name)}${w.day!=null?' · '+DAYS_FULL[w.day]:''} · ${w.exercises.length} hareket · ${workoutSets(w)} set${mine?'':' · '+esc(nameOf(uid))}</p>
-  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e.name,w.id);return`<div class="exi"><span class="exn">${i+1}</span><div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${rirOn(uid)&&e.rir!=null?` · ${fmt(e.rir)} RIR`:''}${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(key(e.name))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
-  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Kas ısı haritası</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(h,'w')}</div>
+  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e,w.id),lx=libOf(e);return`<div class="exi">${lx?.img?thumb(lx,42):`<span class="exn">${i+1}</span>`}<div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${rirOn(uid)&&e.rir!=null?` · ${fmt(e.rir)} RIR`:''}${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(hk(e))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
+  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Bu antrenmanda çalışan kaslar</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(hitems,'w',{id:'w'})}</div>
   <div class="row" style="position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));gap:8px">${mine?`<button class="btn pri block" style="flex:1;min-height:54px;font-size:17px;box-shadow:0 8px 24px rgba(229,53,42,.35)" data-a="startw" data-p="${pid}" data-w="${wid}" data-d="${ymd(new Date())}">${ic('play',18,1)} Antrenmana Başla</button>`:`<button class="btn pri block" data-a="pcopy" data-u="${uid}" data-p="${pid}">${ic('copy',18)} Programı kopyala</button>`}</div>`;
 }
 
 function viewPHeat(){
   const {uid,pid}=S.route,p=progOf(uid,pid);if(!p)return`<div class="top"><button class="ibtn bg" data-a="back">${ic('back')}</button></div><div class="empty">Program bulunamadı.</div>`;
-  const items=p.workouts.flatMap(w=>w.exercises.map(e=>({name:e.name,sets:+e.sets||0})));const h=heatOf(items);
-  if(items.some(e=>!MAP[key(e.name)])&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
-  return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button></div><h1>${esc(p.name)} analizi</h1><p class="sub" style="margin:6px 0 16px">Tüm programın haftalık set dağılımı. Ana kas 1, yardımcı kas 0,5 set sayılır.</p>
-  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Haftalık yük</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(h,'week',{all:1})}</div>
-  <div class="sec"><h2>Günlere göre</h2></div>${p.workouts.map(w=>{const hw=heatOf(w.exercises.map(e=>({name:e.name,sets:+e.sets||0})));const top=Object.entries(hw).sort((a,b)=>b[1]-a[1]).slice(0,4);return`<button class="card press row" style="width:100%" data-a="openw" data-p="${pid}" data-w="${w.id}"><span class="daytag">${w.day!=null?DAYS[w.day]:'—'}</span><span class="sp" style="text-align:left"><h3>${esc(w.name)}</h3><span class="sub">${top.map(([k,v])=>MUS[k]+' '+fmt(v)).join(' · ')||'—'}</span></span>${ic('chev',18)}</button>`}).join('')}`;
+  const items=p.workouts.flatMap(w=>w.exercises.map(e=>({name:e.name,xid:exId(e),sets:+e.sets||0})));
+  if(LIB.ex&&items.some(e=>!known(e))&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
+  return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button></div><h1>${esc(p.name)} analizi</h1><p class="sub" style="margin:6px 0 16px">Programı bir hafta boyunca uygularsan her kasın alacağı set sayısı. Renkler kas gelişimi için önerilen haftalık aralıklara göre.</p>
+  <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Haftalık yük</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(items,'week',{all:1,id:'ph'})}</div>
+  <div class="sec"><h2>Günlere göre</h2></div>${p.workouts.map(w=>{const hw=heatOf(w.exercises.map(e=>({name:e.name,xid:exId(e),sets:+e.sets||0})));const top=Object.entries(hw).sort((a,b)=>b[1]-a[1]).slice(0,4);return`<button class="card press row" style="width:100%" data-a="openw" data-p="${pid}" data-w="${w.id}"><span class="daytag">${w.day!=null?DAYS[w.day]:'—'}</span><span class="sp" style="text-align:left"><h3>${esc(w.name)}</h3><span class="sub">${top.map(([k,v])=>MUS[k]+' '+fmt(v)).join(' · ')||'—'}</span></span>${ic('chev',18)}</button>`}).join('')}`;
 }
 
 function viewLive(){
   const s=LIVE.doc;
   const RIR=rirOn(S.me),rc=RIR?' rir':'';
-  const ex=s.exercises.map((e,ei)=>{const pv=prevSets(e.name,LIVE.id,s.workoutId);
+  const ex=s.exercises.map((e,ei)=>{const pv=prevSets(e,LIVE.id,s.workoutId);
     return`<div class="card"><div class="row" style="margin-bottom:6px"><div class="sp"><h3 style="font-size:17px">${esc(e.name)}</h3><div class="sub">${e.target?`Hedef: ${e.target.sets} × ${e.target.min===e.target.max?e.target.min:e.target.min+'–'+e.target.max}${RIR&&e.target.rir!=null?` · ${fmt(e.target.rir)} RIR`:''}`:'Serbest'}</div></div><button class="ibtn" data-a="lexdel" data-i="${ei}" aria-label="Hareketi kaldır" style="color:var(--mute)">${ic('x',19)}</button></div>
     <div class="st${rc}"><span class="h">Set</span><span class="h">Önceki</span><span class="h" style="text-align:center">kg</span><span class="h" style="text-align:center">Tekrar</span>${RIR?'<span class="h" style="text-align:center">RIR</span>':''}<span></span></div>
     ${e.sets.map((x,si)=>{const p=pv?.[si]||pv?.at(-1);return`<div class="st${rc} ${x.d?'ok':''}"><span class="num" style="font-weight:700;color:var(--mute)">${si+1}</span><span class="pv">${pv?.[si]?`${fmt(pv[si].w)} × ${pv[si].r}`:'—'}</span><input inputmode="decimal" enterkeyhint="next" aria-label="Set ${si+1} kilo" data-lv="${ei}:${si}:w" value="${x.w??''}" placeholder="${p?p.w:''}"><input inputmode="numeric" enterkeyhint="done" aria-label="Set ${si+1} tekrar" data-lv="${ei}:${si}:r" value="${x.r??''}" placeholder="${p?p.r:(e.target?.max||'0')}">${RIR?`<input inputmode="decimal" enterkeyhint="done" aria-label="Set ${si+1} RIR" data-lv="${ei}:${si}:rir" value="${x.rir??''}" placeholder="${e.target?.rir!=null?fmt(e.target.rir):''}">`:''}<button class="ck" data-a="lck" data-i="${ei}" data-j="${si}" aria-label="Seti tamamla">${ic('check',20)}</button></div>`}).join('')}
@@ -400,11 +496,11 @@ function viewGel(){
   const bars=[];for(let i=7;i>=0;i--){const a=new Date(ws);a.setDate(a.getDate()-7*i);const b=new Date(a);b.setDate(b.getDate()+7);const n=ss.filter(s=>s.date>=ymd(a)&&s.date<ymd(b)).length;bars.push({n,l:a.getDate()+'/'+(a.getMonth()+1),on:i===0})}
   const bmx=Math.max(4,...bars.map(b=>b.n));
   const ago=new Date(now);ago.setDate(ago.getDate()-6);const recent=ss.filter(s=>s.date>=ymd(ago));
-  const h7=heatOf(recent.flatMap(s=>s.exercises.map(e=>({name:e.name,sets:e.sets.filter(x=>x.r>0).length}))));
+  const h7=recent.flatMap(s=>s.exercises.map(e=>({name:e.name,xid:exId(e),sets:e.sets.filter(x=>x.r>0).length})));
   return`<div class="top"><h1>Gelişim</h1></div>${whoBar()}
   <div class="stats"><div class="stat"><b>${thisWeek.length}</b><span>Bu hafta</span></div><div class="stat"><b>${ss.filter(s=>s.date.startsWith(mk)).length}</b><span>Bu ay</span></div><div class="stat"><b>${setsW}</b><span>Set / hafta</span></div></div>
   <div class="card" style="margin-top:12px"><div class="row" style="margin-bottom:12px"><h2 class="sp">Haftalık antrenman</h2><span class="sub">Son 8 hafta</span></div><div class="bars">${bars.map(b=>`<div><small class="num" style="color:var(--ink)">${b.n||''}</small><i class="${b.on?'on':''}" style="height:${b.n/bmx*80}%"></i><small>${b.l}</small></div>`).join('')}</div></div>
-  <div class="card"><div class="row" style="margin-bottom:10px"><h2 class="sp">Son 7 gün çalışan kaslar</h2></div>${heatBlock(h7,'week')}</div>
+  <div class="card"><div class="row" style="margin-bottom:10px"><h2 class="sp">Son 7 gün çalışan kaslar</h2></div>${heatBlock(h7,'week',{id:'g'})}</div>
   <div class="sec"><h2>Hareketler</h2><span class="sub">${Object.keys(hist(uid)).length} hareket</span></div>
   <input class="f" id="exq" type="search" placeholder="Hareket ara…" value="${esc(S.exq)}" style="margin-bottom:10px" aria-label="Hareket ara">
   <div id="exlist">${exList()}</div>`;
@@ -414,7 +510,7 @@ function exList(){const hm=hist(S.view);const q=key(S.exq);const items=Object.en
   return`<div class="card list" style="padding:2px 16px">${items.map(([k,v])=>{const f=v.ents[0].top.w,l=v.ents.at(-1).top,d=l.w-f;return`<button class="li press" data-a="ex" data-k="${esc(k)}"><span class="sp" style="text-align:left"><h3>${esc(v.name)}</h3><span class="sub">${fmt(l.w)} kg × ${l.r} · ${v.ents.length} seans</span></span>${spark(v.ents.slice(-12).map(e=>e.top.w))}${v.ents.length>1?`<span class="delta ${d>0?'up':d<0?'dn':''}">${d>0?'+':''}${fmt(d)}</span>`:''}</button>`}).join('')}</div>`}
 
 function viewEx(){
-  const k=S.route.k,uid=S.view,e=hist(uid)[k];
+  const uid=S.view,H=hist(uid);let k=S.route.k;if(!H[k]&&LIB.exIdx[nz(k)])k=LIB.exIdx[nz(k)];const e=H[k];
   const head=`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button></div>`;
   if(!e)return head+`<h1>${esc(S.route.name2||k)}</h1><div class="card empty" style="margin-top:16px">${isMine()?'Bu hareket için henüz kayıt yok. Antrenmanda ağırlık ve tekrar girdikçe grafik oluşur.':'Bu kullanıcının bu harekette kaydı yok.'}</div>`;
   const [mt,unit,get]=METRICS[S.metric];
@@ -483,27 +579,6 @@ const MACROS=[['p','Protein','#2a6fe5',4],['c','Karbonhidrat','#e58a14',4],['f',
 const r1=n=>Math.round((+n||0)*10)/10;
 const savePlan=pl=>saveDoc(P(S.me,'nutrition','plan'),{...strip(pl),updated:Date.now()});
 const myPlan=()=>{const p=U(S.me).nutrition;return p?clone(p):null};
-function viewNutr(){
-  const uid=S.view,mine=isMine(),pl=U(uid).nutrition;
-  const head=`<div class="top"><h1>Beslenme</h1>${mine&&pl?`<button class="ibtn bg" data-a="ntarget" aria-label="Planı düzenle">${ic('edit',20)}</button>`:''}</div>${whoBar()}`;
-  if(!pl)return head+`<div class="card empty">${ic('flame',36)}<p>${mine?'Henüz beslenme planın yok. Öğünlerini, besinleri ve gramajlarını ekleyerek planını oluştur.':esc(nameOf(uid))+' henüz beslenme planı eklemedi.'}</p>${mine?'<button class="btn pri" data-a="nnew">Plan oluştur</button>':''}</div>`;
-  const all=pl.meals.flatMap(m=>m.items),tot=nsum(all),t=pl.target||{};
-  const ek=MACROS.map(([k,,,m])=>tot[k]*m),eks=ek.reduce((a,b)=>a+b,0)||1;
-  const pct=t.kcal?Math.min(100,tot.kcal/t.kcal*100):0,diff=t.kcal?tot.kcal-t.kcal:0;
-  return head+`<p class="sub" style="margin:-6px 2px 14px;font-weight:600">${esc(pl.name||'Beslenme planı')}${mine?'':' · '+esc(nameOf(uid))}</p>
-  <div class="card"><div class="row" style="align-items:flex-end"><div class="sp"><div class="sub" style="font-weight:600">Günlük toplam</div><div class="num" style="font:850 46px/1 var(--d);font-stretch:82%">${fmtK(tot.kcal)}<span style="font-size:18px;color:var(--mute)"> kcal</span></div></div>${t.kcal?`<div style="text-align:right"><div class="sub">Hedef ${fmtK(t.kcal)}</div><span class="delta ${Math.abs(diff)<=50?'up':diff>0?'dn':''}">${diff>0?'+':''}${fmtK(diff)} kcal</span></div>`:''}</div>
-  ${t.kcal?`<div style="height:9px;border-radius:9px;background:var(--card2);overflow:hidden;margin:12px 0 4px"><i style="display:block;height:100%;width:${pct}%;background:var(--acc);border-radius:9px"></i></div>`:''}
-  <div style="display:flex;height:12px;border-radius:7px;overflow:hidden;margin:16px 0 8px;gap:2px">${MACROS.map(([k,,col],i)=>`<i style="display:block;flex:${ek[i]||0.0001};background:${col}"></i>`).join('')}</div>
-  <div class="row wrap" style="gap:12px;font-size:12px;color:var(--mute);font-weight:600">${MACROS.map(([k,n,col],i)=>`<span class="row" style="gap:5px"><i style="width:9px;height:9px;border-radius:3px;background:${col};display:block"></i>${n} %${Math.round(ek[i]/eks*100)}</span>`).join('')}</div>
-  <div style="margin-top:14px">${MACROS.map(([k,n,col])=>{const v=tot[k],g=t[k];return`<div class="mbar" style="grid-template-columns:96px minmax(0,1fr) auto"><span>${n}</span><div class="b"><i style="width:${g?Math.min(100,v/g*100):0}%;background:${col}"></i></div><span class="v" style="white-space:nowrap">${fmt(v)}${g?`<span style="color:var(--mute);font-weight:500"> / ${fmt(g)}</span>`:''} g</span></div>`}).join('')}</div></div>
-  ${pl.meals.map((m,mi)=>{const s=nsum(m.items);return`<div class="card"><div class="row" style="margin-bottom:4px"><div class="sp"><h2>${esc(m.name)}</h2><div class="sub">${fmtK(s.kcal)} kcal · P ${fmt(s.p)} · K ${fmt(s.c)} · Y ${fmt(s.f)} g</div></div>${mine?`<button class="ibtn" data-a="nmeal" data-i="${mi}" aria-label="Öğün seçenekleri">${ic('dots',22)}</button>`:''}</div>
-    <div class="list">${m.items.map((it,j)=>`<${mine?'button':'div'} class="li ${mine?'press':''}" ${mine?`data-a="nitem" data-i="${mi}" data-j="${j}"`:''} style="text-align:left"><div class="sp"><h3>${esc(it.name)}</h3><div class="sub">${fmt(it.g)} g · P ${fmt(it.p)} · K ${fmt(it.c)} · Y ${fmt(it.f)}</div></div><b class="num" style="font-size:18px;white-space:nowrap">${fmtK(it.kcal)} <span class="sub" style="font:500 12px var(--f)">kcal</span></b></${mine?'button':'div'}>`).join('')||'<p class="sub" style="padding:10px 0">Bu öğünde besin yok.</p>'}</div>
-    ${m.note?`<p class="sub" style="margin:8px 0 0;padding:10px 12px;background:var(--card2);border-radius:12px">${esc(m.note)}</p>`:''}
-    ${mine?`<button class="btn ghost" style="margin-top:6px" data-a="nitem" data-i="${mi}" data-j="-1">${ic('plus',18)} Besin ekle</button>`:''}</div>`}).join('')}
-  ${pl.note?`<div class="card"><h3>Notlar</h3><p class="sub" style="margin:6px 0 0;white-space:pre-wrap">${esc(pl.note)}</p></div>`:''}
-  ${mine?`<button class="btn block" data-a="nmealnew">${ic('plus',18)} Öğün ekle</button>`:`<button class="btn pri block" data-a="ncopy">${ic('copy',18)} Bu planı kendime kopyala</button>`}
-  <p class="sub" style="margin:12px 2px 0;font-size:12px">Gramajlar çiğ ağırlıktır. Değerler planı yazan kaynaktan alınmıştır.</p>`;
-}
 function openNItem(mi,j){const pl=myPlan();const it=j>=0?pl.meals[mi].items[j]:{id:uidGen(),name:'',g:100,kcal:null,p:null,c:null,f:null};ED={kind:'nitem',mi,j,it:{...it},base:{...it},scale:true};
   const fld=(k,l)=>`<div><label class="l" for="ni_${k}">${l}</label><input class="f" id="ni_${k}" inputmode="decimal" data-ed="it.${k}" data-num="1" value="${it[k]??''}"></div>`;
   openSheet(()=>`${sheetHead(j>=0?'Besini düzenle':'Besin ekle',esc(pl.meals[mi].name))}<label class="l" for="ni_name">Besin</label><input class="f" id="ni_name" data-ed="it.name" value="${esc(ED.it.name)}" placeholder="Örn. Yulaf ezmesi">
@@ -542,7 +617,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
     if(U(S.me).nutrition)confirmSheet('Planın değiştirilsin mi?','Kendi beslenme planının yerine bu plan gelecek.','Değiştir',go_);else go_();break}
   }
 });
-const inviteCard=()=>S.demo?'':`<div class="card" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını davet et</h3><p class="sub" style="margin:6px 0 10px">Bu sitenin adresini ve davet kodunu gönder. Kayıt olup kodu girdiğinde, üstteki isim seçicisinden onun takvimini, gelişimini, programlarını ve beslenmesini görebilirsin.</p>${S.invite?`<div class="row wrap"><span class="num sp" style="font-size:24px;font-weight:800;letter-spacing:.04em">${esc(S.invite)}</span><button class="btn sm pri" data-a="invcopy">${ic('copy',16)} Davet metnini kopyala</button></div>`:'<button class="btn sm" data-a="invget">Davet kodunu göster</button>'}</div>`;
+const inviteCard=()=>S.demo?'':`<div class="card" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını davet et</h3><p class="sub" style="margin:6px 0 10px">Bu sitenin adresini ve davet kodunu gönder. Kayıt olup kodu girdiğinde, üstteki isim seçicisinden onun takvimini, gelişimini, programlarını, beslenme planını ve uyum skorunu görebilirsin.</p>${S.invite?`<div class="row wrap"><span class="num sp" style="font-size:24px;font-weight:800;letter-spacing:.04em">${esc(S.invite)}</span><button class="btn sm pri" data-a="invcopy">${ic('copy',16)} Davet metnini kopyala</button></div>`:'<button class="btn sm" data-a="invget">Davet kodunu göster</button>'}</div>`;
 
 /* ---------- render ---------- */
 let rq=0,pendingRender=false;
@@ -565,7 +640,7 @@ const go=(tab,route=null)=>{S.tab=tab;S.route=route;render();scrollTo(0,0)};
 let ED=null,sheetRender=null;
 function openSheet(fn){sheetRender=fn;drawSheet();document.body.style.overflow='hidden'}
 function drawSheet(){if(!sheetRender)return;const st=sheetEl.querySelector('.sheet')?.scrollTop||0;sheetEl.innerHTML=`<div class="ov" data-a="sclose"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${sheetRender()}</div></div>`;const sh=sheetEl.querySelector('.sheet');if(sh)sh.scrollTop=st}
-function closeSheet(){sheetEl.innerHTML='';sheetRender=null;ED=null;document.body.style.overflow=''}
+function closeSheet(){SSTK.length=0;sheetEl.innerHTML='';sheetRender=null;ED=null;document.body.style.overflow=''}
 const sheetHead=(t,s)=>`<div class="row" style="margin-bottom:8px"><div class="sp"><h2>${t}</h2>${s?`<div class="sub">${s}</div>`:''}</div><button class="ibtn bg" data-a="sclose" aria-label="Kapat">${ic('x',20)}</button></div>`;
 function confirmSheet(title,text,yes,fn){openSheet(()=>`${sheetHead(title)}<p class="sub">${text}</p><div class="row" style="margin-top:16px"><button class="btn block" style="flex:1" data-a="sclose">Vazgeç</button><button class="btn pri block" style="flex:1" data-a="cyes">${yes}</button></div>`);ED={kind:'confirm',fn}}
 
@@ -596,16 +671,16 @@ function openShare(pid){const p=progOf(S.me,pid);const data={n:p.name,w:p.workou
   <div class="row" style="margin-top:12px"><button class="btn block" style="flex:1" data-a="cpy" data-x="code">${ic('copy',18)} Kodu kopyala</button><button class="btn pri block" style="flex:1" data-a="cpy" data-x="text">${ic('copy',18)} Metni kopyala</button></div>`)}
 function openImport(){ED={kind:'imp',txt:''};openSheet(()=>`${sheetHead('Programı içe aktar')}<p class="sub">Sana gönderilen metni ya da SETLOG1: ile başlayan kodu yapıştır.</p><textarea class="f" data-ed="txt" placeholder="SETLOG1:..." style="margin-top:10px"></textarea><button class="btn pri block" style="margin-top:12px" data-a="impgo">İçe aktar</button>`)}
 
-function openWkEditor(pid,wid){const p=progOf(S.me,pid);const w=wid?clone(p.workouts.find(x=>x.id===wid)):{id:uidGen(),name:'',day:null,exercises:[]};if(!w.exercises.length)w.exercises.push({id:uidGen(),name:'',sets:3,min:8,max:12});ED={kind:'wk',pid,isNew:!wid,w};
-  openSheet(()=>{const w=ED.w;return`${sheetHead(ED.isNew?'Gün ekle':'Antrenmanı düzenle',esc(p.name))}
+function openWkEditor(pid,wid){const p=progOf(S.me,pid);const w=wid?clone(p.workouts.find(x=>x.id===wid)):{id:uidGen(),name:'',day:null,exercises:[]};ED={kind:'wk',pid,isNew:!wid,w};loadEx();
+  openSheet(()=>{const w=ED.w,R=rirOn(S.me);return`${sheetHead(ED.isNew?'Gün ekle':'Antrenmanı düzenle',esc(p.name))}
   <label class="l" for="wn">Antrenman adı</label><input class="f" id="wn" data-ed="w.name" value="${esc(w.name)}" placeholder="Örn. push">
   <label class="l">Gün</label><div class="chips">${DAYS.map((d,i)=>`<button class="chip ${w.day===i?'on':''}" data-a="edday" data-v="${i}">${d}</button>`).join('')}<button class="chip ${w.day==null?'on':''}" data-a="edday" data-v="">Yok</button></div>
-  <label class="l">Hareketler</label>${datalist()}
-  ${w.exercises.map((e,i)=>`<div class="edrow"><div class="row"><span class="exn">${i+1}</span><input class="f" style="height:44px" list="exnames" data-ed="w.exercises.${i}.name" value="${esc(e.name)}" placeholder="Hareket adı (örn. Bench Press)" aria-label="Hareket adı"></div>
-  <div class="edg${rirOn(S.me)?' rir':''}"><div><label>Set</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.sets" data-num="1" value="${e.sets??''}"></div><div><label>Min tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.min" data-num="1" value="${e.min??''}"></div><div><label>Maks tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.max" data-num="1" value="${e.max??''}"></div>${rirOn(S.me)?`<div><label>RIR</label><input class="f" inputmode="decimal" data-ed="w.exercises.${i}.rir" data-num="1" value="${e.rir??''}" placeholder="—"></div>`:''}</div>
-  <div class="row" style="margin-top:6px;justify-content:flex-end;gap:2px"><button class="ibtn" data-a="edmv" data-i="${i}" data-v="-1" aria-label="Yukarı" ${i?'':'disabled style="opacity:.3"'}>${ic('up',19)}</button><button class="ibtn" data-a="edmv" data-i="${i}" data-v="1" aria-label="Aşağı" ${i<w.exercises.length-1?'':'disabled style="opacity:.3"'}>${ic('down',19)}</button><button class="ibtn" data-a="edrm" data-i="${i}" aria-label="Kaldır" style="color:var(--acc)">${ic('trash',19)}</button></div></div>`).join('')}
+  <label class="l">Hareketler</label>
+  ${w.exercises.map((e,i)=>{const x=libOf(e);const mm=(x?x.m:(e.m?.length?e.m:mapOf(e.name).p)).map(k=>MUS[k]).join(', ');return`<div class="edrow"><div class="row" style="gap:10px"><span class="exn">${i+1}</span><button class="row sp press" data-a="edswap" data-i="${i}" style="gap:10px;text-align:left;min-width:0" aria-label="Hareketi değiştir">${thumb(x,42)}<span class="sp" style="min-width:0"><b style="display:block;font-size:15px;line-height:1.25">${esc(e.name)}</b><span class="sub" style="font-size:12px">${esc(mm||'Özel hareket')}</span></span><span class="sub" style="font-size:12px;font-weight:600">Değiştir</span></button></div>
+  <div class="edg${R?' rir':''}"><div><label>Set</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.sets" data-num="1" value="${e.sets??''}"></div><div><label>Min tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.min" data-num="1" value="${e.min??''}"></div><div><label>Maks tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.max" data-num="1" value="${e.max??''}"></div>${R?`<div><label>RIR</label><input class="f" inputmode="decimal" data-ed="w.exercises.${i}.rir" data-num="1" value="${e.rir??''}" placeholder="—"></div>`:''}</div>
+  <div class="row" style="margin-top:6px;justify-content:flex-end;gap:2px"><button class="ibtn" data-a="edmv" data-i="${i}" data-v="-1" aria-label="Yukarı" ${i?'':'disabled style="opacity:.3"'}>${ic('up',19)}</button><button class="ibtn" data-a="edmv" data-i="${i}" data-v="1" aria-label="Aşağı" ${i<w.exercises.length-1?'':'disabled style="opacity:.3"'}>${ic('down',19)}</button><button class="ibtn" data-a="edrm" data-i="${i}" aria-label="Kaldır" style="color:var(--acc)">${ic('trash',19)}</button></div></div>`}).join('')||'<p class="sub" style="padding:4px 2px 10px">Henüz hareket yok. Kütüphaneden arayıp birden fazlasını tek seferde ekleyebilirsin.</p>'}
   <button class="btn block" data-a="edadd">${ic('plus',18)} Hareket ekle</button>
-  <p class="sub" style="margin:10px 2px 0">${ic('spark',13)} Kas ısı haritası hareket adlarından ve set sayılarından otomatik çıkarılır.</p>
+  <p class="sub" style="margin:10px 2px 0">${ic('spark',13)} Çalışan kaslar seçtiğin hareketlerden otomatik belirlenir.</p>
   <button class="btn pri block" style="margin-top:14px;min-height:52px" data-a="edsave">Kaydet</button>${ED.isNew?'':`<button class="btn danger block" style="margin-top:8px" data-a="wdel">${ic('trash',18)} Bu günü sil</button>`}`})}
 
 function openMeas(mid){const m=mid?U(S.me).measures.find(x=>x.id===mid):null;const last=U(S.me).measures.at(-1)?.values||{};ED={kind:'meas',id:mid||uidGen(),isNew:!mid,m:m?{date:m.date,values:{...m.values},note:m.note||''}:{date:ymd(new Date()),values:{},note:''}};
@@ -622,14 +697,14 @@ function liveSave(now){clearTimeout(liveT);const run=()=>LIVE&&saveDoc(P(S.me,'s
 async function startWorkout(pid,wid,date){const act=U(S.me).sessions.find(s=>!s.done);
   if(act){toast('Önce devam eden antrenmanı bitir ya da iptal et.');resume(act.id);return}
   const p=pid?progOf(S.me,pid):null,w=p?.workouts.find(x=>x.id===wid);
-  const doc={date,programId:p?.id||null,programName:p?.name||'',workoutId:w?.id||null,workoutName:w?.name||'Serbest antrenman',startedAt:Date.now(),done:false,exercises:(w?.exercises||[]).map(e=>({name:e.name,target:{sets:+e.sets||1,min:e.min,max:e.max,rir:rirN(e.rir)},sets:Array.from({length:Math.max(1,+e.sets||1)},()=>({w:null,r:null,d:false}))}))};
+  const doc={date,programId:p?.id||null,programName:p?.name||'',workoutId:w?.id||null,workoutName:w?.name||'Serbest antrenman',startedAt:Date.now(),done:false,exercises:(w?.exercises||[]).map(e=>({name:e.name,xid:exId(e),target:{sets:+e.sets||1,min:e.min,max:e.max,rir:rirN(e.rir)},sets:Array.from({length:Math.max(1,+e.sets||1)},()=>({w:null,r:null,d:false}))}))};
   LIVE={id:uidGen(),doc};closeSheet();S.route={name:'live'};render();scrollTo(0,0);liveSave(true);
 }
 function resume(sid){const s=U(S.me).sessions.find(x=>x.id===sid);if(!s)return;if(!LIVE||LIVE.id!==sid)LIVE={id:sid,doc:clone(s)};delete LIVE.doc.id;closeSheet();S.route={name:'live'};render();scrollTo(0,0)}
 async function finishLive(){const d=LIVE.doc;
   const valid=d.exercises.map(e=>({...e,sets:e.sets.filter(x=>x.r>0&&x.w!=null)})).filter(e=>e.sets.length);
   if(!valid.length){toast('En az bir set için kilo ve tekrar gir.');return}
-  const before=hist(S.me);const prs=valid.filter(e=>{const h=before[key(e.name)];if(!h)return false;const best=Math.max(...h.ents.map(x=>x.top.w));return Math.max(...e.sets.map(x=>x.w))>best});
+  const before=hist(S.me);const prs=valid.filter(e=>{const h=before[hk(e)];if(!h)return false;const best=Math.max(...h.ents.map(x=>x.top.w));return Math.max(...e.sets.map(x=>x.w))>best});
   const out={...d,exercises:valid.map(e=>({...e,sets:e.sets.map(x=>({...x,d:true}))})),done:true,finishedAt:Date.now()};
   const id=LIVE.id;clearTimeout(liveT);LIVE=null;S.route=null;S.tab='cal';
   const ok=await saveDoc(P(S.me,'sessions',id),out);render();scrollTo(0,0);
@@ -680,20 +755,22 @@ document.addEventListener('click',async ev=>{
   case'wnew':closeSheet();openWkEditor(ds.p,null);break;
   case'wedit':openWkEditor(ds.p,ds.w);break;
   case'edday':ED.w.day=ds.v===''?null:+ds.v;drawSheet();break;
-  case'edadd':ED.w.exercises.push({id:uidGen(),name:'',sets:3,min:8,max:12});drawSheet();setTimeout(()=>{const ins=sheetEl.querySelectorAll('input[list]');ins[ins.length-1]?.focus()},60);break;
+  case'edadd':openExPicker({multi:true,title:'Hareket ekle',onDone:items=>{for(const it of items)ED.w.exercises.push({id:uidGen(),name:it.name,xid:it.xid||null,sets:3,min:8,max:12,...(rirOn(me)?{rir:1}:{}),...(it.m?{m:it.m}:{})});drawSheet()}});break;
+  case'edswap':{const i=+ds.i;openExPicker({multi:false,title:'Hareketi değiştir',onDone:([it])=>{const e=ED.w.exercises[i];if(!e||!it)return;e.name=it.name;e.xid=it.xid||null;if(it.m)e.m=it.m;else delete e.m;drawSheet()}});break}
   case'edrm':ED.w.exercises.splice(+ds.i,1);drawSheet();break;
   case'edmv':{const i=+ds.i,j=i+(+ds.v),x=ED.w.exercises;if(j<0||j>=x.length)break;[x[i],x[j]]=[x[j],x[i]];drawSheet();break}
-  case'edsave':{const w=ED.w;w.name=(w.name||'').trim();if(!w.name){toast('Antrenmana bir ad ver.');break}w.exercises=w.exercises.filter(e=>(e.name||'').trim()).map(e=>({...e,name:e.name.trim(),sets:Math.max(1,Math.round(+e.sets||1)),min:Math.max(1,Math.round(+e.min||1)),max:Math.max(Math.round(+e.min||1),Math.round(+e.max||+e.min||1)),rir:rirN(e.rir)}));
+  case'edsave':{const w=ED.w;w.name=(w.name||'').trim();if(!w.name){toast('Antrenmana bir ad ver.');break}const cm={};w.exercises=w.exercises.filter(e=>(e.name||'').trim()).map(e=>({...e,name:e.name.trim(),sets:Math.max(1,Math.round(+e.sets||1)),min:Math.max(1,Math.round(+e.min||1)),max:Math.max(Math.round(+e.min||1),Math.round(+e.max||+e.min||1)),rir:rirN(e.rir)}));w.exercises.forEach(e=>{if(!e.xid&&e.m?.length)cm[key(e.name)]={p:e.m,s:[]};delete e.m;if(!e.xid)delete e.xid});
     const p=progOf(me,ED.pid);const ws=p.workouts.slice();const i=ws.findIndex(x=>x.id===w.id);if(i<0)ws.push(w);else ws[i]=w;const pid=ED.pid,isNew=ED.isNew;
-    if(await saveDoc(P(me,'programs',pid),{...strip(p),workouts:ws})){closeSheet();if(isNew){S.route={name:'w',uid:me,pid,wid:w.id};render()}toast('Kaydedildi');ensureMap(me,pid)}break}
+    if(await saveDoc(P(me,'programs',pid),{...strip(p),workouts:ws,map:{...(p.map||{}),...cm}})){closeSheet();if(isNew){S.route={name:'w',uid:me,pid,wid:w.id};render()}toast('Kaydedildi');ensureMap(me,pid)}break}
   case'wdel':{const pid=ED.pid,wid=ED.w.id;confirmSheet('Bu gün silinsin mi?','Antrenman programdan kaldırılacak. Geçmiş kayıtların korunur.','Sil',async()=>{const p=progOf(me,pid);await saveDoc(P(me,'programs',pid),{...strip(p),workouts:p.workouts.filter(x=>x.id!==wid)});S.route=null;S.tab='prog';render()});break}
+  case'hsel':S.hsel[ds.b]=S.hsel[ds.b]===ds.k?null:ds.k;render();break;
   case'cyes':{const fn=ED?.fn;closeSheet();fn&&fn();break}
   /* live */
   case'lck':{const x=LIVE.doc.exercises[ds.i].sets[ds.j];if(!x.d){const row=el.closest('.st');const ins=row.querySelectorAll('input');if(x.w==null&&ins[0].placeholder)x.w=Number(ins[0].placeholder);if(x.r==null&&ins[1].placeholder)x.r=Number(ins[1].placeholder);if(!(x.r>0)){toast('Tekrar sayısını gir.');break}x.d=true}else x.d=false;liveSave();render();break}
   case'lsadd':{const e=LIVE.doc.exercises[ds.i];const l=e.sets.at(-1);e.sets.push({w:l?.w??null,r:null,d:false});liveSave();render();break}
   case'lsdel':LIVE.doc.exercises[ds.i].sets.pop();liveSave();render();break;
   case'lexdel':LIVE.doc.exercises.splice(+ds.i,1);liveSave();render();break;
-  case'lexadd':openAddEx();break;
+  case'lexadd':openExPicker({multi:true,title:'Hareket ekle',onDone:items=>{if(!items.length||!LIVE)return;for(const it of items)LIVE.doc.exercises.push({name:it.name,xid:it.xid||null,target:null,sets:Array.from({length:3},()=>({w:null,r:null,d:false}))});rememberCustom(LIVE.doc.programId,items);liveSave();render();setTimeout(()=>scrollTo(0,document.body.scrollHeight),50)}});break;
   case'lexgo':{const n=(ED.name||'').trim();if(!n){toast('Hareket adı gir.');break}const s=Math.max(1,Math.min(12,Math.round(+ED.sets||3)));LIVE.doc.exercises.push({name:n,target:null,sets:Array.from({length:s},()=>({w:null,r:null,d:false}))});closeSheet();liveSave();render();setTimeout(()=>scrollTo(0,document.body.scrollHeight),50);break}
   case'lmin':liveSave(true);S.route=null;S.tab='cal';render();break;
   case'lfin':finishLive();break;
@@ -723,6 +800,318 @@ document.addEventListener('click',async ev=>{
 });
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&sheetRender)closeSheet()});
 setInterval(()=>{const el=$('#elapsed');if(el&&LIVE&&LIVE.doc.date===ymd(new Date()))el.textContent=dur(Date.now()-LIVE.doc.startedAt)},15000);
+
+
+/* ---------- exercise picker ---------- */
+const SSTK=[];
+function pushSheet(fn,ed){SSTK.push({r:sheetRender,ed:ED});ED=ed;sheetRender=fn;drawSheet();document.body.style.overflow='hidden';const sh=sheetEl.querySelector('.sheet');if(sh)sh.scrollTop=0}
+function popSheet(){const p=SSTK.pop();if(!p||!p.r){closeSheet();return}sheetRender=p.r;ED=p.ed;drawSheet()}
+const XG=[['','Tümü'],['chest','Göğüs'],['back','Sırt'],['sh','Omuz'],['biceps','Biceps'],['triceps','Triceps'],['quads','Ön bacak'],['hamstrings','Arka bacak'],['glutes','Kalça'],['legin','İç/dış bacak'],['calves','Baldır'],['abs','Karın'],['forearms','Ön kol'],['traps','Trapez']];
+const XGM={back:['lats','upper_back','lower_back'],sh:['front_delts','side_delts','rear_delts'],legin:['adductors','abductors'],abs:['abs','obliques']};
+const thumb=(x,s=46)=>x?.img?`<img class="xth" src="${EXIMG}${x.img}" alt="" loading="lazy" width="${s}" height="${s}" style="width:${s}px;height:${s}px">`:`<span class="xth ph" style="width:${s}px;height:${s}px">${ic('dumb',Math.round(s*.46))}</span>`;
+function myExNames(){const s=new Map();for(const p of U(S.me).programs)for(const w of p.workouts)for(const e of w.exercises){const n=(e.name||'').trim();if(n&&!s.has(hk(e)))s.set(hk(e),{name:n,xid:exId(e)})}return[...s.values()]}
+function openExPicker(o){
+  loadEx();
+  pushSheet(()=>exPickRender(),{kind:'xpk',multi:!!o.multi,title:o.title||'Hareket seç',onDone:o.onDone,q:'',g:'',sel:[],cust:null});
+  setTimeout(()=>$('#xq')?.focus(),120);
+}
+function xMatches(){const E=ED,q=nz(E.q),t=q?q.split(' '):[];const gm=E.g?(XGM[E.g]||[E.g]):null;
+  if(!LIB.ex)return null;
+  let arr=LIB.ex.filter(x=>(!gm||x.m.some(m=>gm.includes(m)))&&t.every(w=>x._h.includes(w)));
+  if(q)arr=arr.map(x=>{const n=nz(x.n),al=x._al||[];return[(n===q||al.includes(q)?0:n.startsWith(q)||al.some(a=>a.startsWith(q))?1:(' '+n).includes(' '+t[0])?2:3)+(x.i.startsWith('c_')||al.length?-.5:0),n.length,x]}).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(z=>z[2]);
+  return arr.slice(0,80)}
+function xRow(x,isSel){const sub=x.m.map(k=>MUS[k]).join(', ')+' · '+x.e;return`<button class="li press xrow${isSel?' on':''}" data-a="xpick" data-i="${esc(x.i)}">${thumb(x)}<span class="sp" style="text-align:left;min-width:0"><h3 style="font-size:15px">${esc(x.n)}</h3><span class="sub" style="font-size:12.5px">${esc(sub)}</span></span>${ED.multi?`<span class="xck">${isSel?ic('check',16):''}</span>`:ic('chev',18)}</button>`}
+function xListHTML(){const E=ED;const arr=xMatches();if(!arr)return'<p class="sub" style="padding:16px 0;text-align:center">Hareketler yükleniyor…</p>';
+  const isSel=id=>E.sel.some(s=>s.xid===id);let h='';
+  const q=(E.q||'').trim();
+  if(q&&!E.cust)h+=`<button class="li press xrow" data-a="xcust">${`<span class="xth ph" style="width:46px;height:46px">${ic('plus',20)}</span>`}<span class="sp" style="text-align:left"><h3 style="font-size:15px">“${esc(q)}” adlı özel hareket</h3><span class="sub" style="font-size:12.5px">Listede yoksa kendi hareketini ekle</span></span></button>`;
+  if(!q&&!E.g){const mine=myExNames();if(mine.length)h+=`<div class="xsec">Programlarındakiler</div>`+mine.slice(0,30).map(m=>{const x=m.xid&&LIB.exById[m.xid];return x?xRow(x,isSel(x.i)):`<button class="li press xrow${E.sel.some(s=>!s.xid&&s.name===m.name)?' on':''}" data-a="xpickn" data-n="${esc(m.name)}">${thumb(null)}<span class="sp" style="text-align:left"><h3 style="font-size:15px">${esc(m.name)}</h3><span class="sub" style="font-size:12.5px">Özel hareket</span></span>${E.multi?`<span class="xck">${E.sel.some(s=>!s.xid&&s.name===m.name)?ic('check',16):''}</span>`:ic('chev',18)}</button>`}).join('');h+=`<div class="xsec">Tüm hareketler</div>`}
+  h+=arr.map(x=>xRow(x,isSel(x.i))).join('')||'<p class="sub" style="padding:16px 0;text-align:center">Eşleşen hareket yok. Yukarıdan özel hareket olarak ekleyebilirsin.</p>';
+  if(arr.length===80)h+='<p class="sub" style="text-align:center;padding:10px 0">Daha fazlası için aramayı daralt.</p>';
+  return h}
+function exPickRender(){const E=ED;
+  if(E.cust)return`<div class="row" style="margin-bottom:8px"><button class="ibtn bg" data-a="xcustx" aria-label="Geri">${ic('back')}</button><div class="sp"><h2>Özel hareket</h2><div class="sub">Isı haritası için çalışan kası seç</div></div></div>
+  <label class="l" for="xcn">Hareket adı</label><input class="f" id="xcn" data-ed="cust.name" value="${esc(E.cust.name)}">
+  <label class="l">Ana çalışan kas</label><div class="row wrap" style="gap:8px">${Object.entries(MUS).map(([k,n])=>`<button class="chip ${E.cust.m.includes(k)?'on':''}" data-a="xcm" data-k="${k}">${n}</button>`).join('')}</div>
+  <button class="btn pri block" style="margin-top:18px;min-height:52px" data-a="xcustok">Ekle</button>`;
+  return`<div class="row" style="margin-bottom:10px">${SSTK.length&&SSTK.at(-1).r?`<button class="ibtn bg" data-a="spop" aria-label="Geri">${ic('back')}</button>`:''}<div class="sp"><h2>${esc(E.title)}</h2><div class="sub">${E.multi?'Birden fazla seçebilirsin':'Bir hareket seç'}</div></div>${SSTK.length&&SSTK.at(-1).r?'':`<button class="ibtn bg" data-a="sclose" aria-label="Kapat">${ic('x',20)}</button>`}</div>
+  <input class="f" id="xq" type="search" placeholder="Ara: bench, göğüs, kablo…" value="${esc(E.q)}" autocomplete="off" aria-label="Hareket ara">
+  <div class="chips" style="margin:10px 0 4px">${XG.map(([k,n])=>`<button class="chip ${E.g===k?'on':''}" data-a="xg" data-k="${k}">${n}</button>`).join('')}</div>
+  <div class="list" id="xlist">${xListHTML()}</div>
+  ${E.multi?`<div class="xbar"><button class="btn pri block" style="min-height:52px" data-a="xdone" ${E.sel.length?'':'disabled'}>${E.sel.length?`${E.sel.length} hareket ekle`:'Hareket seç'}</button></div>`:''}`}
+function xToggle(item){const E=ED;if(!E.multi){const fn=E.onDone;popSheet();fn([item]);return}
+  const i=E.sel.findIndex(s=>item.xid?s.xid===item.xid:(!s.xid&&s.name===item.name));if(i>=0)E.sel.splice(i,1);else E.sel.push(item);
+  const l=$('#xlist');if(l){const st=sheetEl.querySelector('.sheet').scrollTop;l.innerHTML=xListHTML();sheetEl.querySelector('.sheet').scrollTop=st}
+  const b=sheetEl.querySelector('[data-a="xdone"]');if(b){b.disabled=!E.sel.length;b.textContent=E.sel.length?`${E.sel.length} hareket ekle`:'Hareket seç'}}
+document.addEventListener('input',ev=>{if(ev.target.id==='xq'&&ED?.kind==='xpk'){ED.q=ev.target.value;const l=$('#xlist');if(l)l.innerHTML=xListHTML()}});
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,ds=el.dataset;
+  if(a==='spop'){popSheet();return}
+  if(ED?.kind!=='xpk')return;
+  switch(a){
+  case'xg':ED.g=ds.k;drawSheet();break;
+  case'xpick':{const x=LIB.exById[ds.i];if(x)xToggle({xid:x.i,name:x.n});break}
+  case'xpickn':xToggle({xid:null,name:ds.n});break;
+  case'xcust':ED.cust={name:(ED.q||'').trim(),m:[]};drawSheet();break;
+  case'xcustx':ED.cust=null;drawSheet();break;
+  case'xcm':{const m=ED.cust.m,i=m.indexOf(ds.k);if(i>=0)m.splice(i,1);else if(m.length<2)m.push(ds.k);else{m.shift();m.push(ds.k)}drawSheet();break}
+  case'xcustok':{const c=ED.cust,n=(c.name||'').trim();if(!n){toast('Hareket adını gir.');break}const it={xid:null,name:n.slice(0,80),m:c.m.slice()};if(c.m.length){const g={p:c.m.slice(),s:[]};AIMEM[key(n)]=g;rebuildMap()}ED.cust=null;ED.q='';if(!ED.multi){const fn=ED.onDone;popSheet();fn([it]);break}ED.sel.push(it);drawSheet();break}
+  case'xdone':{const fn=ED.onDone,sel=ED.sel.slice();popSheet();fn(sel);break}
+  }});
+/* custom muscle choices → program.map so the heat map remembers them */
+async function rememberCustom(pid,items){const got={};for(const it of items)if(!it.xid&&it.m?.length)got[key(it.name)]={p:it.m,s:[]};if(!pid||!Object.keys(got).length)return;const cur=progOf(S.me,pid);if(cur)await saveDoc(P(S.me,'programs',pid),{...strip(cur),map:{...(cur.map||{}),...got}})}
+
+/* ---------- food database ---------- */
+function loadFoods(){return LIB.fdP||(LIB.fdP=fetch('foods.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{LIB.fd=d;soft();if(ED?.kind==='fpk'){const l=$('#flist');if(l)l.innerHTML=fListHTML()}return d}).catch(()=>{LIB.fdP=null;return null}))}
+const NPRIV=new Set(['nlog','nmeta']);
+const todayS=()=>ymd(new Date());
+const addDays=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ymd(d)};
+const meta=()=>U(S.me).nmeta||{fav:{},rec:[],saved:[]};
+const saveMeta=m=>saveDoc(P(S.me,'nmeta','me'),{fav:m.fav||{},rec:(m.rec||[]).slice(0,30),saved:(m.saved||[]).slice(0,40)});
+const snapF=f=>{const o={id:f.id,n:f.n,k:+f.k||0,p:+f.p||0,c:+f.c||0,f:+f.f||0};if(f.fb)o.fb=f.fb;if(f.u?.length)o.u=f.u;if(f.s)o.s=f.s;return o};
+function pushRecent(f){if(!f?.id)return;const m=clone(meta());m.rec=[snapF(f),...(m.rec||[]).filter(x=>x.id!==f.id)].slice(0,30);saveMeta(m)}
+const srcTag=f=>{const i=String(f.id||'');return f.own?(f.own===S.me?'Benim':esc(nameOf(f.own))):i.startsWith('off:')?'Paket':i.startsWith('fdc:')?'USDA':i.startsWith('r')?'Tarif':i.startsWith('u')?'USDA':''};
+function allFoods(){const out=[];for(const id of userIds())for(const f of U(id).foods||[])out.push({...f,own:id});return out.concat(LIB.fd||[])}
+function searchFoods(q){const t=nz(q).split(' ').filter(Boolean);if(!t.length)return[];const res=[];
+  for(const f of allFoods()){const hay=nz(f.n+' '+(f.a||'')+' '+(f.cat||''));if(!t.every(x=>hay.includes(x)))continue;const n=nz(f.n);res.push([(n.startsWith(t[0])?0:(' '+n).includes(' '+t[0])?1:2)+(f.own===S.me?-.6:f.own?.4:0),n.length,f])}
+  return res.sort((a,b)=>a[0]-b[0]||a[1]-b[1]).slice(0,40).map(x=>x[2])}
+const itemOf=(f,g,u)=>{g=+g||0;const it={id:uidGen(),name:f.n,g:r1(g),kcal:Math.round(f.k*g/100),p:r1(f.p*g/100),c:r1(f.c*g/100),f:r1(f.f*g/100),fid:f.id,b:{k:+f.k||0,p:+f.p||0,c:+f.c||0,f:+f.f||0}};if(u)it.u=u;if(f.u?.length)it.fu=f.u;return it};
+const reItem=(it,g,u)=>{if(!it.b)return it;const n={...it,g:r1(g),kcal:Math.round(it.b.k*g/100),p:r1(it.b.p*g/100),c:r1(it.b.c*g/100),f:r1(it.b.f*g/100)};if(u)n.u=u;else delete n.u;return n};
+const itemSub=it=>`${it.u?esc(it.u)+' · ':''}${it.g?fmt(it.g)+' g · ':''}P ${fmt(it.p)} · K ${fmt(it.c)} · Y ${fmt(it.f)}`;
+async function fetchJ(url,ms=12000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('http '+r.status);return await r.json()}finally{clearTimeout(t)}}
+function offFood(x){const n=x.nutriments||{};let k=n['energy-kcal_100g'];if(k==null&&n.energy_100g!=null)k=n.energy_100g/4.184;if(k==null||!(+k>=0))return null;const name=String(x.product_name_tr||x.product_name||'').trim();if(!name)return null;const sq=+x.serving_quantity;const br=String(x.brands||'').split(',')[0].trim();
+  return{id:'off:'+x.code,n:name+(br?` (${br})`:''),k:Math.round(+k),p:r1(n.proteins_100g),c:r1(n.carbohydrates_100g),f:r1(n.fat_100g),fb:r1(n.fiber_100g),u:sq>0?[[String(x.serving_size||'1 porsiyon').slice(0,30),sq]]:[],s:'Open Food Facts · barkod '+x.code+'. Değerler ürün ambalajından kullanıcılar tarafından girilmiştir.'}}
+async function offSearch(q){const fl='code,product_name,product_name_tr,brands,nutriments,serving_quantity,serving_size';const u=h=>`https://${h}.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=30&fields=${fl}`;
+  let p=[];try{p=(await fetchJ(u('tr'))).products||[]}catch{}
+  if(p.length<6){try{p=p.concat((await fetchJ(u('world'))).products||[])}catch(e){if(!p.length)throw e}}
+  const seen=new Set();return p.map(offFood).filter(f=>f&&!seen.has(f.id)&&seen.add(f.id))}
+async function usdaSearch(q){if(!sb?.functions)throw new Error('offline');const{data,error}=await sb.functions.invoke('usda-search',{body:{q}});if(error)throw error;if(data?.error==='not_configured')return'nc';if(data?.error)throw new Error(data.error);return data.foods||[]}
+
+/* ---------- food picker ---------- */
+function openFoodPicker(ctx){loadFoods();pushSheet(()=>fpkRender(),{kind:'fpk',ctx,view:'list',q:'',list:[],sel:null,unit:-1,qty:100,ext:{},man:{name:'',g:null,kcal:null,p:null,c:null,f:null,save:false}});setTimeout(()=>$('#fq')?.focus(),120)}
+const fRow=(f,i,src='list')=>`<button class="li press" data-a="fsel" data-src="${src}" data-i="${i}" style="text-align:left"><span class="sp" style="min-width:0"><h3 style="font-size:15px">${esc(f.n)}</h3><span class="sub" style="font-size:12.5px">100 g · <b style="color:var(--ink)">${fmtK(f.k)} kcal</b> · P ${fmt(f.p)} · K ${fmt(f.c)} · Y ${fmt(f.f)}</span></span>${srcTag(f)?`<span class="ftag">${srcTag(f)}</span>`:''}</button>`;
+function fListHTML(){const E=ED,q=(E.q||'').trim();const m=meta();let h='';
+  if(!q){const favs=Object.values(m.fav||{}),rec=(m.rec||[]).filter(r=>!m.fav?.[r.id]).slice(0,12),mine=(U(S.me).foods||[]);E.list=[...favs,...rec,...mine.map(f=>({...f,own:S.me}))];let i=0;
+    if(E.ctx.saved&&(m.saved||[]).length)h+=`<div class="xsec">Kayıtlı öğünler</div>`+m.saved.map((s,j)=>{const t=nsum(s.items);return`<button class="li press" data-a="fsaved" data-i="${j}" style="text-align:left"><span class="sp"><h3 style="font-size:15px">${esc(s.name)}</h3><span class="sub" style="font-size:12.5px">${s.items.length} besin · ${fmtK(t.kcal)} kcal</span></span>${ic('plus',18)}</button>`}).join('');
+    if(favs.length)h+=`<div class="xsec">${ic('star',13,1)} Favoriler</div>`+favs.map(f=>fRow(f,i++)).join('');
+    if(rec.length)h+=`<div class="xsec">Son kullanılanlar</div>`+rec.map(f=>fRow(f,i++)).join('');
+    if(mine.length)h+=`<div class="xsec">Besinlerim ve tariflerim</div>`+mine.map(f=>fRow({...f,own:S.me},i++)).join('');
+    if(!h)h=`<p class="sub" style="padding:14px 2px">Yukarıya besin adını yaz: yumurta, tavuk, pilav, simit… Temel besin değerleri USDA ve TürKomp tarzı Türk mutfağı tariflerinden gelir.</p>`;
+    return h}
+  if(!LIB.fd)return'<p class="sub" style="padding:16px 0;text-align:center">Besinler yükleniyor…</p>';
+  E.list=searchFoods(q);h+=E.list.map((f,i)=>fRow(f,i)).join('')||`<p class="sub" style="padding:12px 2px">“${esc(q)}” için hazır listede sonuç yok. Paketli ürünlerde ara ya da elle gir.</p>`;
+  const ex=E.ext;
+  const extBlock=(k,lab,note)=>{const v=ex[k];if(!v)return`<button class="btn block sm" style="margin-top:8px" data-a="fext" data-k="${k}">${ic('spark',15)} ${lab}</button>`;if(v==='loading')return`<p class="sub" style="padding:10px 2px">${lab.replace(' ara','')}: aranıyor…</p>`;if(v==='nc')return`<p class="sub" style="padding:10px 2px;font-size:13px">USDA araması henüz etkin değil (API anahtarı eklenecek).</p>`;if(v.err)return`<p class="sub" style="padding:10px 2px;font-size:13px">${lab.replace(' ara','')}: şu an ulaşılamadı. <button class="btn ghost sm" data-a="fext" data-k="${k}">Tekrar dene</button></p>`;
+    return`<div class="xsec">${note}</div>`+(v.length?v.map((f,i)=>fRow(f,i,k)).join(''):'<p class="sub" style="padding:8px 2px">Sonuç yok.</p>')};
+  h+=extBlock('off','Paketli ürünlerde ara','Paketli ürünler · Open Food Facts');
+  h+=extBlock('usda','USDA veritabanında ara (İngilizce)','USDA FoodData Central');
+  return h}
+function fpkRender(){const E=ED,root=E.view==='list'||!!E.edit||!!E.editRaw,hasPrev=!!SSTK.at(-1)?.r;
+  const back=root?(hasPrev?`<button class="ibtn bg" data-a="spop" aria-label="Geri">${ic('back')}</button>`:`<button class="ibtn bg" data-a="sclose" aria-label="Kapat">${ic('x',20)}</button>`):`<button class="ibtn bg" data-a="fview" data-v="list" aria-label="Geri">${ic('back')}</button>`;
+  if(E.view==='amount'){const f=E.sel,fav=!!meta().fav?.[f.id];const g=fGrams();
+    return`<div class="row" style="margin-bottom:8px">${back}<div class="sp" style="min-width:0"><h2 style="font-size:20px">${esc(f.n)}</h2><div class="sub">100 g: ${fmtK(f.k)} kcal · P ${fmt(f.p)} · K ${fmt(f.c)} · Y ${fmt(f.f)}</div></div>${String(f.id).startsWith('man')?'':`<button class="ibtn" data-a="ffav" aria-label="Favori" style="color:${fav?'var(--acc)':'var(--mute)'}">${ic('star',24,fav)}</button>`}</div>
+    <label class="l">Birim</label><div class="chips">${[['Gram',1],...(f.u||[])].map(([l,gg],i)=>`<button class="chip ${E.unit===i-1?'on':''}" data-a="funit" data-i="${i-1}">${esc(l)}${i?` <span style="opacity:.6;font-weight:500">${fmt(gg)} g</span>`:''}</button>`).join('')}</div>
+    <label class="l" for="fqty">${E.unit<0?'Miktar (gram)':'Adet / porsiyon sayısı'}</label>
+    <div class="row"><button class="ibtn bg" data-a="fstep" data-v="-1" aria-label="Azalt">${ic('down',20)}</button><input class="f num" id="fqty" inputmode="decimal" data-ed="qty" data-num="1" value="${E.qty??''}" style="text-align:center;font-size:20px;font-weight:700"><button class="ibtn bg" data-a="fstep" data-v="1" aria-label="Artır">${ic('up',20)}</button></div>
+    <div id="famt">${fAmtHTML()}</div>
+    ${f.s?`<p class="sub" style="font-size:12px;margin:10px 2px 0">Kaynak: ${esc(f.s)}</p>`:''}
+    <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="fadd" ${g>0?'':'disabled'}>${E.edit?'Kaydet':'Ekle'}</button>${E.edit?`<button class="btn danger block" style="margin-top:8px" data-a="fdel">${ic('trash',18)} Sil</button>`:''}`}
+  if(E.view==='manual'||E.view==='quick'){const m=E.man,qk=E.view==='quick';const fld=(k,l,w)=>`<div><label class="l" for="fm_${k}">${l}</label><input class="f" id="fm_${k}" inputmode="decimal" data-ed="man.${k}" data-num="1" value="${m[k]??''}"></div>`;
+    return`<div class="row" style="margin-bottom:8px">${back}<div class="sp"><h2>${qk?'Hızlı kalori':'Elle gir'}</h2><div class="sub">${qk?'Ne yediğini tam bilmiyorsan sadece kaloriyi gir':'Etiketten ya da tahminen değerleri gir'}</div></div></div>
+    <label class="l" for="fm_name">${qk?'Açıklama (isteğe bağlı)':'Besin adı'}</label><input class="f" id="fm_name" data-ed="man.name" value="${esc(m.name)}" placeholder="${qk?'Örn. Dışarıda akşam yemeği':'Örn. Ev yapımı kek'}">
+    <div class="mg">${qk?'':fld('g','Miktar (g)')}${fld('kcal','Kalori (kcal)')}${fld('p','Protein (g)')}${fld('c','Karbonhidrat (g)')}${fld('f','Yağ (g)')}</div>
+    ${qk?'':`<label class="row" style="gap:10px;margin:14px 2px 0;font-size:14px"><input type="checkbox" id="fm_save" ${m.save?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"> Besinlerime kaydet (miktar girersen 100 g değerleri hesaplanır)</label>`}
+    <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="fmanok">${E.editRaw?'Kaydet':'Ekle'}</button>${E.editRaw?`<button class="btn danger block" style="margin-top:8px" data-a="fdel">${ic('trash',18)} Sil</button>`:''}`}
+  return`<div class="row" style="margin-bottom:10px">${back}<div class="sp"><h2>${esc(E.ctx.title||'Besin ekle')}</h2>${E.ctx.sub?`<div class="sub">${esc(E.ctx.sub)}</div>`:''}</div></div>
+  <input class="f" id="fq" type="search" placeholder="Besin ara: yumurta, pilav, simit…" value="${esc(E.q)}" autocomplete="off" aria-label="Besin ara">
+  <div class="row" style="gap:8px;margin:10px 0 2px"><button class="btn sm" style="flex:1" data-a="fview" data-v="manual">${ic('edit',15)} Elle gir</button><button class="btn sm" style="flex:1" data-a="fview" data-v="quick">${ic('flame',15)} Hızlı kalori</button>${E.ctx.noRecipe?'':`<button class="btn sm" style="flex:1" data-a="frecipe">${ic('plus',15)} Tarif</button>`}</div>
+  <div class="list" id="flist">${fListHTML()}</div>`}
+function fGrams(){const E=ED;const q=+E.qty||0;return E.unit<0?q:q*(+E.sel.u?.[E.unit]?.[1]||0)}
+function fAmtHTML(){const f=ED.sel,g=fGrams(),k=f.k*g/100;return`<div class="famt"><div><b class="num">${fmtK(k)}</b><span>kcal</span></div><div><b class="num">${fmt(f.p*g/100)}</b><span>Protein</span></div><div><b class="num">${fmt(f.c*g/100)}</b><span>Karb.</span></div><div><b class="num">${fmt(f.f*g/100)}</b><span>Yağ</span></div></div><p class="sub" style="text-align:center;margin:6px 0 0">${fmt(g)} g</p>`}
+function fSelect(f){const E=ED;E.sel=f;E.view='amount';if(f.u?.length){E.unit=0;E.qty=1}else{E.unit=-1;E.qty=100}drawSheet()}
+function fFinish(items){const fn=ED.ctx.onPick;popSheet();fn(items)}
+document.addEventListener('input',ev=>{const t=ev.target;if(ED?.kind!=='fpk')return;
+  if(t.id==='fq'){ED.q=t.value;ED.ext={};const l=$('#flist');if(l)l.innerHTML=fListHTML()}
+  if(t.id==='fqty')setTimeout(()=>{const a=$('#famt');if(a)a.innerHTML=fAmtHTML();const b=sheetEl.querySelector('[data-a="fadd"]');if(b)b.disabled=!(fGrams()>0)},0)});
+document.addEventListener('change',ev=>{if(ev.target.id==='fm_save'&&ED?.kind==='fpk')ED.man.save=ev.target.checked});
+document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el||ED?.kind!=='fpk')return;const a=el.dataset.a,ds=el.dataset,E=ED;
+  switch(a){
+  case'fview':E.view=ds.v;drawSheet();if(ds.v==='list')setTimeout(()=>$('#fq')?.focus(),60);break;
+  case'fsel':{const src=ds.src==='list'?E.list:E.ext[ds.src];const f=src?.[+ds.i];if(f)fSelect(f);break}
+  case'fsaved':{const s=meta().saved[+ds.i];if(s)fFinish(s.items.map(it=>({...clone(it),id:uidGen()})));break}
+  case'funit':{const i=+ds.i;if(i===E.unit)break;const g=fGrams();E.unit=i;E.qty=i<0?Math.round(g)||100:(g>0?r1(g/E.sel.u[i][1])||1:1);drawSheet();break}
+  case'fstep':{const st=E.unit<0?10:.5;E.qty=Math.max(0,r1((+E.qty||0)+st*(+ds.v)));const q=$('#fqty');if(q)q.value=E.qty;const am=$('#famt');if(am)am.innerHTML=fAmtHTML();const b=sheetEl.querySelector('[data-a="fadd"]');if(b)b.disabled=!(fGrams()>0);break}
+  case'ffav':{const m=clone(meta());m.fav=m.fav||{};if(m.fav[E.sel.id])delete m.fav[E.sel.id];else m.fav[E.sel.id]=snapF(E.sel);await saveMeta(m);drawSheet();break}
+  case'fadd':{const g=fGrams();if(!(g>0))break;const u=E.unit>=0?`${fmt(E.qty)} × ${E.sel.u[E.unit][0]}`:null;
+    if(E.edit){const fn=E.ctx.onPick;const it=reItem(E.edit,g,u);popSheet();fn([it]);break}
+    const it=itemOf(E.sel,g,u);if(!String(E.sel.id).startsWith('man'))pushRecent(E.sel);fFinish([it]);break}
+  case'fdel':{const fn=E.ctx.onPick;popSheet();fn([]);break}
+  case'fext':{const k=ds.k,q=(E.q||'').trim();if(q.length<2)break;E.ext[k]='loading';const l=$('#flist');if(l)l.innerHTML=fListHTML();
+    try{E.ext[k]=k==='off'?await offSearch(q):await usdaSearch(q)}catch{E.ext[k]={err:1}}
+    if(ED===E&&E.view==='list'){const l2=$('#flist');if(l2)l2.innerHTML=fListHTML()}break}
+  case'fmanok':{const m=E.man,qk=E.view==='quick';if(!(m.kcal>=0)||m.kcal==null){toast('Kaloriyi gir.');break}const name=(m.name||'').trim()||(qk?'Hızlı kalori':'');if(!name){toast('Besin adını gir.');break}
+    const it={id:uidGen(),name:name.slice(0,60),g:qk?null:(m.g>0?r1(m.g):null),kcal:Math.round(m.kcal),p:r1(m.p),c:r1(m.c),f:r1(m.f)};
+    if(!qk&&m.g>0){const s=100/m.g;it.b={k:r1(m.kcal*s),p:r1((m.p||0)*s),c:r1((m.c||0)*s),f:r1((m.f||0)*s)};
+      if(m.save){const id='my'+uidGen();await saveDoc(P(S.me,'foods',id),{n:it.name,k:Math.round(it.b.k),p:it.b.p,c:it.b.c,f:it.b.f,u:[],cat:'Benim',s:'Elle girildi'});it.fid=id}}
+    else if(!qk&&m.save)toast('Besinlerine kaydetmek için miktarı (g) da gir.');
+    fFinish([it]);break}
+  case'frecipe':openRecipe(null);break;
+  }});
+
+/* ---------- recipes ---------- */
+function openRecipe(fid){const f=fid?(U(S.me).foods||[]).find(x=>x.id===fid):null;
+  pushSheet(()=>recRender(),{kind:'rec',fid,name:f?.n||'',ings:clone(f?.ing||[]),cooked:f?.cooked??null,por:f?.por??null})}
+function recTot(){return nsum(ED.ings)}
+function recRender(){const E=ED,t=recTot(),raw=E.ings.reduce((a,i)=>a+(+i.g||0),0),w=+E.cooked||raw,per=w?100/w:0;
+  return`<div class="row" style="margin-bottom:8px"><button class="ibtn bg" data-a="spop" aria-label="Geri">${ic('back')}</button><div class="sp"><h2>${E.fid?'Tarifi düzenle':'Tarif oluştur'}</h2><div class="sub">Malzemeleri çiğ gramajlarıyla ekle</div></div></div>
+  <label class="l" for="rn">Tarif adı</label><input class="f" id="rn" data-ed="name" value="${esc(E.name)}" placeholder="Örn. Annemin mercimek çorbası">
+  <label class="l">Malzemeler</label><div class="card list" style="padding:0 14px;margin:0">${E.ings.map((it,i)=>`<div class="li"><span class="sp"><h3 style="font-size:15px">${esc(it.name)}</h3><span class="sub" style="font-size:12.5px">${fmt(it.g)} g · ${fmtK(it.kcal)} kcal</span></span><button class="ibtn" data-a="rrm" data-i="${i}" aria-label="Kaldır" style="color:var(--mute)">${ic('x',18)}</button></div>`).join('')||'<p class="sub" style="padding:12px 0">Henüz malzeme yok.</p>'}</div>
+  <button class="btn block sm" style="margin-top:8px" data-a="radd">${ic('plus',16)} Malzeme ekle</button>
+  <div class="mg"><div><label class="l" for="rc">Pişmiş toplam (g)</label><input class="f" id="rc" inputmode="decimal" data-ed="cooked" data-num="1" value="${E.cooked??''}" placeholder="${raw?fmtK(raw):'İsteğe bağlı'}"></div><div><label class="l" for="rp">Kaç porsiyon?</label><input class="f" id="rp" inputmode="numeric" data-ed="por" data-num="1" value="${E.por??''}" placeholder="İsteğe bağlı"></div></div>
+  <p class="sub" style="margin:8px 2px 0;font-size:12.5px">Tencereyi tartıp pişmiş ağırlığı girersen gram başına değerler doğru çıkar. Boş bırakırsan çiğ toplam (${fmtK(raw)} g) kullanılır.</p>
+  ${E.ings.length?`<div class="famt" style="margin-top:12px"><div><b class="num">${fmtK(t.kcal*per)}</b><span>kcal/100 g</span></div><div><b class="num">${fmt(t.p*per)}</b><span>Protein</span></div><div><b class="num">${fmt(t.c*per)}</b><span>Karb.</span></div><div><b class="num">${fmt(t.f*per)}</b><span>Yağ</span></div></div>`:''}
+  <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="rsave">Tarifi kaydet</button>${E.fid?`<button class="btn danger block" style="margin-top:8px" data-a="rdel">${ic('trash',18)} Tarifi sil</button>`:''}`}
+document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el||ED?.kind!=='rec')return;const a=el.dataset.a,E=ED;
+  switch(a){
+  case'radd':openFoodPicker({title:'Malzeme ekle',noRecipe:true,onPick:items=>{E.ings.push(...items);drawSheet()}});break;
+  case'rrm':E.ings.splice(+el.dataset.i,1);drawSheet();break;
+  case'rsave':{const n=(E.name||'').trim();if(!n){toast('Tarife bir ad ver.');break}if(!E.ings.length){toast('En az bir malzeme ekle.');break}
+    const t=recTot(),raw=E.ings.reduce((x,i)=>x+(+i.g||0),0),w=+E.cooked||raw;if(!(w>0)){toast('Malzeme gramajlarını kontrol et.');break}const s=100/w;
+    const doc={n:n.slice(0,60),k:Math.round(t.kcal*s),p:r1(t.p*s),c:r1(t.c*s),f:r1(t.f*s),u:E.por>0?[['1 porsiyon',r1(w/E.por)]]:[],cat:'Tarif',ing:E.ings.map(i=>({name:i.name,g:i.g,kcal:i.kcal,p:i.p,c:i.c,f:i.f,fid:i.fid||null})),cooked:E.cooked||null,por:E.por||null,s:'Kendi tarifin: '+E.ings.map(i=>`${fmt(i.g)} g ${i.name}`).join(', ')+` → ${fmtK(w)} g`};
+    const id=E.fid||'my'+uidGen();if(await saveDoc(P(S.me,'foods',id),doc)){toast('Tarif kaydedildi');popSheet();if(ED?.kind==='fpk'){fSelect({...doc,id,own:S.me})}}break}
+  case'rdel':{const id=E.fid;if(await delDoc(P(S.me,'foods',id))){toast('Tarif silindi');popSheet()}break}
+  }});
+
+/* ---------- daily log ---------- */
+const DEFMEALS=[['k','Kahvaltı'],['o','Öğle'],['a','Akşam']];
+function dayMeals(pl){const ms=pl?.meals?.length?pl.meals.map(m=>({id:m.id,name:m.name,plan:m.items})):DEFMEALS.map(([id,name])=>({id,name,plan:[]}));ms.push({id:'snack',name:'Ara öğün / plan dışı',plan:[],snack:true});return ms}
+function dayCalc(pl,log,date){log=log||{};const free=!!log.free||!pl?.meals?.length;const ms=dayMeals(pl);const xs=log.x||[];
+  const meals=ms.map(m=>{const st=free||m.snack?null:(log.m?.[m.id]?.st||null);const extra=xs.filter(x=>x.mid===m.id||(m.snack&&!ms.some(z=>z.id===x.mid)));const planS=nsum(m.plan);
+    const base=free||m.snack?[]:st==='ok'?m.plan:st==='swap'?(log.m[m.id].items||[]):[];const eat=nsum(base.concat(extra));
+    return{...m,st,extra,base,planS,eat,done:free||m.snack?true:!!st}});
+  const eat=nsum(meals.flatMap(m=>m.base.concat(m.extra)));const planTot=nsum(ms.flatMap(m=>m.plan));const ref=planTot.kcal||pl?.target?.kcal||0;
+  const pending=!free&&meals.some(m=>!m.snack&&m.plan.length&&!m.st);
+  const dev=free?eat.kcal-ref:meals.reduce((a,m)=>a+(m.snack||!m.st?m.eat.kcal:m.eat.kcal-m.planS.kcal),0);
+  const logged=free?xs.length>0:meals.some(m=>m.st||m.extra.length);
+  const tol=Math.max(150,ref*.1);const ok=!logged||pending||!ref?null:Math.abs(eat.kcal-ref)<=tol;
+  return{free,meals,eat,planTot,ref,pending,dev,logged,ok,tol}}
+const logOf=(uid,d)=>U(uid).nlog?.[d]||null;
+let scoreT=0;
+function saveLog(date,log){const doc={...strip(log),date,upd:Date.now()};U(S.me).nlog=U(S.me).nlog||{};U(S.me).nlog[date]=doc;clearTimeout(scoreT);scoreT=setTimeout(saveScore,1500);return saveDoc(P(S.me,'nlog',date),doc)}
+const curLog=d=>clone(logOf(S.me,d)||{date:d,free:false,m:{},x:[]});
+function weekScore(uid){const pl=U(uid).nutrition,t=todayS();let n=0,ok=0;const days={};for(let i=13;i>=0;i--){const d=addDays(t,-i);const c=dayCalc(pl,logOf(uid,d),d);const v=c.ok==null?(c.logged?'part':'none'):c.ok?'ok':'off';days[d]=v;if(i<7&&c.ok!=null){n++;if(c.ok)ok++}}return{n,ok,score:n?Math.round(ok/n*100):null,days}}
+function saveScore(){const ws=weekScore(S.me);const cur=U(S.me).nscore;const doc={upd:Date.now(),score:ws.score,n:ws.n,ok:ws.ok,days:ws.days};if(cur&&cur.score===doc.score&&cur.n===doc.n&&JSON.stringify(cur.days)===JSON.stringify(doc.days))return;saveDoc(P(S.me,'nutrition','score'),doc)}
+function tdee(uid){const t=todayS(),from=addDays(t,-28),pl=U(uid).nutrition;const kc=[];for(let i=28;i>=1;i--){const d=addDays(t,-i);const c=dayCalc(pl,logOf(uid,d),d);if(c.logged&&!c.pending&&c.eat.kcal>500)kc.push(c.eat.kcal)}
+  const ws=(U(uid).measures||[]).filter(m=>m.date>=from&&m.date<t&&m.values?.weight>0).map(m=>({x:(pd(m.date)-pd(from))/864e5,y:m.values.weight}));
+  const need={days:kc.length,weights:ws.length,span:ws.length?ws.at(-1).x-ws[0].x:0};if(kc.length<14||ws.length<2||need.span<10)return{ok:false,need};
+  const mx=ws.reduce((a,p)=>a+p.x,0)/ws.length,my=ws.reduce((a,p)=>a+p.y,0)/ws.length;const sl=ws.reduce((a,p)=>a+(p.x-mx)*(p.y-my),0)/(ws.reduce((a,p)=>a+(p.x-mx)**2,0)||1);
+  const avg=kc.reduce((a,b)=>a+b,0)/kc.length;return{ok:true,avg,slope:sl*7,tdee:Math.round((avg-sl*7700)/10)*10,days:kc.length}}
+
+/* ---------- views ---------- */
+function nutrHead(uid,mine){const tabs=mine?[['day','Günlük'],['plan','Plan'],['stats','Analiz']]:[['plan','Plan'],['stats','Uyum']];if(!tabs.some(t=>t[0]===S.nt))S.nt=tabs[0][0];
+  return`<div class="top"><h1>Beslenme</h1>${mine&&S.nt==='plan'&&U(uid).nutrition?`<button class="ibtn bg" data-a="ntarget" aria-label="Planı düzenle">${ic('edit',20)}</button>`:mine&&S.nt==='day'?`<button class="ibtn bg" data-a="ndmenu" aria-label="Gün seçenekleri">${ic('dots',22)}</button>`:''}</div>${whoBar()}<div class="seg">${tabs.map(([k,n])=>`<button class="${S.nt===k?'on':''}" data-a="nt" data-k="${k}">${n}</button>`).join('')}</div>`}
+function viewNutr(){const uid=S.view,mine=isMine();const head=nutrHead(uid,mine);
+  if(S.nt==='plan')return head+viewNPlan();
+  if(S.nt==='stats')return head+viewNStats(uid,mine);
+  return head+viewNDay()}
+const stPill={ok:['Plana uydum','ok'],swap:['Değiştirildi','sw'],skip:['Atlandı','sk']};
+function viewNDay(){const d=S.nd||todayS(),pl=U(S.me).nutrition,log=logOf(S.me,d)||{},c=dayCalc(pl,log,d),t=todayS();
+  const lab=d===t?'Bugün':d===addDays(t,-1)?'Dün':d===addDays(t,1)?'Yarın':dShort(d);
+  const ref=c.ref,pct=ref?Math.min(100,c.eat.kcal/ref*100):0,left=ref-c.eat.kcal;
+  const pT=c.planTot,tgt=pl?.target||{};
+  const mref=k=>pT[k]||tgt[k]||0;
+  const devCls=Math.abs(c.dev)<=Math.max(60,ref*.03)?'up':c.dev>0?'dn':'';
+  let h=`<div class="dnav"><button class="ibtn bg" data-a="nd" data-v="-1" aria-label="Önceki gün">${ic('back',20)}</button><button class="sp dlab" data-a="nd" data-v="0"><b>${lab}</b><span class="sub">${dLong(d)}</span></button><button class="ibtn bg" data-a="nd" data-v="1" aria-label="Sonraki gün" style="transform:scaleX(-1)">${ic('back',20)}</button></div>`;
+  h+=`<div class="card"><div class="row" style="align-items:flex-end"><div class="sp"><div class="sub" style="font-weight:600">Yenen</div><div class="num" style="font:850 44px/1 var(--d);font-stretch:82%">${fmtK(c.eat.kcal)}<span style="font-size:17px;color:var(--mute)"> ${ref?'/ '+fmtK(ref):''} kcal</span></div></div>
+   <div style="text-align:right">${ref?`<div class="sub">${left>=0?'Kalan':'Aşım'}</div><b class="num" style="font-size:22px;color:${left>=0?'var(--ink)':'var(--acc)'}">${fmtK(Math.abs(left))}</b>`:''}</div></div>
+   ${ref?`<div class="kbar"><i style="width:${pct}%;background:${c.eat.kcal>ref+c.tol?'var(--acc)':'var(--good)'}"></i></div>`:''}
+   ${c.logged&&ref?`<div class="row" style="margin:10px 0 2px"><span class="sub sp">${c.free?'Plana göre (gün toplamı)':'Plandan sapma (işaretlenen öğünler)'}</span><span class="delta ${devCls}" style="font-size:13px">${c.dev>0?'+':''}${fmtK(c.dev)} kcal</span></div>`:''}
+   <div style="margin-top:10px">${MACROS.map(([k,n,col])=>{const v=c.eat[k],g=mref(k);return`<div class="mbar" style="grid-template-columns:92px minmax(0,1fr) auto"><span>${n}</span><div class="b"><i style="width:${g?Math.min(100,v/g*100):0}%;background:${col}"></i></div><span class="v" style="white-space:nowrap">${fmt(v)}${g?`<span style="color:var(--mute);font-weight:500"> / ${fmt(g)}</span>`:''} g</span></div>`}).join('')}</div></div>`;
+  if(!pl?.meals?.length)h+=`<div class="banner" style="display:flex;gap:10px;align-items:center"><span class="sp">Kayıtlı bir beslenme planın yok. Yediklerini yine de girebilirsin; plan oluşturursan her gün plandan başlarsın.</span><button class="btn sm pri" data-a="nt" data-k="plan">Plan</button></div>`;
+  else if(c.free)h+=`<div class="banner" style="display:flex;gap:10px;align-items:center"><span class="sp">Serbest gün: plan bugün devre dışı. Ne yediysen öğünlere ekle.</span><button class="btn sm" data-a="nfree">Plana dön</button></div>`;
+  else if(c.pending)h+=`<button class="btn block sm" style="margin-bottom:12px" data-a="nallok">${ic('check',16)} Kalan öğünlere “plana uydum” de</button>`;
+  h+=c.meals.map(m=>{if(m.snack&&!m.extra.length&&!c.free)return'';const pk=!c.free&&!m.snack&&m.plan.length;const d0=pk&&m.st?m.eat.kcal-m.planS.kcal:0;
+    const pill=m.st?stPill[m.st]:pk?['Bekliyor','pe']:null;
+    let body='';
+    if(pk&&!m.st){body=`<div class="list pmut">${m.plan.map(it=>`<div class="li"><span class="sp"><h3>${esc(it.name)}</h3><span class="sub">${itemSub(it)}</span></span><span class="num sub">${fmtK(it.kcal)}</span></div>`).join('')}</div>
+      <div class="mact"><button class="btn sm pri" data-a="nmst" data-m="${m.id}" data-v="ok">${ic('check',16)} Uydum</button><button class="btn sm" data-a="nmswap" data-m="${m.id}">Değiştir</button><button class="btn sm" data-a="nmst" data-m="${m.id}" data-v="skip">Atla</button></div>`}
+    else if(m.st==='ok')body=`<div class="list">${m.plan.map(it=>`<div class="li"><span class="sp"><h3>${esc(it.name)}</h3><span class="sub">${itemSub(it)}</span></span><b class="num">${fmtK(it.kcal)}</b></div>`).join('')}</div>`;
+    else if(m.st==='swap')body=`<div class="list">${m.base.map((it,j)=>`<button class="li press" data-a="nied" data-m="${m.id}" data-j="${j}" data-w="s" style="text-align:left"><span class="sp"><h3>${esc(it.name)}</h3><span class="sub">${itemSub(it)}</span></span><b class="num">${fmtK(it.kcal)}</b></button>`).join('')||'<p class="sub" style="padding:8px 0">Bu öğüne besin ekle.</p>'}</div>`;
+    else if(m.st==='skip')body=`<p class="sub" style="padding:6px 0 2px">Bu öğün atlandı.</p>`;
+    const ex=m.extra.map(it=>{const j=(log.x||[]).indexOf((log.x||[]).find(x=>x.id===it.id));return`<button class="li press" data-a="nied" data-m="${m.id}" data-j="${j}" data-w="x" style="text-align:left"><span class="sp"><h3>${esc(it.name)}${!c.free&&!m.snack&&m.st!=='swap'?' <span class="xtag">plan dışı</span>':''}</h3><span class="sub">${itemSub(it)}</span></span><b class="num">${fmtK(it.kcal)}</b></button>`}).join('');
+    return`<div class="card meal"><div class="row" style="margin-bottom:2px"><div class="sp"><h2 style="font-size:19px">${esc(m.name)}</h2><div class="sub">${fmtK(m.eat.kcal)}${pk?` / ${fmtK(m.planS.kcal)}`:''} kcal${pk&&m.st&&d0?` · <b style="color:${d0>0?'var(--acc)':'var(--good)'}">${d0>0?'+':''}${fmtK(d0)}</b>`:''}</div></div>${pill?`<span class="zp s${pill[1]}">${pill[0]}</span>`:''}<button class="ibtn" data-a="nmmenu" data-m="${m.id}" aria-label="Öğün seçenekleri">${ic('dots',20)}</button></div>
+     ${body}${ex?`<div class="list">${ex}</div>`:''}
+     ${(!pk||m.st)&&m.st!=='skip'||c.free?`<button class="btn ghost" style="margin-top:4px" data-a="nmadd" data-m="${m.id}">${ic('plus',18)} ${m.st==='swap'||c.free||!pk?'Besin ekle':'Plan dışı ekle'}</button>`:''}</div>`}).join('');
+  if(!c.free)h+=`<button class="btn block" data-a="nmadd" data-m="snack">${ic('plus',18)} Ara öğün / plan dışı ekle</button>`;
+  h+=`<p class="sub" style="margin:12px 2px 0;font-size:12px">Günlük kayıtların yalnızca sana görünür. Arkadaşların planını ve haftalık uyum skorunu görür.</p>`;
+  return h}
+function viewNPlan(){const uid=S.view,mine=isMine(),pl=U(uid).nutrition;
+  if(!pl)return`<div class="card empty">${ic('flame',36)}<p>${mine?'Henüz beslenme planın yok. Öğünlerini ve besinleri ekleyerek planını oluştur; her gün bu plandan başlarsın.':esc(nameOf(uid))+' henüz beslenme planı eklemedi.'}</p>${mine?'<button class="btn pri" data-a="nnew">Plan oluştur</button>':''}</div>`;
+  const all=pl.meals.flatMap(m=>m.items),tot=nsum(all),t=pl.target||{};
+  const ek=MACROS.map(([k,,,m])=>tot[k]*m),eks=ek.reduce((a,b)=>a+b,0)||1;
+  const pct=t.kcal?Math.min(100,tot.kcal/t.kcal*100):0,diff=t.kcal?tot.kcal-t.kcal:0;
+  return`<p class="sub" style="margin:2px 2px 14px;font-weight:600">${esc(pl.name||'Beslenme planı')}${mine?'':' · '+esc(nameOf(uid))}</p>
+  <div class="card"><div class="row" style="align-items:flex-end"><div class="sp"><div class="sub" style="font-weight:600">Plan toplamı</div><div class="num" style="font:850 46px/1 var(--d);font-stretch:82%">${fmtK(tot.kcal)}<span style="font-size:18px;color:var(--mute)"> kcal</span></div></div>${t.kcal?`<div style="text-align:right"><div class="sub">Hedef ${fmtK(t.kcal)}</div><span class="delta ${Math.abs(diff)<=50?'up':diff>0?'dn':''}">${diff>0?'+':''}${fmtK(diff)} kcal</span></div>`:''}</div>
+  ${t.kcal?`<div class="kbar"><i style="width:${pct}%;background:var(--acc)"></i></div>`:''}
+  <div style="display:flex;height:12px;border-radius:7px;overflow:hidden;margin:16px 0 8px;gap:2px">${MACROS.map(([k,,col],i)=>`<i style="display:block;flex:${ek[i]||0.0001};background:${col}"></i>`).join('')}</div>
+  <div class="row wrap" style="gap:12px;font-size:12px;color:var(--mute);font-weight:600">${MACROS.map(([k,n,col],i)=>`<span class="row" style="gap:5px"><i style="width:9px;height:9px;border-radius:3px;background:${col};display:block"></i>${n} %${Math.round(ek[i]/eks*100)}</span>`).join('')}</div>
+  <div style="margin-top:14px">${MACROS.map(([k,n,col])=>{const v=tot[k],g=t[k];return`<div class="mbar" style="grid-template-columns:96px minmax(0,1fr) auto"><span>${n}</span><div class="b"><i style="width:${g?Math.min(100,v/g*100):0}%;background:${col}"></i></div><span class="v" style="white-space:nowrap">${fmt(v)}${g?`<span style="color:var(--mute);font-weight:500"> / ${fmt(g)}</span>`:''} g</span></div>`}).join('')}</div></div>
+  ${pl.meals.map((m,mi)=>{const s=nsum(m.items);return`<div class="card"><div class="row" style="margin-bottom:4px"><div class="sp"><h2>${esc(m.name)}</h2><div class="sub">${fmtK(s.kcal)} kcal · P ${fmt(s.p)} · K ${fmt(s.c)} · Y ${fmt(s.f)} g</div></div>${mine?`<button class="ibtn" data-a="nmeal" data-i="${mi}" aria-label="Öğün seçenekleri">${ic('dots',22)}</button>`:''}</div>
+    <div class="list">${m.items.map((it,j)=>`<${mine?'button':'div'} class="li ${mine?'press':''}" ${mine?`data-a="nitem" data-i="${mi}" data-j="${j}"`:''} style="text-align:left"><div class="sp"><h3>${esc(it.name)}</h3><div class="sub">${itemSub(it)}</div></div><b class="num" style="font-size:18px;white-space:nowrap">${fmtK(it.kcal)} <span class="sub" style="font:500 12px var(--f)">kcal</span></b></${mine?'button':'div'}>`).join('')||'<p class="sub" style="padding:10px 0">Bu öğünde besin yok.</p>'}</div>
+    ${m.note?`<p class="sub" style="margin:8px 0 0;padding:10px 12px;background:var(--card2);border-radius:12px">${esc(m.note)}</p>`:''}
+    ${mine?`<button class="btn ghost" style="margin-top:6px" data-a="npadd" data-i="${mi}">${ic('plus',18)} Besin ekle</button>`:''}</div>`}).join('')}
+  ${pl.note?`<div class="card"><h3>Notlar</h3><p class="sub" style="margin:6px 0 0;white-space:pre-wrap">${esc(pl.note)}</p></div>`:''}
+  ${mine?`<button class="btn block" data-a="nmealnew">${ic('plus',18)} Öğün ekle</button>`:`<button class="btn pri block" data-a="ncopy">${ic('copy',18)} Bu planı kendime kopyala</button>`}
+  <p class="sub" style="margin:12px 2px 0;font-size:12px">Besin değerleri USDA SR28 / FoodData Central, Open Food Facts ve kendi girdiğin değerlerden gelir. Gramajlar besin adında aksi yazmadıkça çiğ ağırlıktır.</p>`}
+const DOT={ok:'var(--good)',off:'var(--acc)',part:'var(--z1)',none:'var(--card2)'};
+function scoreCard(sc,title){if(!sc||sc.score==null)return`<div class="card"><h2>${title}</h2><p class="sub" style="margin:6px 0 0">Henüz yeterli kayıt yok. Bir gün “uyum”a sayılması için tüm öğünler işaretlenmiş olmalı.</p></div>`;
+  const ds=Object.entries(sc.days||{}).sort((a,b)=>a[0]<b[0]?-1:1);
+  return`<div class="card"><div class="row" style="align-items:flex-end"><div class="sp"><h2>${title}</h2><div class="sub">Son 7 günde kaydı tam ${sc.n} günden ${sc.ok} tanesi plana yakın (±%10)</div></div><div class="num" style="font:850 42px/1 var(--d);color:${sc.score>=70?'var(--good)':sc.score>=40?'var(--z2)':'var(--acc)'}">%${sc.score}</div></div>
+  <div class="dots">${ds.map(([d,v])=>`<span title="${dShort(d)}"><i style="background:${DOT[v]}"></i><small>${DAYS[dow(pd(d))][0]}</small></span>`).join('')}</div>
+  <div class="row wrap" style="gap:12px;font-size:12px;color:var(--mute);margin-top:6px"><span class="row" style="gap:5px"><i class="dk" style="background:var(--good)"></i>Uyumlu</span><span class="row" style="gap:5px"><i class="dk" style="background:var(--acc)"></i>Saptı</span><span class="row" style="gap:5px"><i class="dk" style="background:var(--z1)"></i>Eksik kayıt</span><span class="row" style="gap:5px"><i class="dk" style="background:var(--card2)"></i>Kayıt yok</span></div></div>`}
+function viewNStats(uid,mine){if(!mine)return scoreCard(U(uid).nscore,'Haftalık uyum')+`<p class="sub" style="margin:4px 2px">${esc(nameOf(uid))} ne yediğini paylaşmıyor; yalnızca plana uyum skoru görünür.</p>`;
+  const pl=U(uid).nutrition,ws=weekScore(uid),t=todayS();const rows=[];for(let i=13;i>=0;i--){const d=addDays(t,-i);const c=dayCalc(pl,logOf(uid,d),d);rows.push({d,c})}
+  const logged=rows.filter(r=>r.c.logged&&r.d<t);const avg=k=>logged.length?logged.reduce((a,r)=>a+r.c.eat[k],0)/logged.length:0;
+  const ref=rows[0].c.ref,mx=Math.max(ref*1.3,...rows.map(r=>r.c.eat.kcal),1);
+  const td=tdee(uid);
+  return scoreCard({...ws},'Haftalık uyum')+
+  `<div class="card"><div class="row" style="margin-bottom:10px"><h2 class="sp">Son 14 gün</h2><span class="sub">kcal</span></div>
+   <div class="kbars">${ref?`<em style="bottom:calc(16px + (100% - 16px)*${(ref/mx).toFixed(3)})"><span>Plan ${fmtK(ref)}</span></em>`:''}${rows.map(r=>`<div><i style="height:${r.c.eat.kcal/mx*100}%;background:${r.c.ok===true?'var(--good)':r.c.ok===false?'var(--acc)':'var(--z1)'}"></i><small>${pd(r.d).getDate()}</small></div>`).join('')}</div></div>
+   <div class="stats"><div class="stat"><b>${fmtK(avg('kcal'))}</b><span>Ort. kcal</span></div><div class="stat"><b>${fmtK(avg('p'))}</b><span>Ort. protein (g)</span></div><div class="stat"><b>${logged.length}</b><span>Kayıtlı gün</span></div></div>
+   <div class="card" style="margin-top:12px"><h2>Tahmini bakım kalorin</h2>${td.ok?`<div class="num" style="font:850 40px/1.1 var(--d);margin:6px 0">${fmtK(td.tdee)} <span class="sub" style="font:600 15px var(--f)">kcal/gün</span></div><p class="sub" style="margin:0">Son ${td.days} günde ortalama <b style="color:var(--ink)">${fmtK(td.avg)} kcal</b> yedin, kilon haftada <b style="color:var(--ink)">${td.slope>0?'+':''}${fmt(td.slope)} kg</b> değişti. ${ref?`Planın (${fmtK(ref)} kcal) ile haftada yaklaşık <b style="color:var(--ink)">${(ref-td.tdee)*7/7700>0?'+':''}${fmt((ref-td.tdee)*7/7700)} kg</b> beklenir.`:''}</p><p class="sub" style="font-size:12px;margin:8px 0 0">Yediklerin ve tartı ölçümlerin karşılaştırılarak hesaplanır; kayıt arttıkça netleşir.</p>`
+   :`<p class="sub" style="margin:6px 0 0">Hesaplamak için son 4 haftada en az 14 tam kayıtlı gün ve en az 10 gün arayla 2 kilo ölçümü gerekiyor. Şu an: ${td.need.days} gün, ${td.need.weights} ölçüm.</p><button class="btn sm" style="margin-top:10px" data-a="goto" data-u="${S.me}" data-t="prof">${ic('ruler',16)} Kilo ölçümü ekle</button>`}</div>`}
+
+/* ---------- nutrition actions ---------- */
+function nItemEdit(it,onSave){if(it.b){loadFoods();const f={id:it.fid||'man'+it.id,n:it.name,k:it.b.k,p:it.b.p,c:it.b.c,f:it.b.f,u:it.fu||[]};pushSheet(()=>fpkRender(),{kind:'fpk',ctx:{onPick:onSave},view:'amount',sel:f,unit:-1,qty:it.g||100,edit:it,ext:{},man:{}});return}
+  pushSheet(()=>fpkRender(),{kind:'fpk',ctx:{onPick:items=>onSave(items)},view:'manual',q:'',list:[],ext:{},man:{name:it.name,g:it.g,kcal:it.kcal,p:it.p,c:it.c,f:it.f,save:false},editRaw:it})}
+function mealMenu(mid){const d=S.nd||todayS(),pl=U(S.me).nutrition,c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===mid);if(!m)return;const items=m.base.concat(m.extra);
+  openSheet(()=>`${sheetHead(esc(m.name),dLong(d))}<div class="card list" style="padding:0 14px">
+  ${items.length?`<button class="li press" data-a="nmsave" data-m="${mid}">${ic('star',20)}<span class="sp">Öğünü kaydet (sonra tek dokunuşla ekle)</span></button>`:''}
+  ${m.st?`<button class="li press" data-a="nmst" data-m="${mid}" data-v="">${ic('back',20)}<span class="sp">İşareti geri al</span></button>`:''}
+  ${m.st==='swap'?`<button class="li press" data-a="nmcopyplan" data-m="${mid}">${ic('copy',20)}<span class="sp">Plandaki besinleri ekle</span></button>`:''}
+  ${m.extra.length?`<button class="li press" data-a="nmclrx" data-m="${mid}" style="color:var(--acc)">${ic('trash',20)}<span class="sp">Plan dışı eklenenleri sil</span></button>`:''}</div>`)}
+document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,ds=el.dataset;if(!/^n/.test(a))return;
+  const d=S.nd||todayS();
+  switch(a){
+  case'nt':S.nt=ds.k;closeSheet();render();break;
+  case'nd':S.nd=ds.v==='0'?todayS():addDays(d,+ds.v);render();break;
+  case'nmst':{const L=curLog(d);L.m=L.m||{};if(!ds.v)delete L.m[ds.m];else L.m[ds.m]={st:ds.v};closeSheet();await saveLog(d,L);render();break}
+  case'nallok':{const L=curLog(d),pl=U(S.me).nutrition;L.m=L.m||{};for(const m of pl.meals)if(!L.m[m.id]&&m.items.length)L.m[m.id]={st:'ok'};await saveLog(d,L);render();toast('Kalan öğünler işaretlendi');break}
+  case'nmswap':{const mid=ds.m;openFoodPicker({title:'Öğünü değiştir',sub:'Bugün bu öğünde ne yedin?',saved:true,onPick:async items=>{if(!items.length)return;const L=curLog(d);L.m=L.m||{};const cur=L.m[mid]?.st==='swap'?L.m[mid].items:[];L.m[mid]={st:'swap',items:cur.concat(items)};await saveLog(d,L);render()}});break}
+  case'nmadd':{const mid=ds.m;const L0=logOf(S.me,d);const sw=L0?.m?.[mid]?.st==='swap';openFoodPicker({title:'Besin ekle',sub:'',saved:true,onPick:async items=>{if(!items.length)return;const L=curLog(d);if(sw&&L.m?.[mid]?.st==='swap')L.m[mid].items.push(...items);else{L.x=L.x||[];L.x.push(...items.map(i=>({...i,mid})))}await saveLog(d,L);render()}});break}
+  case'nied':{const L=curLog(d),mid=ds.m,j=+ds.j;const arr=ds.w==='s'?L.m?.[mid]?.items:L.x;const it=arr?.[j];if(!it)break;nItemEdit(it,async items=>{const L2=curLog(d);const ar=ds.w==='s'?L2.m[mid].items:L2.x;const k=ar.findIndex(x=>x.id===it.id);if(k<0)return;if(!items.length)ar.splice(k,1);else ar[k]={...items[0],id:it.id,mid:it.mid};await saveLog(d,L2);render()});break}
+  case'nmmenu':mealMenu(ds.m);break;
+  case'nmsave':{const pl=U(S.me).nutrition,c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===ds.m);const items=m.base.concat(m.extra).map(i=>{const o={...i};delete o.mid;return o});const mm=clone(meta());mm.saved=[{id:uidGen(),name:`${m.name} · ${dShort(d)}`,items},...(mm.saved||[])];await saveMeta(mm);closeSheet();toast('Öğün kaydedildi; besin eklerken “Kayıtlı öğünler”de görünür');break}
+  case'nmcopyplan':{const pl=U(S.me).nutrition,pm=pl.meals.find(x=>x.id===ds.m);const L=curLog(d);L.m[ds.m].items=(L.m[ds.m].items||[]).concat(pm.items.map(i=>({...clone(i),id:uidGen()})));closeSheet();await saveLog(d,L);render();break}
+  case'nmclrx':{const L=curLog(d);L.x=(L.x||[]).filter(x=>x.mid!==ds.m);closeSheet();await saveLog(d,L);render();break}
+  case'ndmenu':{const L=logOf(S.me,d),pl=U(S.me).nutrition;openSheet(()=>`${sheetHead('Gün seçenekleri',dLong(d))}<div class="card list" style="padding:0 14px">
+    ${pl?.meals?.length?`<button class="li press" data-a="nfree">${ic('flame',20)}<span class="sp">${L?.free?'Serbest günü kapat (plana dön)':'Serbest gün yap (planı bugün kapat)'}</span></button>`:''}
+    <button class="li press" data-a="ncopyy">${ic('copy',20)}<span class="sp">Önceki günü bu güne kopyala</span></button>
+    ${L?`<button class="li press" data-a="nreset" style="color:var(--acc)">${ic('trash',20)}<span class="sp">Bu günün kayıtlarını sıfırla</span></button>`:''}</div>`);break}
+  case'nfree':{const L=curLog(d);L.free=!L.free;closeSheet();await saveLog(d,L);render();toast(L.free?'Serbest gün: plan bugün devre dışı':'Plana dönüldü');break}
+  case'ncopyy':{const y=logOf(S.me,addDays(d,-1));closeSheet();if(!y){toast('Önceki günde kayıt yok.');break}const L=clone(y);L.m=Object.fromEntries(Object.entries(L.m||{}).map(([k,v])=>[k,{...v,items:(v.items||[]).map(i=>({...i,id:uidGen()}))}]));L.x=(L.x||[]).map(i=>({...i,id:uidGen()}));await saveLog(d,L);render();toast('Önceki gün kopyalandı');break}
+  case'nreset':confirmSheet('Gün sıfırlansın mı?','Bu günün tüm işaretleri ve eklenen besinler silinecek.','Sıfırla',async()=>{await saveLog(d,{free:false,m:{},x:[]});render()});break;
+  case'npadd':{const mi=+ds.i;openFoodPicker({title:'Plana besin ekle',sub:myPlan()?.meals[mi]?.name,onPick:async items=>{if(!items.length)return;const pl=myPlan();pl.meals[mi].items.push(...items);await savePlan(pl);render()}});break}
+  }});
 
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
 function memDB(){const st=new Map(),ls=new Set();const snapDoc=(p)=>({id:p.split('/').pop(),exists:st.has(p),data:()=>st.get(p),metadata:{fromCache:false,hasPendingWrites:false}});
@@ -816,7 +1205,7 @@ async function afterLogin(user){
   db.live();S.phase='app';startData(db,user.id,user.email);
 }
 function startData(db,uid,email){
-  S.db=db;S.me=uid;S.view=uid;S.email=email;
+  S.db=db;S.me=uid;S.view=uid;S.email=email;loadEx();
   db.collection('ud').onSnapshot(snap=>{
     for(const d of snap.docs){const u=U(d.id);u.profile={...d.data()};subUser(d.id)}
     for(const id of Object.keys(S.users))if(!snap.docs.some(d=>d.id===id))S.users[id].profile=null;
@@ -828,7 +1217,9 @@ function startData(db,uid,email){
 function subUser(uid){const u=U(uid);if(u.subs)return;u.subs=true;const map=s=>s.docs.map(d=>({id:d.id,...d.data()}));const onErr=()=>{};
   S.db.collection(`ud/${uid}/programs`).onSnapshot(s=>{u.programs=map(s).sort((a,b)=>(b.star?1:0)-(a.star?1:0)||(a.created||0)-(b.created||0));rebuildMap();soft()},onErr);
   S.db.collection(`ud/${uid}/sessions`).onSnapshot(s=>{u.sessions=map(s);soft()},onErr);
-  S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='plan');u.nutrition=d?{...d.data()}:null;soft()},onErr);
+  S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='plan');u.nutrition=d?{...d.data()}:null;const sc=s.docs.find(x=>x.id==='score');u.nscore=sc?{...sc.data()}:null;soft()},onErr);
+  S.db.collection(`ud/${uid}/foods`).onSnapshot(s=>{u.foods=map(s);soft()},onErr);
+  if(uid===S.me){S.db.collection(`ud/${uid}/nlog`).onSnapshot(s=>{u.nlog=Object.fromEntries(s.docs.map(d=>[d.id,{...d.data()}]));if(!u._sc){u._sc=1;setTimeout(saveScore,4000)}soft()},onErr);S.db.collection(`ud/${uid}/nmeta`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='me');u.nmeta=d?{...d.data()}:null;soft()},onErr)}
   S.db.collection(`ud/${uid}/measures`).onSnapshot(s=>{u.measures=map(s).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);soft()},onErr);
 }
 rebuildMap();boot();
