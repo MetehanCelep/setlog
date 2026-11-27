@@ -186,6 +186,7 @@ button.mbar{width:100%;text-align:left;border-radius:10px;padding:5px 6px;margin
 .kbars em{position:absolute;left:0;right:0;border-top:1.5px dashed var(--ink);opacity:.55;z-index:1;pointer-events:none}
 .kbars em span{position:absolute;right:0;top:-17px;font:650 10.5px var(--f);font-style:normal;color:var(--ink)}
 
+.bfig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bfig .bodyfig{gap:2px}.bfh{text-align:center;font-size:12.5px;font-weight:700;color:var(--mute);margin-bottom:4px}
 .bodyfig figcaption{text-align:center;font-size:12px;color:var(--mute);font-weight:600}
 .bodyfig path,.bodyfig ellipse,.bodyfig rect{stroke:var(--card);stroke-width:1.4;transition:fill .4s}
 .legend{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--mute);justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
@@ -471,6 +472,7 @@ function viewPHeat(){
   if(LIB.ex&&items.some(e=>!known(e))&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button></div><h1>${esc(p.name)} analizi</h1><p class="sub" style="margin:6px 0 16px">Programı bir hafta boyunca uygularsan her kasın alacağı set sayısı. Renkler kas gelişimi için önerilen haftalık aralıklara göre.</p>
   <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Haftalık yük</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(items,'week',{all:1,id:'ph'})}</div>
+  <button class="card press row" style="width:100%;text-align:left;box-shadow:inset 0 0 0 1.5px var(--acc)" data-a="balopen" data-u="${uid}" data-p="${pid}"><span class="xth ph" style="width:44px;height:44px;background:var(--accSoft);color:var(--acc)">${ic('spark',22)}</span><span class="sp"><h3>Programı dengele</h3><span class="sub" style="font-size:13px">Fazla çalışan kasları azaltıp eksikleri ideal aralığa çeker; sonucu yeni program olarak kaydeder.</span></span>${ic('chev',18)}</button>
   <div class="sec"><h2>Günlere göre</h2></div>${p.workouts.map(w=>{const hw=heatOf(w.exercises.map(e=>({name:e.name,xid:exId(e),sets:+e.sets||0})));const top=Object.entries(hw).sort((a,b)=>b[1]-a[1]).slice(0,4);return`<button class="card press row" style="width:100%" data-a="openw" data-p="${pid}" data-w="${w.id}"><span class="daytag">${w.day!=null?DAYS[w.day]:'—'}</span><span class="sp" style="text-align:left"><h3>${esc(w.name)}</h3><span class="sub">${top.map(([k,v])=>MUS[k]+' '+fmt(v)).join(' · ')||'—'}</span></span>${ic('chev',18)}</button>`}).join('')}`;
 }
 
@@ -638,7 +640,7 @@ function render(){
   if(!S.ready){main.innerHTML=`<div class="empty" style="padding-top:40vh">${S.loadSlow?'Veriler henüz alınamadı. Bağlantını kontrol et; geldiğinde sayfa kendiliğinden güncellenir.':'Yükleniyor…'}</div>`;return}
   if(S.onboard){nav.hidden=true;main.innerHTML=viewOnboard();return}
   const r=S.route;let h;
-  try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():({cal:viewCal,prog:viewProg,gel:viewGel,nutr:viewNutr,prof:viewProf}[S.tab]||viewCal)()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
+  try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():r?.name==='bal'?viewBal():({cal:viewCal,prog:viewProg,gel:viewGel,nutr:viewNutr,prof:viewProf}[S.tab]||viewCal)()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
   nav.hidden=r?.name==='live';
   nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
   main.innerHTML=(S.demo?'<div class="banner">Önizleme modu: veriler kaydedilmez.</div>':'')+h;
@@ -672,7 +674,7 @@ function openDay(date){const uid=S.view,mine=isMine();const ss=U(uid).sessions.f
 function openProgName(pid){const p=pid?progOf(S.me,pid):null;ED={kind:'pname',pid,name:p?.name||''};
   openSheet(()=>`${sheetHead(pid?'Programı yeniden adlandır':'Yeni program')}<label class="l" for="pn">Program adı</label><input class="f" id="pn" data-ed="name" value="${esc(ED.name)}" placeholder="Örn. Upper / Lower"><button class="btn pri block" style="margin-top:16px" data-a="pnsave">Kaydet</button>`);setTimeout(()=>$('#pn')?.focus(),80)}
 function openPMenu(pid){const p=progOf(S.me,pid);openSheet(()=>`${sheetHead(esc(p.name))}<div class="card list" style="padding:0 14px">
-  ${[['pstar',p.star?'Aktif program (seçili)':'Aktif program yap','star'],['wnew','Gün ekle','plus'],['pshare','Paylaş','share'],['pren','Yeniden adlandır','edit'],['pdel','Programı sil','trash']].map(([a,n,i])=>`<button class="li press" data-a="${a}" data-p="${pid}" style="${a==='pdel'?'color:var(--acc)':''}">${ic(i,20)}<span class="sp">${n}</span></button>`).join('')}</div>`)}
+  ${[['pstar',p.star?'Aktif program (seçili)':'Aktif program yap','star'],['wnew','Gün ekle','plus'],['balopen','Dengele (yeni program)','spark'],['pshare','Paylaş','share'],['pren','Yeniden adlandır','edit'],['pdel','Programı sil','trash']].map(([a,n,i])=>`<button class="li press" data-a="${a}" data-p="${pid}" style="${a==='pdel'?'color:var(--acc)':''}">${ic(i,20)}<span class="sp">${n}</span></button>`).join('')}</div>`)}
 
 const b64e=s=>btoa(unescape(encodeURIComponent(s))),b64d=s=>decodeURIComponent(escape(atob(s)));
 function openShare(pid){const p=progOf(S.me,pid);const data={n:p.name,w:p.workouts.map(w=>({n:w.name,d:w.day,e:w.exercises.map(e=>e.rir!=null?[e.name,e.sets,e.min,e.max,e.rir]:[e.name,e.sets,e.min,e.max])}))};const code='SETLOG1:'+b64e(JSON.stringify(data));
@@ -1143,6 +1145,94 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'nplnewok':{const n=(ED.name||'').trim();if(!n){toast('Plana bir ad ver.');break}const src=ED.src==='copy'?myPlan():null;const c=src?copyPlan(src):{target:{...(myPlan()?.target||{kcal:2000,p:130,c:250,f:60})},note:'',meals:['Kahvaltı','Öğle','Akşam'].map(x=>({id:uidGen(),name:x,note:'',items:[]}))};c.name=n.slice(0,60);c.created=Date.now();const id=U(S.me).nplans.length?'p_'+uidGen():'plan';if(await saveDoc(P(S.me,'nutrition',id),c)){closeSheet();S.npv=id;render();toast('Plan oluşturuldu')}break}
   case'nplact':await activatePlan(npv());render();break;
   case'npadd':{const mi=+ds.i;openFoodPicker({title:'Plana besin ekle',sub:myPlan()?.meals[mi]?.name,onPick:async items=>{if(!items.length)return;const pl=myPlan();pl.meals[mi].items.push(...items);await savePlan(pl);render()}});break}
+  }});
+
+/* ---------- program balancer ---------- */
+const BAL_MAJ=['chest','lats','upper_back','side_delts','rear_delts','biceps','triceps','quads','hamstrings','glutes','calves','abs'];
+const BAL_G={m:[6,9,'Bakım','Kası korumaya yetecek hacim; daha kısa antrenmanlar.'],g:[10,16,'Gelişim','Çoğu kişi için kas gelişiminin verimli aralığı.'],h:[14,20,'Yüksek hacim','Deneyimliler için; toparlanma ve uyku iyi olmalı.']};
+const BAL_PREF={calves:['c_stcalf','c_lpcalf','Seated_Calf_Raise'],side_delts:['c_cablelat','Side_Lateral_Raise','c_mlat'],rear_delts:['c_revfly','Face_Pull','c_cablerear'],biceps:['c_cablecurl','Hammer_Curls','c_mpreacher'],triceps:['c_pushdown','c_cableohe'],chest:['c_mchest','c_pecdeck','Incline_Dumbbell_Press'],lats:['c_latwide','c_pullover'],upper_back:['c_rowclose','c_csrow'],quads:['c_legext','c_legpress','c_hack'],hamstrings:['c_slc','c_llc','Romanian_Deadlift'],glutes:['c_hipthrustm','c_kickback','Barbell_Hip_Thrust'],abs:['c_ropecrunch','c_hkr','c_abmachine']};
+const BAL_REG={push:['chest','front_delts','side_delts','triceps'],pull:['lats','upper_back','rear_delts','biceps','forearms','traps'],legs:['quads','hamstrings','glutes','calves','adductors','abductors','lower_back'],core:['abs','obliques']};
+const regOf=m=>Object.keys(BAL_REG).find(r=>BAL_REG[r].includes(m));
+const bmp=e=>mapOf(e.name,e.xid||exId(e));
+function balVol(ws){const tot={},prim=ws.map(()=>({}));ws.forEach((w,i)=>w.exercises.forEach(e=>{const s=+e.sets||0,m=bmp(e);m.p.forEach(k=>{tot[k]=(tot[k]||0)+s;prim[i][k]=(prim[i][k]||0)+s});m.s.forEach(k=>{tot[k]=(tot[k]||0)+s*.5})}));return{tot,prim,sets:ws.map(w=>w.exercises.reduce((a,e)=>a+(+e.sets||0),0))}}
+function balBand(o,m){const G=BAL_G[o.goal];if(o.pri.includes(m))return[Math.max(G[1]-2,G[0]),Math.min(G[1]+4,22)];return BAL_MAJ.includes(m)?[G[0],G[1]]:[0,Math.max(G[1],20)]}
+function balance(prog,o){
+  const ws=clone(prog.workouts).map(w=>({...w,exercises:w.exercises.map(e=>({...e,sets:+e.sets||1,_o:+e.sets||1,_r:[]}))}));
+  const band=m=>balBand(o,m),tag=(e,t)=>{if(!e._r.includes(t))e._r.push(t)};let V=balVol(ws);const re=()=>V=balVol(ws);
+  const RIR=rirOn(S.me);
+  function reduce(){for(let g=0;g<300;g++){re();const over=Object.keys(MUS).filter(m=>(V.tot[m]||0)>band(m)[1]+.01).sort((a,b)=>(V.tot[b]-band(b)[1])-(V.tot[a]-band(a)[1]));let did=false;
+    for(const m of over){const pool=[];ws.forEach(w=>w.exercises.forEach(e=>{if(e.sets>1&&bmp(e).p.includes(m)&&bmp(e).p.every(k=>k===m||(V.tot[k]||0)-1>=band(k)[0]))pool.push(e)}));if(!pool.length)continue;
+      pool.sort((a,b)=>b.sets-a.sets);pool[0].sets--;tag(pool[0],'over:'+m);did=true;break}
+    if(!did)return}}
+  function add(m){const ids=(BAL_PREF[m]||[]).filter(id=>LIB.exById[id]);if(!ids.length)return false;const R=BAL_REG[regOf(m)]||[];
+    const days=ws.map((w,i)=>({i,ov:w.exercises.filter(e=>bmp(e).p.some(k=>R.includes(k))).length,has:(V.prim[i][m]||0)>0})).filter(d=>V.sets[d.i]+2<=o.maxDay);if(!days.length)return false;
+    const sc=d=>Math.min(d.ov,3)*2-(d.has&&o.freq?1.5:0)-(V.prim[d.i][m]||0)/2-V.sets[d.i]/10;days.sort((a,b)=>sc(b)-sc(a));const di=days[0].i,w=ws[di];
+    const id=ids.find(x=>!ws.some(z=>z.exercises.some(e=>exId(e)===x)))||ids.find(x=>!w.exercises.some(e=>exId(e)===x));if(!id)return false;const x=LIB.exById[id];
+    const ne={id:uidGen(),name:x.n,xid:x.i,sets:2,min:m==='calves'||m==='abs'?10:8,max:m==='calves'||m==='abs'?15:12,...(RIR?{rir:1}:{}),_o:0,_r:['add:'+m],_new:true};
+    let at=-1;w.exercises.forEach((e,j)=>{if(bmp(e).p.some(k=>R.includes(k)))at=j});w.exercises.splice(at<0?w.exercises.length:at+1,0,ne);return true}
+  function increase(){for(let g=0;g<300;g++){re();const list=[...new Set(BAL_MAJ.concat(o.pri))].filter(m=>(V.tot[m]||0)<band(m)[0]-.01).sort((a,b)=>(V.tot[a]||0)-band(a)[0]-((V.tot[b]||0)-band(b)[0]));if(!list.length)return;let did=false;
+    for(const m of list){const c=[];ws.forEach((w,i)=>w.exercises.forEach(e=>{if(bmp(e).p.includes(m)&&e.sets<4&&(V.prim[i][m]||0)+1<=10&&V.sets[i]<o.maxDay&&bmp(e).p.every(k=>k===m||(V.tot[k]||0)+1<=band(k)[1]))c.push({e,i})}));
+      if(c.length){c.sort((a,b)=>a.e.sets-b.e.sets||V.sets[a.i]-V.sets[b.i]);c[0].e.sets++;tag(c[0].e,'under:'+m);did=true;break}
+      if(add(m)){did=true;break}}
+    if(!did)return}}
+  function freq(){if(!o.freq||ws.length<2)return;for(const m of BAL_MAJ){re();const days=V.prim.map((d,i)=>[i,d[m]||0]).filter(x=>x[1]>0);if(days.length!==1)continue;const[di,ds]=days[0];if(ds<4)continue;const R=BAL_REG[regOf(m)]||[];
+    const cand=ws.map((w,i)=>i).filter(i=>i!==di&&V.sets[i]+2<=o.maxDay).map(i=>({i,sc:ws[i].exercises.filter(e=>bmp(e).p.some(k=>R.includes(k))).length})).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc||V.sets[a.i]-V.sets[b.i]);if(!cand.length)continue;
+    const ti=cand[0].i,mv=Math.min(2,Math.floor(ds/2));let left=mv,base=null;
+    for(const e of ws[di].exercises.filter(e=>bmp(e).p.includes(m)).sort((a,b)=>b.sets-a.sets)){base=base||e;while(left>0&&e.sets>1){e.sets--;left--;tag(e,'freq:'+m)}}
+    const moved=mv-left;if(!moved||!base)continue;
+    const ex=ws[ti].exercises.find(e=>bmp(e).p.includes(m));if(ex){ex.sets+=moved;tag(ex,'freq:'+m)}
+    else ws[ti].exercises.push({id:uidGen(),name:base.name,xid:base.xid||exId(base)||null,sets:moved,min:base.min,max:base.max,...(base.rir!=null?{rir:base.rir}:{}),_o:0,_r:['freq:'+m],_new:true})}}
+  function cap(){for(let g=0;g<300;g++){re();const i=V.sets.findIndex(n=>n>o.maxDay);if(i<0)return;const c=ws[i].exercises.filter(e=>e.sets>1).map(e=>({e,s:Math.min(...bmp(e).p.map(k=>(V.tot[k]||0)-band(k)[0]),99)})).sort((a,b)=>b.s-a.s);if(!c.length)return;c[0].e.sets--;tag(c[0].e,'cap')}}
+  reduce();increase();freq();cap();reduce();increase();re();
+  const changes=[];ws.forEach((w,wi)=>w.exercises.forEach(e=>{if(e._new||e.sets!==e._o)changes.push({k:w.id+':'+e.id,wi,wname:w.name,id:e.id,name:e.name,from:e._o,to:e.sets,add:!!e._new,r:e._r})}));
+  const warn=[];BAL_MAJ.concat(o.pri).forEach(m=>{const v=V.tot[m]||0,b=band(m);if(v<b[0]-.01)warn.push(`${MUS[m]} hedefin altında kaldı (${fmt(v)} set): uygun gün ya da yer bulunamadı.`);else if(v>b[1]+.01)warn.push(`${MUS[m]} hâlâ yüksek (${fmt(v)} set): azaltılabilecek hareket kalmadı.`)});
+  ws.forEach((w,i)=>{if(V.sets[i]>o.maxDay)warn.push(`${w.name} günü ${V.sets[i]} set; sınırın üstünde.`)});
+  return{ws,changes,warn:[...new Set(warn)]}}
+function balFinal(){const B=S.bal;return B.res.ws.map(w=>({...w,exercises:w.exercises.filter(e=>!(e._new&&B.off[w.id+':'+e.id])).map(e=>({...e,sets:B.off[w.id+':'+e.id]?e._o:e.sets}))}))}
+const balClean=ws=>ws.map(w=>({...w,id:uidGen(),exercises:w.exercises.map(e=>{const c={...e,id:uidGen()};delete c._o;delete c._r;delete c._new;if(!c.xid)delete c.xid;return c})}));
+const balItems=ws=>ws.flatMap(w=>w.exercises.map(e=>({name:e.name,xid:e.xid||exId(e),sets:+e.sets||0})));
+function openBal(uid,pid){loadEx();const p=progOf(uid,pid);if(!p)return;ED={kind:'bal',uid,pid,goal:S.bal?.o?.goal||'g',pri:S.bal?.pid===pid?S.bal.o.pri.slice():[],freq:S.bal?.o?.freq??true,maxDay:S.bal?.o?.maxDay||25};
+  openSheet(()=>`${sheetHead('Programı dengele',esc(p.name)+' · mevcut programın değişmez')}
+  <label class="l">Hedefin</label><div class="list card" style="padding:0 14px;margin:0">${Object.entries(BAL_G).map(([k,[a,b,n,d]])=>`<button class="li press" data-a="balg" data-k="${k}" style="text-align:left"><span class="xck" style="${ED.goal===k?'background:var(--acc);border-color:var(--acc)':''}">${ED.goal===k?ic('check',16):''}</span><span class="sp"><h3 style="font-size:15px">${n} <span class="sub" style="font-weight:600">· ${a}–${b} set/hafta</span></h3><span class="sub" style="font-size:12.5px">${d}</span></span></button>`).join('')}</div>
+  <label class="l">Öncelikli kaslar <span style="font-weight:500">(isteğe bağlı, en fazla 3)</span></label><div class="row wrap" style="gap:8px">${BAL_MAJ.map(k=>`<button class="chip ${ED.pri.includes(k)?'on':''}" data-a="balp" data-k="${k}">${MUS[k]}</button>`).join('')}</div>
+  <label class="row" style="gap:10px;margin:16px 2px 0;font-size:14px"><input type="checkbox" id="balf" ${ED.freq?'checked':''} style="width:20px;height:20px;accent-color:var(--acc)"><span>Her ana kası haftada en az 2 gün çalıştır</span></label>
+  <label class="l" for="balm">Bir günde en fazla set</label><input class="f" id="balm" inputmode="numeric" data-ed="maxDay" data-num="1" value="${ED.maxDay}" style="max-width:120px">
+  <p class="sub" style="margin:10px 2px 0;font-size:12.5px">Ana kaslar hedef aralığa çekilir. Ön kol, bel, trapez, iç/dış bacak, yan karın ve ön omuz gibi yardımcı kaslar zaten dolaylı çalıştığı için yalnızca çok fazlaysa azaltılır.</p>
+  <button class="btn pri block" style="margin-top:16px;min-height:52px" data-a="balgo">Önizle</button>`)}
+document.addEventListener('change',ev=>{if(ev.target.id==='balf'&&ED?.kind==='bal')ED.freq=ev.target.checked});
+function viewBal(){const B=S.bal;const back=`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button><button class="btn sm" data-a="balset">${ic('edit',16)} Ayarlar</button></div>`;if(!B)return back;
+  const p=progOf(B.uid,B.pid);if(!p)return back+'<div class="empty">Program bulunamadı.</div>';
+  const fin=balFinal(),before=heatDetail(balItems(p.workouts)).h,after=heatDetail(balItems(fin)).h,G=BAL_G[B.o.goal];
+  const fig=(h,side)=>figure(side,h,'week','bal',null);
+  const ms=Object.keys(MUS).filter(m=>BAL_MAJ.includes(m)||B.o.pri.includes(m)||Math.abs((after[m]||0)-(before[m]||0))>.01).sort((a,b)=>Math.abs((after[b]||0)-(before[b]||0))-Math.abs((after[a]||0)-(before[a]||0)));
+  const dot=v=>`<i class="dk" style="background:${heatColor(v,'week')};display:inline-block;margin-right:5px"></i>`;
+  const RT={over:'fazlaydı',under:'eksikti',add:'eksikti, yeni hareket',freq:'haftada 2 gün için',cap:'gün çok uzundu'};
+  const rtxt=r=>{const [t,m]=r.split(':');return t==='cap'?RT.cap:`${MUS[m]} ${RT[t]}`};
+  const byDay={};B.res.changes.forEach(c=>(byDay[c.wi]||(byDay[c.wi]=[])).push(c));
+  const sumS=ws=>ws.reduce((a,w)=>a+w.exercises.reduce((b,e)=>b+(+e.sets||0),0),0);
+  return back+`<h1>Programı dengele</h1><p class="sub" style="margin:6px 0 14px">${esc(p.name)} · hedef: <b style="color:var(--ink)">${G[2]} (${G[0]}–${G[1]} set/hafta)</b>${B.o.pri.length?' · öncelik: '+B.o.pri.map(k=>MUS[k]).join(', '):''}</p>
+  <div class="card"><div class="bfig"><div><div class="bfh">Önce · ${sumS(p.workouts)} set</div><div class="bodyfig">${fig(before,'f')}${fig(before,'b')}</div></div><div><div class="bfh">Sonra · ${sumS(fin)} set</div><div class="bodyfig">${fig(after,'f')}${fig(after,'b')}</div></div></div>
+   <div class="zleg">${[1,2,3,4].map(z=>`<span><i style="background:${ZC[z]}"></i><b>${ZN.week.n[z]}</b><small>${ZN.week.r[z]}</small></span>`).join('')}</div>
+   <div class="list" style="margin-top:8px">${ms.map(m=>{const a=before[m]||0,b=after[m]||0,bd=balBand(B.o,m),okb=b>=bd[0]-.01&&b<=bd[1]+.01;return`<div class="row" style="padding:8px 0;font-size:14px"><span class="sp">${MUS[m]}${B.o.pri.includes(m)?' <span class="xtag" style="color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)">öncelik</span>':''}</span><span class="num sub" style="min-width:52px;text-align:right">${dot(a)}${fmt(a)}</span><span class="sub">→</span><b class="num" style="min-width:52px;text-align:right">${dot(b)}${fmt(b)}</b><span style="width:20px;color:${BAL_MAJ.includes(m)||B.o.pri.includes(m)?(okb?'var(--good)':'var(--acc)'):'var(--mute)'}">${BAL_MAJ.includes(m)||B.o.pri.includes(m)?(okb?ic('check',16):'!'):''}</span></div>`}).join('')}</div></div>
+  ${B.res.warn.length?`<div class="banner">${B.res.warn.map(esc).join('<br>')}</div>`:''}
+  <div class="sec"><h2>Değişiklikler</h2><span class="sub">${B.res.changes.length-Object.values(B.off).filter(Boolean).length}/${B.res.changes.length} seçili</span></div>
+  ${B.res.changes.length?Object.entries(byDay).map(([wi,cs])=>`<div class="card"><h3 style="text-transform:lowercase;margin-bottom:4px">${esc(B.res.ws[wi].name)}</h3><div class="list">${cs.map(c=>{const off=!!B.off[c.k];return`<button class="li press" data-a="balt" data-k="${esc(c.k)}" style="text-align:left;opacity:${off?.45:1}"><span class="xck" style="${off?'':'background:var(--acc);border-color:var(--acc)'}">${off?'':ic('check',16)}</span><span class="sp" style="min-width:0"><h3 style="font-size:15px">${c.add?`<span style="color:var(--good)">+ </span>`:''}${esc(c.name)}</h3><span class="sub" style="font-size:12.5px">${c.add?`Yeni · ${c.to} set`:`${c.from} → <b style="color:${c.to>c.from?'var(--good)':'var(--acc)'}">${c.to}</b> set`} · ${[...new Set(c.r.map(rtxt))].join(', ')}</span></span></button>`}).join('')}</div></div>`).join(''):'<div class="card empty">Program hedefe zaten uygun; değişiklik gerekmiyor.</div>'}
+  <label class="l" for="baln">Yeni programın adı</label><input class="f" id="baln" value="${esc(B.name)}">
+  <button class="btn pri block" style="margin-top:12px;min-height:54px" data-a="balsave" ${B.res.changes.length?'':'disabled'}>${ic('copy',18)} Yeni program olarak kaydet</button>
+  <p class="sub" style="margin:10px 2px 0;font-size:12px">“${esc(p.name)}” olduğu gibi kalır. Değişikliklerin üzerine dokunarak istemediklerini çıkarabilirsin.</p>`}
+document.addEventListener('input',ev=>{if(ev.target.id==='baln'&&S.bal)S.bal.name=ev.target.value});
+document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,ds=el.dataset;if(!a.startsWith('bal'))return;
+  switch(a){
+  case'balg':ED.goal=ds.k;drawSheet();break;
+  case'balp':{const i=ED.pri.indexOf(ds.k);if(i>=0)ED.pri.splice(i,1);else if(ED.pri.length<3)ED.pri.push(ds.k);else toast('En fazla 3 kas seçebilirsin.');drawSheet();break}
+  case'balgo':{const E=ED;await loadEx();if(!LIB.ex){toast('Hareket kütüphanesi yüklenemedi.');break}const p=progOf(E.uid,E.pid);const o={goal:E.goal,pri:E.pri.slice(),freq:!!E.freq,maxDay:Math.max(10,Math.min(40,Math.round(+E.maxDay||25)))};
+    const res=balance(p,o);const from=S.route?.name==='bal'?S.route.from:S.route;S.bal={uid:E.uid,pid:E.pid,o,res,off:{},name:`${p.name} (dengelenmiş)`};closeSheet();S.route={name:'bal',from};render();scrollTo(0,0);break}
+  case'balopen':openBal(ds.u||S.me,ds.p);break;
+  case'balset':if(S.bal)openBal(S.bal.uid,S.bal.pid);break;
+  case'balt':S.bal.off[ds.k]=!S.bal.off[ds.k];render();break;
+  case'balsave':{const B=S.bal,p=progOf(B.uid,B.pid);const n=(B.name||'').trim()||p.name+' (dengelenmiş)';const id=uidGen();
+    const doc={name:n.slice(0,60),star:false,created:Date.now(),map:{...(p.map||{})},from:p.name,workouts:balClean(balFinal())};
+    if(await saveDoc(P(S.me,'programs',id),doc)){S.bal=null;S.view=S.me;S.open[id]=true;go('prog');toast('Yeni program oluşturuldu; aktif yapmak için yıldıza dokun')}break}
   }});
 
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
