@@ -110,6 +110,7 @@ nav.tabs button.on{color:var(--acc)}
 .st .h{font-size:11px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .st input{height:44px;border-radius:11px;border:0;background:var(--card2);text-align:center;font:650 18px var(--d);font-variant-numeric:tabular-nums;width:100%}
 .st input::placeholder{color:var(--mute);opacity:.6}
+.st.rir{grid-template-columns:20px minmax(0,1fr) 64px 52px 46px 40px;gap:6px}
 .st .pv{font-size:13px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ck{width:44px;height:44px;border-radius:11px;background:var(--card2);display:grid;place-items:center;color:var(--mute)}
 .st.ok input{background:color-mix(in srgb,var(--good) 16%,var(--card))}
@@ -138,6 +139,10 @@ nav.tabs button.on{color:var(--acc)}
 .grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 12px}
 .edrow{background:var(--card);border-radius:16px;padding:12px;margin-bottom:8px}
 .edg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.edg.rir{grid-template-columns:repeat(4,minmax(0,1fr))}
+.sw{position:relative;width:52px;height:32px;border-radius:99px;border:0;background:var(--card2);flex:none;transition:background .2s;padding:0}
+.sw i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .2s}
+.sw.on{background:var(--good)}.sw.on i{transform:translateX(20px)}
 .edg label{font-size:11px;color:var(--mute);font-weight:700;display:block;margin-bottom:3px}
 .edg .f{height:42px;text-align:center;padding:0 6px}
 .mg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -232,6 +237,8 @@ const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false
 const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,subs:false});
 const progOf=(uid,pid)=>U(uid).programs.find(p=>p.id===pid);
 const doneSessions=uid=>U(uid).sessions.filter(s=>s.done).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.startedAt||0)-(b.startedAt||0));
+const rirOn=uid=>!!U(uid).profile?.rir;
+const rirN=v=>v==null||v===''||!Number.isFinite(+v)?null:Math.max(0,Math.min(10,Math.round(+v*2)/2));
 const nameOf=uid=>U(uid).profile?.nick||'Sporcu';
 const userIds=()=>{const ids=Object.keys(S.users).filter(id=>S.users[id].profile);ids.sort((a,b)=>a===S.me?-1:b===S.me?1:(S.users[a].profile.created||0)-(S.users[b].profile.created||0));return ids};
 const HUES=['#e5352a','#2a6fe5','#13a06b','#9b3fe0','#e58a14','#0f9fb5'];
@@ -337,7 +344,7 @@ const heroDeco=()=>`<svg class="deco" viewBox="0 0 24 24" fill="none" stroke="#f
 
 function sessionCard(s,mine){const vol=(s.exercises||[]).reduce((a,e)=>a+e.sets.filter(x=>x.r>0).reduce((b,x)=>b+(x.w||0)*x.r,0),0);const d=s.finishedAt&&s.startedAt&&s.finishedAt-s.startedAt<5*36e5?dur(s.finishedAt-s.startedAt):null;
   return`<div class="card"><div class="row"><div class="sp"><h2 style="text-transform:lowercase">${esc(s.workoutName||'Antrenman')}</h2><div class="sub">${esc(s.programName||'Serbest')}${d?' · '+d:''} · ${fmtK(vol)} kg hacim</div></div>${mine?`<button class="ibtn bg" data-a="sdel" data-s="${s.id}" aria-label="Sil">${ic('trash',19)}</button>`:''}</div>
-  <div class="list" style="margin-top:8px">${(s.exercises||[]).filter(e=>e.sets.some(x=>x.r>0)).map(e=>{const ok=e.sets.filter(x=>x.r>0);const b=ok.reduce((a,x)=>x.w>a.w?x:a,ok[0]);return`<div style="padding:10px 0"><h3>${esc(e.name)}</h3><div class="setchips">${ok.map(x=>`<span class="sc ${x===b?'best':''}">${fmt(x.w)} kg × ${x.r}</span>`).join('')}</div></div>`}).join('')||'<p class="sub">Kayıtlı set yok.</p>'}</div></div>`}
+  <div class="list" style="margin-top:8px">${(s.exercises||[]).filter(e=>e.sets.some(x=>x.r>0)).map(e=>{const ok=e.sets.filter(x=>x.r>0);const b=ok.reduce((a,x)=>x.w>a.w?x:a,ok[0]);return`<div style="padding:10px 0"><h3>${esc(e.name)}</h3><div class="setchips">${ok.map(x=>`<span class="sc ${x===b?'best':''}">${fmt(x.w)} kg × ${x.r}${x.rir!=null?` @${fmt(x.rir)}`:''}</span>`).join('')}</div></div>`}).join('')||'<p class="sub">Kayıtlı set yok.</p>'}</div></div>`}
 
 function viewProg(){
   const uid=S.view,mine=isMine(),u=U(uid);
@@ -357,7 +364,7 @@ function viewWorkout(){
   if(pending&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button>${mine?`<button class="ibtn bg" data-a="wedit" data-p="${pid}" data-w="${wid}" aria-label="Düzenle">${ic('edit',20)}</button>`:''}</div>
   <h1 style="text-transform:lowercase">${esc(w.name)}</h1><p class="sub" style="margin:6px 0 16px">${esc(p.name)}${w.day!=null?' · '+DAYS_FULL[w.day]:''} · ${w.exercises.length} hareket · ${workoutSets(w)} set${mine?'':' · '+esc(nameOf(uid))}</p>
-  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e.name,w.id);return`<div class="exi"><span class="exn">${i+1}</span><div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(key(e.name))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
+  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e.name,w.id);return`<div class="exi"><span class="exn">${i+1}</span><div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${rirOn(uid)&&e.rir!=null?` · ${fmt(e.rir)} RIR`:''}${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(key(e.name))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
   <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Kas ısı haritası</h2>${S.ai[pid]?`<span class="ai pulse">${ic('spark',14)} Analiz ediliyor</span>`:`<span class="ai">${ic('spark',14)} Otomatik analiz</span>`}</div>${heatBlock(h,'w')}</div>
   <div class="row" style="position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));gap:8px">${mine?`<button class="btn pri block" style="flex:1;min-height:54px;font-size:17px;box-shadow:0 8px 24px rgba(229,53,42,.35)" data-a="startw" data-p="${pid}" data-w="${wid}" data-d="${ymd(new Date())}">${ic('play',18,1)} Antrenmana Başla</button>`:`<button class="btn pri block" data-a="pcopy" data-u="${uid}" data-p="${pid}">${ic('copy',18)} Programı kopyala</button>`}</div>`;
 }
@@ -373,10 +380,11 @@ function viewPHeat(){
 
 function viewLive(){
   const s=LIVE.doc;
+  const RIR=rirOn(S.me),rc=RIR?' rir':'';
   const ex=s.exercises.map((e,ei)=>{const pv=prevSets(e.name,LIVE.id,s.workoutId);
-    return`<div class="card"><div class="row" style="margin-bottom:6px"><div class="sp"><h3 style="font-size:17px">${esc(e.name)}</h3><div class="sub">${e.target?`Hedef: ${e.target.sets} × ${e.target.min===e.target.max?e.target.min:e.target.min+'–'+e.target.max}`:'Serbest'}</div></div><button class="ibtn" data-a="lexdel" data-i="${ei}" aria-label="Hareketi kaldır" style="color:var(--mute)">${ic('x',19)}</button></div>
-    <div class="st"><span class="h">Set</span><span class="h">Önceki</span><span class="h" style="text-align:center">kg</span><span class="h" style="text-align:center">Tekrar</span><span></span></div>
-    ${e.sets.map((x,si)=>{const p=pv?.[si]||pv?.at(-1);return`<div class="st ${x.d?'ok':''}"><span class="num" style="font-weight:700;color:var(--mute)">${si+1}</span><span class="pv">${pv?.[si]?`${fmt(pv[si].w)} × ${pv[si].r}`:'—'}</span><input inputmode="decimal" enterkeyhint="next" aria-label="Set ${si+1} kilo" data-lv="${ei}:${si}:w" value="${x.w??''}" placeholder="${p?p.w:''}"><input inputmode="numeric" enterkeyhint="done" aria-label="Set ${si+1} tekrar" data-lv="${ei}:${si}:r" value="${x.r??''}" placeholder="${p?p.r:(e.target?.max||'0')}"><button class="ck" data-a="lck" data-i="${ei}" data-j="${si}" aria-label="Seti tamamla">${ic('check',20)}</button></div>`}).join('')}
+    return`<div class="card"><div class="row" style="margin-bottom:6px"><div class="sp"><h3 style="font-size:17px">${esc(e.name)}</h3><div class="sub">${e.target?`Hedef: ${e.target.sets} × ${e.target.min===e.target.max?e.target.min:e.target.min+'–'+e.target.max}${RIR&&e.target.rir!=null?` · ${fmt(e.target.rir)} RIR`:''}`:'Serbest'}</div></div><button class="ibtn" data-a="lexdel" data-i="${ei}" aria-label="Hareketi kaldır" style="color:var(--mute)">${ic('x',19)}</button></div>
+    <div class="st${rc}"><span class="h">Set</span><span class="h">Önceki</span><span class="h" style="text-align:center">kg</span><span class="h" style="text-align:center">Tekrar</span>${RIR?'<span class="h" style="text-align:center">RIR</span>':''}<span></span></div>
+    ${e.sets.map((x,si)=>{const p=pv?.[si]||pv?.at(-1);return`<div class="st${rc} ${x.d?'ok':''}"><span class="num" style="font-weight:700;color:var(--mute)">${si+1}</span><span class="pv">${pv?.[si]?`${fmt(pv[si].w)} × ${pv[si].r}`:'—'}</span><input inputmode="decimal" enterkeyhint="next" aria-label="Set ${si+1} kilo" data-lv="${ei}:${si}:w" value="${x.w??''}" placeholder="${p?p.w:''}"><input inputmode="numeric" enterkeyhint="done" aria-label="Set ${si+1} tekrar" data-lv="${ei}:${si}:r" value="${x.r??''}" placeholder="${p?p.r:(e.target?.max||'0')}">${RIR?`<input inputmode="decimal" enterkeyhint="done" aria-label="Set ${si+1} RIR" data-lv="${ei}:${si}:rir" value="${x.rir??''}" placeholder="${e.target?.rir!=null?fmt(e.target.rir):''}">`:''}<button class="ck" data-a="lck" data-i="${ei}" data-j="${si}" aria-label="Seti tamamla">${ic('check',20)}</button></div>`}).join('')}
     <div class="row" style="margin-top:8px"><button class="btn sm" data-a="lsadd" data-i="${ei}">${ic('plus',16)} Set ekle</button>${e.sets.length>1?`<button class="btn sm" data-a="lsdel" data-i="${ei}" style="background:transparent;color:var(--mute)">Son seti sil</button>`:''}</div></div>`}).join('');
   const doneSets=s.exercises.reduce((a,e)=>a+e.sets.filter(x=>x.d).length,0),tot=s.exercises.reduce((a,e)=>a+e.sets.length,0);
   return`<div class="lhead"><button class="ibtn bg" data-a="lmin" aria-label="Küçült">${ic('down')}</button><div class="sp" style="text-align:center"><div style="font:800 19px var(--d);font-stretch:88%;text-transform:lowercase">${esc(s.workoutName||'antrenman')}</div><div class="sub num" id="elapsed">${s.date===ymd(new Date())?dur(Date.now()-s.startedAt):dShort(s.date)}</div></div><button class="btn pri sm" data-a="lfin">Bitir</button></div>
@@ -448,6 +456,7 @@ function viewProf0(){
   const tiles=MF.filter(([k])=>latest[k]!=null);
   return`<div class="top"><h1>Profil</h1>${mine?`<button class="ibtn bg" data-a="nick" aria-label="Profili düzenle">${ic('edit',20)}</button>`:''}</div>${whoBar()}
   <div class="card row">${av(uid,56)}<div class="sp"><h2>${esc(nameOf(uid))}</h2><div class="sub">${pr.height?pr.height+' cm':''}${bmi?' · VKİ '+fmt(bmi):''}${mine?(pr.height?' · ':'')+esc(S.email||''):''}</div></div></div>
+  ${mine?`<div class="card row"><div class="sp"><h3>RIR kullan</h3><div class="sub">Programda hedef RIR, antrenmanda her set için RIR sütunu</div></div><button class="sw ${pr.rir?'on':''}" data-a="rirtog" role="switch" aria-checked="${!!pr.rir}" aria-label="RIR kullan"><i></i></button></div>`:''}
   <div class="sec"><h2>Vücut ölçüleri</h2>${mine?`<button class="btn pri sm" data-a="madd">${ic('plus',16)} Ölçü ekle</button>`:''}</div>
   ${tiles.length?`<div class="mg">${tiles.map(([k,n,un])=>{const d=first[k]!=null&&ms.length>1?latest[k]-first[k]:null;return`<button class="mtile press ${S.mf===k?'on':''}" data-a="mf" data-f="${k}"><small>${n}</small><b>${fmt(latest[k])}</b> <span class="sub">${un}</span>${d?` <span class="delta">${d>0?'+':''}${fmt(d)}</span>`:''}</button>`}).join('')}</div>
   <div class="card" style="margin-top:12px"><div class="row" style="margin-bottom:8px"><h2 class="sp">${f[1]}</h2><span class="sub">${pts.length} ölçüm</span></div><div class="fig" data-c="meas" style="height:210px"><svg></svg></div><p class="sub" style="margin:6px 0 0">Değişim ilk ölçüme göre gösterilir.</p></div>
@@ -579,8 +588,8 @@ function openPMenu(pid){const p=progOf(S.me,pid);openSheet(()=>`${sheetHead(esc(
   ${[['pstar',p.star?'Aktif program (seçili)':'Aktif program yap','star'],['wnew','Gün ekle','plus'],['pshare','Paylaş','share'],['pren','Yeniden adlandır','edit'],['pdel','Programı sil','trash']].map(([a,n,i])=>`<button class="li press" data-a="${a}" data-p="${pid}" style="${a==='pdel'?'color:var(--acc)':''}">${ic(i,20)}<span class="sp">${n}</span></button>`).join('')}</div>`)}
 
 const b64e=s=>btoa(unescape(encodeURIComponent(s))),b64d=s=>decodeURIComponent(escape(atob(s)));
-function openShare(pid){const p=progOf(S.me,pid);const data={n:p.name,w:p.workouts.map(w=>({n:w.name,d:w.day,e:w.exercises.map(e=>[e.name,e.sets,e.min,e.max])}))};const code='SETLOG1:'+b64e(JSON.stringify(data));
-  const text=`${p.name}\n`+p.workouts.map(w=>`\n${w.name}${w.day!=null?' ('+DAYS_FULL[w.day]+')':''}\n`+w.exercises.map(e=>`• ${e.name} — ${e.sets} set × ${e.min===e.max?e.min:e.min+'-'+e.max}`).join('\n')).join('\n')+`\n\nSetlog kodu:\n${code}`;
+function openShare(pid){const p=progOf(S.me,pid);const data={n:p.name,w:p.workouts.map(w=>({n:w.name,d:w.day,e:w.exercises.map(e=>e.rir!=null?[e.name,e.sets,e.min,e.max,e.rir]:[e.name,e.sets,e.min,e.max])}))};const code='SETLOG1:'+b64e(JSON.stringify(data));
+  const text=`${p.name}\n`+p.workouts.map(w=>`\n${w.name}${w.day!=null?' ('+DAYS_FULL[w.day]+')':''}\n`+w.exercises.map(e=>`• ${e.name} — ${e.sets} set × ${e.min===e.max?e.min:e.min+'-'+e.max}${e.rir!=null?' · '+fmt(e.rir)+' RIR':''}`).join('\n')).join('\n')+`\n\nSetlog kodu:\n${code}`;
   ED={kind:'share',code,text};
   openSheet(()=>`${sheetHead('Programı paylaş',esc(p.name))}<p class="sub">Uygulamayı kullanan herkes programını zaten Ekip ekranından görüp kopyalayabilir. Başkalarıyla paylaşmak için metni veya kodu gönder; kodu alan kişi Programlar → İçe aktar ile ekler.</p>
   <label class="l">Okunabilir metin + kod</label><textarea class="f" readonly rows="8">${esc(text)}</textarea>
@@ -593,7 +602,7 @@ function openWkEditor(pid,wid){const p=progOf(S.me,pid);const w=wid?clone(p.work
   <label class="l">Gün</label><div class="chips">${DAYS.map((d,i)=>`<button class="chip ${w.day===i?'on':''}" data-a="edday" data-v="${i}">${d}</button>`).join('')}<button class="chip ${w.day==null?'on':''}" data-a="edday" data-v="">Yok</button></div>
   <label class="l">Hareketler</label>${datalist()}
   ${w.exercises.map((e,i)=>`<div class="edrow"><div class="row"><span class="exn">${i+1}</span><input class="f" style="height:44px" list="exnames" data-ed="w.exercises.${i}.name" value="${esc(e.name)}" placeholder="Hareket adı (örn. Bench Press)" aria-label="Hareket adı"></div>
-  <div class="edg"><div><label>Set</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.sets" data-num="1" value="${e.sets??''}"></div><div><label>Min tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.min" data-num="1" value="${e.min??''}"></div><div><label>Maks tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.max" data-num="1" value="${e.max??''}"></div></div>
+  <div class="edg${rirOn(S.me)?' rir':''}"><div><label>Set</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.sets" data-num="1" value="${e.sets??''}"></div><div><label>Min tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.min" data-num="1" value="${e.min??''}"></div><div><label>Maks tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.max" data-num="1" value="${e.max??''}"></div>${rirOn(S.me)?`<div><label>RIR</label><input class="f" inputmode="decimal" data-ed="w.exercises.${i}.rir" data-num="1" value="${e.rir??''}" placeholder="—"></div>`:''}</div>
   <div class="row" style="margin-top:6px;justify-content:flex-end;gap:2px"><button class="ibtn" data-a="edmv" data-i="${i}" data-v="-1" aria-label="Yukarı" ${i?'':'disabled style="opacity:.3"'}>${ic('up',19)}</button><button class="ibtn" data-a="edmv" data-i="${i}" data-v="1" aria-label="Aşağı" ${i<w.exercises.length-1?'':'disabled style="opacity:.3"'}>${ic('down',19)}</button><button class="ibtn" data-a="edrm" data-i="${i}" aria-label="Kaldır" style="color:var(--acc)">${ic('trash',19)}</button></div></div>`).join('')}
   <button class="btn block" data-a="edadd">${ic('plus',18)} Hareket ekle</button>
   <p class="sub" style="margin:10px 2px 0">${ic('spark',13)} Kas ısı haritası hareket adlarından ve set sayılarından otomatik çıkarılır.</p>
@@ -613,7 +622,7 @@ function liveSave(now){clearTimeout(liveT);const run=()=>LIVE&&saveDoc(P(S.me,'s
 async function startWorkout(pid,wid,date){const act=U(S.me).sessions.find(s=>!s.done);
   if(act){toast('Önce devam eden antrenmanı bitir ya da iptal et.');resume(act.id);return}
   const p=pid?progOf(S.me,pid):null,w=p?.workouts.find(x=>x.id===wid);
-  const doc={date,programId:p?.id||null,programName:p?.name||'',workoutId:w?.id||null,workoutName:w?.name||'Serbest antrenman',startedAt:Date.now(),done:false,exercises:(w?.exercises||[]).map(e=>({name:e.name,target:{sets:+e.sets||1,min:e.min,max:e.max},sets:Array.from({length:Math.max(1,+e.sets||1)},()=>({w:null,r:null,d:false}))}))};
+  const doc={date,programId:p?.id||null,programName:p?.name||'',workoutId:w?.id||null,workoutName:w?.name||'Serbest antrenman',startedAt:Date.now(),done:false,exercises:(w?.exercises||[]).map(e=>({name:e.name,target:{sets:+e.sets||1,min:e.min,max:e.max,rir:rirN(e.rir)},sets:Array.from({length:Math.max(1,+e.sets||1)},()=>({w:null,r:null,d:false}))}))};
   LIVE={id:uidGen(),doc};closeSheet();S.route={name:'live'};render();scrollTo(0,0);liveSave(true);
 }
 function resume(sid){const s=U(S.me).sessions.find(x=>x.id===sid);if(!s)return;if(!LIVE||LIVE.id!==sid)LIVE={id:sid,doc:clone(s)};delete LIVE.doc.id;closeSheet();S.route={name:'live'};render();scrollTo(0,0)}
@@ -663,7 +672,7 @@ document.addEventListener('click',async ev=>{
   case'cpy':{try{await navigator.clipboard.writeText(ds.x==='code'?ED.code:ED.text);toast('Kopyalandı')}catch{toast('Kopyalanamadı; metni basılı tutarak seç.')}break}
   case'pimport':openImport();break;
   case'impgo':{const m=(ED.txt||'').match(/SETLOG1:([A-Za-z0-9+/=]+)/);if(!m){toast('Geçerli bir kod bulunamadı.');break}
-    try{const d=JSON.parse(b64d(m[1]));if(!d.n||!Array.isArray(d.w))throw 0;const id=uidGen();await saveDoc(P(me,'programs',id),{name:String(d.n).slice(0,60),star:!U(me).programs.length,created:Date.now(),map:{},workouts:d.w.slice(0,14).map(w=>({id:uidGen(),name:String(w.n||'gün').slice(0,40),day:Number.isInteger(w.d)&&w.d>=0&&w.d<7?w.d:null,exercises:(w.e||[]).slice(0,30).map(e=>({id:uidGen(),name:String(e[0]||'').slice(0,80),sets:+e[1]||1,min:+e[2]||1,max:+e[3]||+e[2]||1}))}))});
+    try{const d=JSON.parse(b64d(m[1]));if(!d.n||!Array.isArray(d.w))throw 0;const id=uidGen();await saveDoc(P(me,'programs',id),{name:String(d.n).slice(0,60),star:!U(me).programs.length,created:Date.now(),map:{},workouts:d.w.slice(0,14).map(w=>({id:uidGen(),name:String(w.n||'gün').slice(0,40),day:Number.isInteger(w.d)&&w.d>=0&&w.d<7?w.d:null,exercises:(w.e||[]).slice(0,30).map(e=>({id:uidGen(),name:String(e[0]||'').slice(0,80),sets:+e[1]||1,min:+e[2]||1,max:+e[3]||+e[2]||1,rir:rirN(e[4])}))}))});
       closeSheet();S.view=me;go('prog');toast('Program eklendi');setTimeout(()=>ensureMap(me,id),300)}catch{toast('Kod okunamadı.')}break}
   case'pcopy':{const p=progOf(ds.u,ds.p);if(!p)break;const id=uidGen();const c=strip(p);c.star=!U(me).programs.length;c.created=Date.now();c.from=nameOf(ds.u);c.workouts=c.workouts.map(w=>({...w,id:uidGen()}));if(await saveDoc(P(me,'programs',id),c)){S.view=me;go('prog');toast(`"${p.name}" programlarına kopyalandı`)}break}
   case'pheat':S.route={name:'ph',uid:S.view,pid:ds.p};render();scrollTo(0,0);break;
@@ -674,7 +683,7 @@ document.addEventListener('click',async ev=>{
   case'edadd':ED.w.exercises.push({id:uidGen(),name:'',sets:3,min:8,max:12});drawSheet();setTimeout(()=>{const ins=sheetEl.querySelectorAll('input[list]');ins[ins.length-1]?.focus()},60);break;
   case'edrm':ED.w.exercises.splice(+ds.i,1);drawSheet();break;
   case'edmv':{const i=+ds.i,j=i+(+ds.v),x=ED.w.exercises;if(j<0||j>=x.length)break;[x[i],x[j]]=[x[j],x[i]];drawSheet();break}
-  case'edsave':{const w=ED.w;w.name=(w.name||'').trim();if(!w.name){toast('Antrenmana bir ad ver.');break}w.exercises=w.exercises.filter(e=>(e.name||'').trim()).map(e=>({...e,name:e.name.trim(),sets:Math.max(1,Math.round(+e.sets||1)),min:Math.max(1,Math.round(+e.min||1)),max:Math.max(Math.round(+e.min||1),Math.round(+e.max||+e.min||1))}));
+  case'edsave':{const w=ED.w;w.name=(w.name||'').trim();if(!w.name){toast('Antrenmana bir ad ver.');break}w.exercises=w.exercises.filter(e=>(e.name||'').trim()).map(e=>({...e,name:e.name.trim(),sets:Math.max(1,Math.round(+e.sets||1)),min:Math.max(1,Math.round(+e.min||1)),max:Math.max(Math.round(+e.min||1),Math.round(+e.max||+e.min||1)),rir:rirN(e.rir)}));
     const p=progOf(me,ED.pid);const ws=p.workouts.slice();const i=ws.findIndex(x=>x.id===w.id);if(i<0)ws.push(w);else ws[i]=w;const pid=ED.pid,isNew=ED.isNew;
     if(await saveDoc(P(me,'programs',pid),{...strip(p),workouts:ws})){closeSheet();if(isNew){S.route={name:'w',uid:me,pid,wid:w.id};render()}toast('Kaydedildi');ensureMap(me,pid)}break}
   case'wdel':{const pid=ED.pid,wid=ED.w.id;confirmSheet('Bu gün silinsin mi?','Antrenman programdan kaldırılacak. Geçmiş kayıtların korunur.','Sil',async()=>{const p=progOf(me,pid);await saveDoc(P(me,'programs',pid),{...strip(p),workouts:p.workouts.filter(x=>x.id!==wid)});S.route=null;S.tab='prog';render()});break}
@@ -701,6 +710,7 @@ document.addEventListener('click',async ev=>{
     if(await saveDoc(P(me,'measures',ED.id),{date:m.date,values:vals,note:(m.note||'').trim()})){if(!vals[S.mf])S.mf=Object.keys(vals)[0];closeSheet();toast('Ölçüm kaydedildi')}break}
   case'mdel':{const id=ED.id;confirmSheet('Ölçüm silinsin mi?','Bu ölçüm kaydı silinecek.','Sil',()=>delDoc(P(me,'measures',id)));break}
   case'nick':openNick();break;
+  case'rirtog':{const p=U(me).profile;if(!p)break;const on=!p.rir;if(await saveDoc(`ud/${me}`,{...p,rir:on}))toast(on?'RIR açıldı':'RIR kapatıldı');break}
   case'nsave':{const n=(ED.nick||'').trim();if(!n){toast('Bir ad gir.');break}const p=U(me).profile||{};if(await saveDoc(`ud/${me}`,{...p,nick:n.slice(0,40),height:ED.height||null})){closeSheet();toast('Profil güncellendi')}break}
   case'obgo':{const n=$('#obn').value.trim();if(!n){toast('Adını gir.');$('#obn').focus();break}const h=Number($('#obh').value)||null;el.disabled=true;el.textContent='Hazırlanıyor…';
     let first=false;try{const all=await S.db.collection('ud').get();first=all.empty}catch{}
