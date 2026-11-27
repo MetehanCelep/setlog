@@ -1137,7 +1137,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
 
 /* ---------- program balancer (set budget + diminishing returns) ---------- */
 const BAL_MAJ=['chest','lats','upper_back','side_delts','rear_delts','biceps','triceps','quads','hamstrings','glutes','calves','abs'];
-const BAL_MODE={eff:{n:'Verimli',d:'Az ama etkili: her ana kas 6–10 set. Toplam set yaklaşık %15 azalır.',fl:6,ce:10,pfl:10,pce:14,bud:.85},bal:{n:'Dengeli',d:'Toplam set aynı kalır; setler fazla olan kaslardan eksik olanlara kaydırılır.',fl:6,ce:16,pfl:10,pce:20,bud:1},up:{n:'Artır',d:'Toplam en fazla %15 artar; artış önce eksik ve öncelikli kaslara gider.',fl:8,ce:18,pfl:12,pce:22,bud:1.15}};
+const BAL_MODE={eff:{n:'Verimli',d:'Az ama etkili: ana kaslar 6–10 set aralığına çekilir. Toplam set yaklaşık %15 azalır.',fl:6,ce:10,pfl:10,pce:14,bud:.85},bal:{n:'Dengeli',d:'Toplam set aynı kalır; setler fazla olan kaslardan eksik olanlara kaydırılır.',fl:6,ce:16,pfl:10,pce:20,bud:1},up:{n:'Artır',d:'Toplam en fazla %15 artar; artış önce eksik ve öncelikli kaslara gider.',fl:6,ce:18,pfl:10,pce:22,bud:1.15}};
 const BAL_PREF={calves:['c_stcalf','c_lpcalf','Seated_Calf_Raise'],side_delts:['c_cablelat','Side_Lateral_Raise','c_mlat'],rear_delts:['c_revfly','Face_Pull','c_cablerear'],biceps:['c_cablecurl','Hammer_Curls','c_mpreacher'],triceps:['c_pushdown','c_cableohe'],chest:['c_mchest','c_pecdeck','Incline_Dumbbell_Press'],lats:['c_latwide','c_pullover'],upper_back:['c_rowclose','c_csrow'],quads:['c_legext','c_legpress','c_hack'],hamstrings:['c_slc','c_llc','Romanian_Deadlift'],glutes:['c_hipthrustm','c_kickback','Barbell_Hip_Thrust'],abs:['c_ropecrunch','c_hkr','c_abmachine']};
 const BAL_REG={push:['chest','front_delts','side_delts','triceps'],pull:['lats','upper_back','rear_delts','biceps','forearms','traps'],legs:['quads','hamstrings','glutes','calves','adductors','abductors','lower_back'],core:['abs','obliques']};
 const BAL_SMALL=new Set(['side_delts','rear_delts','front_delts','biceps','triceps','calves','abs','obliques','forearms','traps','adductors','abductors']);
@@ -1193,7 +1193,15 @@ function balance(prog,o){
   for(const w of ws)w.exercises=w.exercises.filter(e=>!(e._new&&e.sets<1));
   const V=balVol(ws);
   const changes=[];ws.forEach((w,wi)=>w.exercises.forEach(e=>{if(e._new||e.sets!==e._o)changes.push({k:w.id+':'+e.id,wi,id:e.id,name:e.name,from:e._o,to:e.sets,add:!!e._new,r:e._r})}));
-  const warn=[];[...new Set(BAL_MAJ.concat(o.pri))].forEach(m=>{const v=V.tot[m]||0;if(v>=fl(m)-.01)return;const grow=ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&canAdd(e,i,V)));warn.push(grow&&o.mode!=='up'?`${MUS[m]} ${fmt(v)} sette kaldı (önerilen en az ${fl(m)}). ${M.n} modunda toplam set sabit tutulduğu ve diğer kaslardan alınabilecek set kalmadığı için daha fazla eklenmedi. “Artır” modu ya da daha az öncelikli kas seçmek bunu çözer.`:`${MUS[m]} ${fmt(v)} sette kaldı (önerilen en az ${fl(m)}). Hareket ve seans sınırları içinde daha fazlası için bu kası bir güne daha eklemek gerekir.`)});
+  const fit0=(e,i)=>e.sets<4&&V.sets[i]<maxDay&&bmp(e).p.every(k=>(V.ses[i][k]||0)+1<=cap(k)+.01);
+  const warn=[],short=[],T1=total();
+  for(const m of [...new Set(BAL_MAJ.concat(o.pri))]){const v=V.tot[m]||0;if(v>=fl(m)-.01)continue;
+    const room=ws.some((w,i)=>w.exercises.some(e=>bmp(e).p.includes(m)&&fit0(e,i)));
+    if(!room)warn.push({c:v<4,t:`${MUS[m]} ${fmt(v)} sette kaldı. Bu kası çalıştıran günlerde hareket ve seans sınırı doldu; daha fazlası için bu kası bir güne daha eklemen gerekir.`});
+    else if(v<4)warn.push({c:true,t:`${MUS[m]} ${fmt(v)} sette; haftada 4 setlik minimum etkili dozun altında.`});
+    else short.push(m)}
+  if(short.length){const lim=o.mode==='up'?`toplam +${bud-T0} set artış sınırı`:o.mode==='bal'?'sabit toplam set kuralı':'toplamı artırmama kuralı';
+    warn.unshift({c:false,t:`Bu turda ${lim} ve hareket başına ±2 set adım sınırı doldu. Hedefin altında kalanlar: ${short.map(m=>`${MUS[m]} ${fmt(V.tot[m]||0)}/${fl(m)}`).join(', ')}. 3–4 hafta sonra tekrar dengelersen artış devam eder${o.mode==='up'?'':'; ya da “Artır” modunu seçebilirsin'}.`})}
   return{ws,changes,warn,T0,fl,ce}}
 function balFinal(){const B=S.bal;return B.res.ws.map(w=>({...w,exercises:w.exercises.filter(e=>!(e._new&&B.off[w.id+':'+e.id])).map(e=>({...e,sets:B.off[w.id+':'+e.id]?e._o:e.sets}))}))}
 const balClean=ws=>ws.map(w=>({...w,id:uidGen(),exercises:w.exercises.map(e=>{const c={...e,id:uidGen()};delete c._o;delete c._r;delete c._new;if(!c.xid)delete c.xid;return c})}));
@@ -1227,7 +1235,7 @@ function viewBal(){const B=S.bal;const back=`<div class="top"><button class="ibt
   ${trend.length||q.length||B.res.warn.length?`<div class="card"><h3 style="margin-bottom:6px">Notlar</h3>
    ${trend.map(([m,t])=>`<div class="row" style="padding:5px 0;font-size:14px"><span class="sp">${MUS[m]}</span><span class="sub">${t.ch>0?'+':''}${fmt(t.ch)}% · 6 hafta</span><b style="color:${TS[t.st][1]};text-align:right;font-size:13px">${TS[t.st][0]}</b></div>`).join('')}
    ${q.map(x=>`<p class="sub" style="margin:8px 0 0;font-size:13px"><b style="color:var(--ink)">${esc(x.n)}:</b> setleri ortalama RIR ${fmt(x.rir)} ile bitiriyorsun. Tükenişe 1–3 tekrar kalana kadar zorlamak, set eklemekten daha etkili olabilir.</p>`).join('')}
-   ${B.res.warn.map(w=>`<p class="sub" style="margin:8px 0 0;font-size:13px;color:var(--acc)">${esc(w)}</p>`).join('')}</div>`:''}
+   ${B.res.warn.map(w=>`<p class="sub" style="margin:8px 0 0;font-size:13px;${w.c?'color:var(--acc)':''}">${esc(w.t)}</p>`).join('')}</div>`:''}
   <div class="sec"><h2>Değişiklikler</h2><span class="sub">${B.res.changes.length-Object.values(B.off).filter(Boolean).length}/${B.res.changes.length} seçili</span></div>
   ${B.res.changes.length?Object.entries(byDay).map(([wi,cs])=>`<div class="card"><h3 style="text-transform:lowercase;margin-bottom:4px">${esc(B.res.ws[wi].name)}</h3><div class="list">${cs.map(c=>{const off=!!B.off[c.k];return`<button class="li press" data-a="balt" data-k="${esc(c.k)}" style="text-align:left;opacity:${off?.45:1}"><span class="xck" style="${off?'':'background:var(--acc);border-color:var(--acc)'}">${off?'':ic('check',16)}</span><span class="sp" style="min-width:0"><h3 style="font-size:15px">${c.add?`<span style="color:var(--good)">+ </span>`:''}${esc(c.name)}</h3><span class="sub" style="font-size:12.5px">${c.add?`Yeni · ${c.to} set`:`${c.from} → <b style="color:${c.to>c.from?'var(--good)':'var(--acc)'}">${c.to}</b> set`} · ${[...new Set(c.r.map(rtxt))].slice(0,2).join('; ')}</span></span></button>`}).join('')}</div></div>`).join(''):'<div class="card empty">Program bu ayarlarla zaten dengeli; değişiklik gerekmiyor.</div>'}
   <label class="l" for="baln">Yeni programın adı</label><input class="f" id="baln" value="${esc(B.name)}">
