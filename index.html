@@ -204,22 +204,92 @@ body.resting main{padding-bottom:110px!important}
 .edg2 label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin:0 0 4px 2px}
 
 .tabs .in{grid-template-columns:repeat(6,minmax(0,1fr))!important}
-.mbadge{min-width:22px;height:22px;border-radius:11px;background:var(--acc);color:#fff;font:800 12px/22px var(--f);text-align:center;padding:0 6px}
-.chathead{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);margin:0 -16px;padding:calc(8px + env(safe-area-inset-top)) 16px 10px}
-.chat{display:flex;flex-direction:column;gap:3px;padding:6px 0 4px}
-.cday{align-self:center;font-size:12px;font-weight:700;color:var(--mute);background:var(--card2);padding:4px 10px;border-radius:999px;margin:12px 0 6px}
-.bub{max-width:80%;align-self:flex-start;background:var(--card);border-radius:18px 18px 18px 6px;padding:8px 12px 6px;box-shadow:0 1px 2px rgba(0,0,0,.05);margin-top:6px;display:flex;flex-direction:column}
-.bub.grp{margin-top:0}
-.bub.me{align-self:flex-end;background:var(--acc);color:#fff;border-radius:18px 18px 6px 18px}
-.bub span{white-space:pre-wrap;word-break:break-word;font-size:15.5px;line-height:1.35}
-.bub small{align-self:flex-end;font-size:10.5px;opacity:.6;margin-top:2px}
-.bub .bn{font-size:12px;color:var(--acc);margin-bottom:2px}
-.seen{align-self:flex-end;font-size:11.5px;color:var(--mute);margin:2px 4px 0}
-body.chatting main{padding-bottom:calc(90px + env(safe-area-inset-bottom))!important}
-#composer{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:8px;align-items:flex-end;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.mbadge{min-width:20px;height:20px;border-radius:10px;background:var(--acc);color:#fff;font:800 11.5px/20px var(--f);text-align:center;padding:0 6px}
+.mlist{padding:4px 6px}
+.mrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 8px;border-radius:16px}
+.mrow:active{background:var(--card2)}
+.mrow+.mrow{position:relative}.mrow+.mrow::before{content:'';position:absolute;left:64px;right:8px;top:0;border-top:1px solid var(--line)}
+.mrow .mb{flex:1;min-width:0}
+.mrow .mt{display:flex;align-items:baseline;gap:8px}
+.mrow h3{flex:1;min-width:0;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow time{font-size:12px;color:var(--mute);flex:none}
+.mrow .pv{display:flex;align-items:center;gap:6px;margin-top:2px}
+.mrow .pv>span{flex:1;min-width:0;display:flex;align-items:center;gap:4px;font-size:13.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .pv svg{flex:none}
+.mrow.un h3{font-weight:800}.mrow.un time{color:var(--acc);font-weight:700}.mrow.un .pv>span{color:var(--ink);font-weight:600}
+.gav{display:inline-grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,#2b2b30,#55555c);color:#fff;flex:none}
+.pushc{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--accSoft);border-radius:16px;padding:12px 14px;margin-bottom:12px;font-size:13.5px}
+.pushc b{display:block;font-size:14.5px;color:var(--ink)}.pushc .sub{font-size:12.5px}
+.pushc>svg:first-child{color:var(--acc);flex:none}
+body.chatting .app{padding-top:calc(env(safe-area-inset-top) + 68px)}
+body.chatting{background:var(--bg)}
+.chathead{position:fixed;top:0;left:0;right:0;z-index:25;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 6px) 10px 8px}
+.chathead .in{max-width:540px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.chathead .ibtn{width:40px;height:40px;border-radius:50%}
+.chathead .nm{flex:1;min-width:0}
+.chathead h2{font-size:16.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chathead .st{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat{display:flex;flex-direction:column;padding:2px 0 6px}
+.cday{align-self:center;font-size:11.5px;font-weight:700;color:var(--mute);background:color-mix(in srgb,var(--card2) 80%,transparent);padding:4px 11px;border-radius:999px;margin:14px 0 4px;letter-spacing:.2px}
+.mr{display:flex;align-items:flex-end;gap:6px;margin-top:10px}
+.mr.grp{margin-top:2px}
+.mr.me{justify-content:flex-end}
+.mr .avs{width:28px;flex:none}
+.bub{position:relative;max-width:min(78%,360px);background:var(--card);color:var(--ink);border-radius:20px;padding:7px 12px 7px;box-shadow:0 1px 1.5px rgba(0,0,0,.06)}
+.mr:not(.me) .bub{border-bottom-left-radius:6px}.mr.grp:not(.me) .bub{border-top-left-radius:6px}
+.mr.me .bub{background:var(--acc);color:#fff;border-bottom-right-radius:6px}.mr.me.grp .bub{border-top-right-radius:6px}
+.bub .bn{display:block;font-size:12px;font-weight:700;margin-bottom:1px}
+.bub .tx{white-space:pre-wrap;word-break:break-word;font-size:15.5px;line-height:1.36}
+.bub time{float:right;font-size:10.5px;line-height:1;opacity:.62;margin:9px -2px -3px 10px;font-variant-numeric:tabular-nums}
+.bub.img{padding:3px;overflow:hidden}
+.bub.img .ph{display:block;position:relative;border-radius:17px;background:var(--card2);overflow:hidden;cursor:zoom-in}
+.mr:not(.me) .bub.img .ph{border-bottom-left-radius:4px}.mr.me .bub.img .ph{border-bottom-right-radius:4px}
+.bub.img .ph img{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover}
+.bub.img .bn{padding:4px 9px 3px}
+.bub.img .cap{padding:6px 9px 4px}
+.bub.img>time{position:absolute;right:10px;bottom:10px;float:none;margin:0;opacity:1;background:rgba(0,0,0,.45);color:#fff;padding:3px 7px;border-radius:999px}
+.bub.img .cap time{position:static;float:right;background:none;padding:0;margin:9px -2px -3px 10px;opacity:.62;color:inherit}
+.aud{display:flex;align-items:center;gap:10px;width:228px;max-width:100%;padding:2px 0}
+.aud .pb{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--acc);color:#fff}
+.mr.me .aud .pb{background:#fff;color:var(--acc)}
+.aud .wf{flex:1;display:flex;align-items:center;gap:2px;height:30px}
+.aud .wf i{flex:1;min-width:2px;border-radius:2px;background:currentColor;opacity:.3;transition:opacity .15s}
+.aud .wf i.on{opacity:1}
+.aud .ad{display:flex;justify-content:space-between;font-size:11px;opacity:.7;font-variant-numeric:tabular-nums;margin-top:1px}
+.aud .ac{flex:1;min-width:0}
+.bub.pend{opacity:.7}
+.bub .spin{position:absolute;inset:0;display:grid;place-items:center}
+.bub .spin::after{content:'';width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.5);border-top-color:#fff;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.seen{align-self:flex-end;font-size:11px;font-weight:600;color:var(--mute);margin:3px 4px 0}
+.cempty{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:56px 20px;color:var(--mute);font-size:14px}
+body.chatting main{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+#composer{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);border-top:1px solid var(--line)}
 #composer[hidden]{display:none}
-#composer textarea{flex:1;resize:none;border:0;outline:0;background:var(--card2);border-radius:20px;padding:10px 14px;font:16px/1.3 var(--f);color:var(--ink);max-height:120px}
-#composer button{width:42px;height:42px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;flex:none}
+#composer .in{max-width:540px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+#composer .cb{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--ink);background:var(--card2)}
+#composer .cs{background:var(--acc);color:#fff}
+#composer .cf{flex:1;min-width:0;display:flex;align-items:center;min-height:40px;background:var(--card);border:1px solid var(--line);border-radius:20px}
+#composer textarea{flex:1;min-width:0;resize:none;border:0;outline:0;background:none;padding:9px 14px;font:16px/1.3 var(--f);color:var(--ink);max-height:120px}
+#composer .rec{flex:1;display:none;align-items:center;gap:10px;padding:0 14px;height:38px}
+#composer.rec .rec{display:flex}#composer.rec textarea{display:none}
+#composer.rec .cb.l{color:var(--acc);background:var(--accSoft)}
+#composer .rdot{width:10px;height:10px;border-radius:50%;background:var(--acc);animation:rpulse 1s ease-in-out infinite;flex:none}
+@keyframes rpulse{50%{opacity:.25}}
+#composer .rt{font:700 15px var(--f);font-variant-numeric:tabular-nums;flex:none}
+#composer .rlv{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:2px;height:24px;overflow:hidden;color:var(--acc)}
+#composer .rlv i{width:3px;flex:none;border-radius:2px;background:currentColor}
+#mview{position:fixed;inset:0;z-index:80;background:#000;display:flex;flex-direction:column;animation:fade .2s}
+#mview[hidden]{display:none}
+#mview .mvt{display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;color:#fff}
+#mview .mvt button{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);color:#fff}
+#mview .mvi{flex:1;min-height:0;display:grid;place-items:center;padding:8px}
+#mview .mvi img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+#mview .mvb{display:flex;gap:8px;align-items:flex-end;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+#mview .mvb textarea{flex:1;resize:none;border:0;outline:0;background:rgba(255,255,255,.14);color:#fff;border-radius:20px;padding:10px 14px;font:16px/1.3 var(--f);max-height:100px}
+#mview .mvb textarea::placeholder{color:rgba(255,255,255,.6)}
+#mview .mvb button{width:44px;height:44px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;flex:none}
+@keyframes fade{from{opacity:0}}
 
 .bodyfig figcaption{text-align:center;font-size:12px;color:var(--mute);font-weight:600}
 .bodyfig path,.bodyfig ellipse,.bodyfig rect{stroke:var(--card);stroke-width:1.4;transition:fill .4s}
@@ -1362,16 +1432,28 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
 
 
 /* ---------- messaging ---------- */
+Object.assign(ICONS,{
+  img:'<rect x="3" y="4.5" width="18" height="15" rx="3"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15.5l-4.8-4.8L6 19.5"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  send:'<path d="M12 19V6M6.5 11.5L12 6l5.5 5.5"/>',
+  pause:'<path d="M8.5 5.5v13M15.5 5.5v13"/>',
+  users:'<circle cx="9" cy="8.5" r="3.2"/><path d="M3.2 19.5c.7-3.3 3-5.2 5.8-5.2s5.1 1.9 5.8 5.2"/><path d="M15.5 5.4a3.1 3.1 0 0 1 0 6.1M17.6 14.6c1.7.7 2.8 2.3 3.2 4.9"/>'
+});
 const allMsgs=()=>userIds().flatMap(id=>(U(id).messages||[]).map(m=>({...m,_u:id})));
-const msgsWith=k=>allMsgs().filter(m=>k==='all'?m.to==='all':(m._u===S.me&&m.to===k)||(m._u===k&&m.to===S.me)).sort((a,b)=>(a.at||0)-(b.at||0));
+const msgsWith=k=>{const real=allMsgs().filter(m=>k==='all'?m.to==='all':(m._u===S.me&&m.to===k)||(m._u===k&&m.to===S.me));const ids=new Set(real.map(m=>m.id));
+  return real.concat((S.mpend||[]).filter(p=>p.to===k&&!ids.has(p.id))).sort((a,b)=>(a.at||0)-(b.at||0))};
 const readAt=k=>(U(S.me).msgread||[]).find(r=>r.id===k)?.at||0;
 const unreadOf=k=>msgsWith(k).filter(m=>m._u!==S.me&&(m.at||0)>readAt(k)).length;
 const unreadMsgs=()=>['all',...userIds().filter(u=>u!==S.me)].reduce((a,k)=>a+unreadOf(k),0);
 const chatName=k=>k==='all'?'Ekip sohbeti':nameOf(k);
 const hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const mss=s=>{s=Math.max(0,Math.round(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const gav=s=>`<span class="gav" style="width:${s}px;height:${s}px">${ic('users',Math.round(s*.46))}</span>`;
+const chatAv=(k,s)=>k==='all'?gav(s):av(k,s);
 const isStandalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
 const pushSupported=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const newMid=()=>'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 let swReg=null;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(r=>{swReg=r;r.pushManager?.getSubscription?.().then(sb_=>{S.pushOn=!!sb_&&window.Notification?.permission==='granted';soft()}).catch(()=>{})}).catch(()=>{});
   navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='open'){try{const k=new URL(e.data.url).searchParams.get('chat');if(k)openChat(k)}catch{}}})}
@@ -1384,39 +1466,148 @@ async function enablePush(){
     const j=sub.toJSON();const{error:e2}=await sb.from('push_subs').upsert({endpoint:j.endpoint,user_id:S.me,p256dh:j.keys.p256dh,auth:j.keys.auth});if(e2)throw e2;
     S.pushOn=true;toast('Bildirimler açıldı');soft()}catch(e){console.error(e);toast('Bildirimler açılamadı; biraz sonra tekrar dene.')}}
 function pushCard(){if(S.pushOn)return'';
-  if(isIOS&&!isStandalone())return`<div class="card" style="background:var(--accSoft)"><h3>Bildirim almak için</h3><p class="sub" style="margin:6px 0 0;font-size:13.5px">1. Safari’de alttaki <b style="color:var(--ink)">Paylaş</b> düğmesine dokun.<br>2. <b style="color:var(--ink)">Ana Ekrana Ekle</b>’yi seç.<br>3. Setlog’u ana ekrandaki simgeden aç ve buradan bildirimleri aç.</p></div>`;
+  if(isIOS&&!isStandalone())return`<div class="pushc">${ic('spark',22)}<div><b>Bildirim almak için</b><span class="sub">Safari’de <b style="display:inline">Paylaş → Ana Ekrana Ekle</b>’ye dokun, Setlog’u ana ekrandan açıp buradan bildirimleri aç.</span></div></div>`;
   if(!pushSupported())return'';
-  if(window.Notification?.permission==='denied')return`<div class="card"><h3>Bildirimler kapalı</h3><p class="sub" style="margin:6px 0 0;font-size:13.5px">iPhone’da Ayarlar → Bildirimler → Setlog’dan izin verebilirsin.</p></div>`;
-  return`<button class="card row press" style="width:100%;text-align:left;background:var(--accSoft)" data-a="msgpush">${ic('spark',22)}<div class="sp"><h3>Bildirimleri aç</h3><div class="sub" style="font-size:13px">Yeni mesaj gelince telefonuna bildirim düşsün</div></div>${ic('chev',18)}</button>`}
+  if(window.Notification?.permission==='denied')return`<div class="pushc">${ic('spark',22)}<div><b>Bildirimler kapalı</b><span class="sub">Ayarlar → Bildirimler → Setlog’dan açabilirsin.</span></div></div>`;
+  return`<button class="pushc press" data-a="msgpush">${ic('spark',22)}<div style="flex:1"><b>Bildirimleri aç</b><span class="sub">Yeni mesaj gelince telefonuna bildirim düşsün</span></div>${ic('chev',18)}</button>`}
+const pvText=(m,k)=>{const who=m._u===S.me?'Sen: ':k==='all'?esc(nameOf(m._u))+': ':'';
+  if(m.kind==='img')return`${who}${ic('img',15)}${m.text?esc(m.text):'Fotoğraf'}`;
+  if(m.kind==='aud')return`${who}${ic('mic',15)}Sesli mesaj · ${mss(m.dur)}`;
+  return who+esc(m.text||'')};
+const whenShort=t=>{const d=ymd(new Date(t));return d===todayS()?hm(t):d===addDays(todayS(),-1)?'Dün':dShort(d)};
 function viewMsg(){const ks=['all',...userIds().filter(u=>u!==S.me)];const last=k=>msgsWith(k).at(-1);
-  ks.sort((a,b)=>a==='all'?-1:b==='all'?1:(last(b)?.at||0)-(last(a)?.at||0));
+  ks.sort((a,b)=>{const la=last(a)?.at||0,lb=last(b)?.at||0;return lb-la||(a==='all'?-1:b==='all'?1:0)});
   return`<div class="top"><h1>Mesajlar</h1></div>${pushCard()}
-  <div class="card list" style="padding:0 14px">${ks.map(k=>{const m=last(k),n=unreadOf(k);return`<button class="li press" data-a="chat" data-k="${k}" style="text-align:left;gap:12px">${k==='all'?`<span class="av" style="width:44px;height:44px;background:var(--ink)">${ic('copy',20)}</span>`:av(k,44)}<span class="sp" style="min-width:0"><h3 style="font-size:15.5px">${esc(chatName(k))}</h3><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;${n?'color:var(--ink);font-weight:600':''}">${m?`${m._u===S.me?'Sen: ':k==='all'?esc(nameOf(m._u))+': ':''}${esc(m.text)}`:k==='all'?'Herkesin olduğu grup':'Henüz mesaj yok'}</span></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${m?`<span class="sub" style="font-size:12px">${m.at>Date.now()-864e5?hm(m.at):dShort(ymd(new Date(m.at)))}</span>`:''}${n?`<span class="mbadge">${n}</span>`:''}</span></button>`}).join('')}</div>`}
-const composer=document.createElement('div');composer.id='composer';composer.hidden=true;composer.innerHTML=`<textarea id="cmp" rows="1" maxlength="2000" placeholder="Mesaj yaz" aria-label="Mesaj"></textarea><button data-a="msgsend" aria-label="Gönder">${ic('up',22)}</button>`;document.body.appendChild(composer);
-const cmp=composer.querySelector('#cmp');
-cmp.addEventListener('input',()=>{cmp.style.height='auto';cmp.style.height=Math.min(120,cmp.scrollHeight)+'px';if(S.route?.name==='chat')(S.drafts||(S.drafts={}))[S.route.k]=cmp.value});
+  <div class="card mlist">${ks.map(k=>{const m=last(k),n=unreadOf(k);return`<button class="mrow press ${n?'un':''}" data-a="chat" data-k="${k}">${chatAv(k,48)}<span class="mb"><span class="mt"><h3>${esc(chatName(k))}</h3>${m?`<time>${whenShort(m.at)}</time>`:''}</span><span class="pv"><span>${m?pvText(m,k):k==='all'?'Herkesin olduğu grup':'Henüz mesaj yok'}</span>${n?`<span class="mbadge">${n>99?'99+':n}</span>`:''}</span></span></button>`}).join('')}</div>`}
+
+/* media urls (private bucket → signed urls) */
+const mediaURL=new Map(),mediaBusy=new Set();
+const murl=p=>{const c=mediaURL.get(p);return c&&c.exp>Date.now()+3e4?c.u:''};
+async function resolveMedia(){const els=[...document.querySelectorAll('[data-sp]')];if(!els.length)return;
+  const need=[...new Set(els.map(e=>e.dataset.sp))].filter(p=>!murl(p)&&!mediaBusy.has(p));
+  if(need.length&&sb?.storage){need.forEach(p=>mediaBusy.add(p));try{const{data}=await sb.storage.from('chat').createSignedUrls(need,3600);(data||[]).forEach(d=>{if(d?.signedUrl)mediaURL.set(d.path,{u:d.signedUrl,exp:Date.now()+3500e3})})}catch(e){console.error(e)}need.forEach(p=>mediaBusy.delete(p))}
+  document.querySelectorAll('img[data-sp]').forEach(e=>{const u=murl(e.dataset.sp);if(u&&e.getAttribute('src')!==u)e.src=u})}
+
+function bubbleHTML(m,k,mine,grp){const nm=!mine&&k==='all'&&!grp?`<b class="bn" style="color:${HUES[[...m._u].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,0)%HUES.length]}">${esc(nameOf(m._u))}</b>`:'';const t=`<time>${hm(m.at)}</time>`;
+  if(m.kind==='img'){const W=m.w||800,H=m.h||800,bw=Math.min(240,W>=H?240:Math.round(240*W/H)),bh=Math.round(bw*H/W),ch=Math.min(bh,320),u=murl(m.path);
+    return`<div class="bub img ${m.pend?'pend':''}">${nm}<span class="ph" data-a="mview" data-sp="${esc(m.path)}" style="width:${bw}px;height:${ch}px"><img alt="Fotoğraf" data-sp="${esc(m.path)}" ${u?`src="${u}"`:''}></span>${m.text?`<div class="cap"><span class="tx">${esc(m.text)}</span>${t}</div>`:t}${m.pend?'<span class="spin"></span>':''}</div>`}
+  if(m.kind==='aud'){const wf=(m.wf&&m.wf.length?m.wf:Array(32).fill(3));
+    return`<div class="bub ${m.pend?'pend':''}">${nm}<div class="aud" data-aid="${m.id}"><button class="pb" data-a="aplay" data-sp="${esc(m.path)}" data-id="${m.id}" aria-label="Oynat">${ic(AUD.id===m.id&&AUD.playing?'pause':'play',18,1)}</button><div class="ac"><div class="wf">${wf.map(v=>`<i style="height:${Math.max(12,Math.min(100,v*10))}%"></i>`).join('')}</div><div class="ad"><span class="cur">${mss(m.dur)}</span><span>${hm(m.at)}</span></div></div></div></div>`}
+  return`<div class="bub">${nm}<span class="tx">${esc(m.text)}</span>${t}</div>`}
 let readT=0;
 function viewChat(){const k=S.route.k,ms=msgsWith(k);let h='',lastDay='';
   ms.forEach((m,i)=>{const d=ymd(new Date(m.at));if(d!==lastDay){lastDay=d;h+=`<div class="cday">${d===todayS()?'Bugün':d===addDays(todayS(),-1)?'Dün':dLong(d)}</div>`}
-    const mine=m._u===S.me,prev=ms[i-1],grp=prev&&prev._u===m._u&&m.at-prev.at<5*6e4&&ymd(new Date(prev.at))===d;
-    h+=`<div class="bub ${mine?'me':''} ${grp?'grp':''}">${!mine&&k==='all'&&!grp?`<b class="bn">${esc(nameOf(m._u))}</b>`:''}<span>${esc(m.text)}</span><small>${hm(m.at)}</small></div>`});
-  const lastMine=[...ms].reverse().find(m=>m._u===S.me);
-  const seen=k!=='all'&&lastMine&&((U(k).msgread||[]).find(r=>r.id===S.me)?.at||0)>=lastMine.at;
+    const mine=m._u===S.me,prev=ms[i-1],next=ms[i+1],same=(a,b)=>a&&b&&a._u===b._u&&Math.abs(a.at-b.at)<5*6e4&&ymd(new Date(a.at))===ymd(new Date(b.at));
+    const grp=same(prev,m),lastOfRun=!same(m,next);
+    const side=!mine&&k==='all'?(lastOfRun?`<span class="avs">${av(m._u,28)}</span>`:'<span class="avs"></span>'):'';
+    h+=`<div class="mr ${mine?'me':''} ${grp?'grp':''}">${side}${bubbleHTML(m,k,mine,grp)}</div>`});
+  const lastMine=[...ms].reverse().find(m=>m._u===S.me&&!m.pend);
+  const seen=k!=='all'&&lastMine&&ms.at(-1)===lastMine&&((U(k).msgread||[]).find(r=>r.id===S.me)?.at||0)>=lastMine.at;
   const inc=ms.filter(m=>m._u!==S.me).at(-1);if(inc&&inc.at>readAt(k)){clearTimeout(readT);readT=setTimeout(()=>saveDoc(P(S.me,'msgread',k),{to:k,at:Date.now()}),400)}
-  return`<div class="top chathead"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button><div class="sp row" style="gap:10px;min-width:0">${k==='all'?`<span class="av" style="width:38px;height:38px;background:var(--ink)">${ic('copy',18)}</span>`:av(k,38)}<h2 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(chatName(k))}</h2></div></div>
-  <div class="chat" id="chatlist">${h||'<p class="sub" style="text-align:center;padding:40px 0">İlk mesajı sen gönder.</p>'}${seen?'<div class="seen">Görüldü</div>':''}</div>`}
-function openChat(k){if(k!=='all'&&!userIds().includes(k))return;closeSheet();S.tab='msg';S.route={name:'chat',k};render();requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}
+  const others=userIds().filter(u=>u!==S.me);
+  return`<div class="chathead"><div class="in"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back',20)}</button>${chatAv(k,38)}<div class="nm"><h2>${esc(chatName(k))}</h2>${k==='all'?`<div class="st">${esc(['Sen',...others.map(nameOf)].join(', '))}</div>`:''}</div></div></div>
+  <div class="chat" id="chatlist">${h||`<div class="cempty">${chatAv(k,64)}<b style="color:var(--ink);font-size:16px">${esc(chatName(k))}</b>İlk mesajı sen gönder. Fotoğraf ve sesli mesaj da atabilirsin.</div>`}${seen?'<div class="seen">Görüldü</div>':''}</div>`}
+function openChat(k){if(k!=='all'&&!userIds().includes(k))return;closeSheet();S.tab='msg';S.route={name:'chat',k};S._stick=true;render();requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}
+
+/* composer */
+const composer=document.createElement('div');composer.id='composer';composer.hidden=true;
+composer.innerHTML=`<div class="in"><button class="cb l" data-a="msgphoto" aria-label="Fotoğraf gönder">${ic('img',21)}</button><div class="cf"><textarea id="cmp" rows="1" maxlength="2000" placeholder="Mesaj" aria-label="Mesaj"></textarea><div class="rec"><span class="rdot"></span><span class="rt">0:00</span><span class="rlv"></span></div></div><button class="cb cs r" data-a="msgrec" aria-label="Sesli mesaj">${ic('mic',21)}</button></div><input type="file" id="cmpfile" accept="image/*" hidden>`;
+document.body.appendChild(composer);
+const cmp=composer.querySelector('#cmp'),cmpFile=composer.querySelector('#cmpfile'),cbL=composer.querySelector('.cb.l'),cbR=composer.querySelector('.cb.r');
+function syncComposer(){const rec=!!REC;composer.classList.toggle('rec',rec);
+  const lA=rec?'reccancel':'msgphoto';if(cbL.dataset.a!==lA){cbL.dataset.a=lA;cbL.innerHTML=ic(rec?'trash':'img',21);cbL.setAttribute('aria-label',rec?'Kaydı sil':'Fotoğraf gönder')}
+  const rA=rec?'recsend':cmp.value.trim()?'msgsend':'msgrec';if(cbR.dataset.a!==rA){cbR.dataset.a=rA;cbR.innerHTML=ic(rA==='msgrec'?'mic':'send',21);cbR.setAttribute('aria-label',rA==='msgrec'?'Sesli mesaj':'Gönder')}}
+cmp.addEventListener('input',()=>{cmp.style.height='auto';cmp.style.height=Math.min(120,cmp.scrollHeight)+'px';if(S.route?.name==='chat')(S.drafts||(S.drafts={}))[S.route.k]=cmp.value;syncComposer()});
 function chatAfterRender(){const on=S.route?.name==='chat';composer.hidden=!on;document.body.classList.toggle('chatting',on);
-  if(on){const k=S.route.k;if(composer.dataset.k!==k){composer.dataset.k=k;cmp.value=S.drafts?.[k]||'';cmp.dispatchEvent(new Event('input'))}
-    if(S._stick!==false)requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}}
+  if(!on){if(REC)stopRec(false);return}
+  const k=S.route.k;if(composer.dataset.k!==k){composer.dataset.k=k;cmp.value=S.drafts?.[k]||'';cmp.dispatchEvent(new Event('input'))}
+  syncComposer();audUI();resolveMedia();
+  if(S._stick!==false)requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}
 addEventListener('scroll',()=>{if(S.route?.name==='chat')S._stick=innerHeight+scrollY>=document.body.scrollHeight-80},{passive:true});
+function notify(k,body){try{sb?.functions?.invoke('push',{body:{action:'send',to:k,body}}).catch(()=>{})}catch{}}
 async function sendMsg(){const k=S.route?.name==='chat'?S.route.k:null;const t=cmp.value.trim();if(!k||!t)return;
-  const id='m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);cmp.value='';cmp.dispatchEvent(new Event('input'));S._stick=true;
-  if(!(await saveDoc(P(S.me,'messages',id),{to:k,text:t.slice(0,2000),at:Date.now()}))){cmp.value=t;return}
-  try{sb?.functions?.invoke('push',{body:{action:'send',to:k,body:t}}).catch(()=>{})}catch{}}
+  const id=newMid();cmp.value='';cmp.dispatchEvent(new Event('input'));S._stick=true;
+  if(!(await saveDoc(P(S.me,'messages',id),{to:k,text:t.slice(0,2000),at:Date.now()}))){cmp.value=t;cmp.dispatchEvent(new Event('input'));return}
+  notify(k,t)}
 cmp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!isIOS){e.preventDefault();sendMsg()}});
+
+async function sendMedia(k,kind,blob,meta){const id=newMid(),ct=(blob.type||'').split(';')[0]||(kind==='img'?'image/jpeg':'audio/mp4');
+  const ext=kind==='img'?'jpg':ct.includes('webm')?'webm':ct.includes('ogg')?'ogg':'m4a';const path=`${S.me}/${k}/${id}.${ext}`,at=Date.now();
+  mediaURL.set(path,{u:URL.createObjectURL(blob),exp:Infinity});
+  S.mpend=(S.mpend||[]).concat({id,_u:S.me,to:k,at,kind,path,...meta,pend:true});S._stick=true;soft();
+  try{const{error}=await sb.storage.from('chat').upload(path,blob,{contentType:ct,upsert:false});if(error)throw error;
+    if(!(await saveDoc(P(S.me,'messages',id),{to:k,text:'',...meta,kind,path,at})))throw new Error('save');
+    notify(k,kind==='img'?'📷 '+(meta.text||'Fotoğraf'):'🎤 Sesli mesaj ('+mss(meta.dur)+')')}
+  catch(e){console.error(e);toast(kind==='img'?'Fotoğraf gönderilemedi, tekrar dene.':'Sesli mesaj gönderilemedi, tekrar dene.')}
+  finally{S.mpend=(S.mpend||[]).filter(p=>p.id!==id);soft()}}
+
+/* photos */
+async function prepImg(file){const url=URL.createObjectURL(file);
+  try{const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('img'));i.src=url});
+    const M=1600,s=Math.min(1,M/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*s)),h=Math.max(1,Math.round(img.naturalHeight*s));
+    const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);
+    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.82));if(!blob)throw new Error('blob');return{blob,w,h}}
+  finally{URL.revokeObjectURL(url)}}
+const mview=document.createElement('div');mview.id='mview';mview.hidden=true;document.body.appendChild(mview);
+let MV=null;
+function closeMV(){if(MV?.prev)URL.revokeObjectURL(MV.prev);MV=null;mview.hidden=true;mview.innerHTML=''}
+function showMV(src,send){mview.innerHTML=`<div class="mvt"><button data-a="mvclose" aria-label="Kapat">${ic('x',22)}</button>${send?`<b style="font-size:15px">${esc(chatName(MV.k))}</b><span style="width:42px"></span>`:''}</div><div class="mvi" ${send?'':'data-a="mvclose"'}><img src="${src}" alt="Fotoğraf"></div>${send?`<div class="mvb"><textarea id="mvcap" rows="1" maxlength="500" placeholder="Açıklama ekle"></textarea><button data-a="mvsend" aria-label="Gönder">${ic('send',22)}</button></div>`:''}`;mview.hidden=false}
+cmpFile.addEventListener('change',async()=>{const f=cmpFile.files?.[0];cmpFile.value='';const k=S.route?.name==='chat'?S.route.k:null;if(!f||!k)return;
+  if(!/^image\//.test(f.type)&&!/\.(heic|heif|jpe?g|png|webp)$/i.test(f.name)){toast('Sadece fotoğraf gönderebilirsin.');return}
+  try{const r=await prepImg(f);const prev=URL.createObjectURL(r.blob);MV={k,...r,prev};showMV(prev,true)}catch(e){console.error(e);toast('Bu fotoğraf açılamadı.')}});
+
+/* voice */
+let REC=null;
+async function startRec(){if(REC)return;const k=S.route?.name==='chat'?S.route.k:null;if(!k)return;
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){toast('Bu cihaz ses kaydını desteklemiyor.');return}
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
+  catch(e){toast(e?.name==='NotAllowedError'?'Mikrofon izni verilmedi. Ayarlar → Setlog (veya Safari) → Mikrofon’dan açabilirsin.':'Mikrofon açılamadı.');return}
+  const mime=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(m=>MediaRecorder.isTypeSupported?.(m))||'';
+  let mr;try{mr=new MediaRecorder(st,mime?{mimeType:mime}:undefined)}catch{st.getTracks().forEach(t=>t.stop());toast('Kayıt başlatılamadı.');return}
+  const ch=[];mr.ondataavailable=e=>{if(e.data?.size)ch.push(e.data)};
+  let an=null,ac=null;try{ac=new(window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaStreamSource(st);an=ac.createAnalyser();an.fftSize=512;src.connect(an)}catch{}
+  REC={k,st,mr,ch,mime,t0:Date.now(),an,ac,lv:[],buf:an?new Uint8Array(an.fftSize):null};mr.start(200);
+  try{navigator.vibrate?.(20)}catch{}syncComposer();recTick()}
+function recTick(){if(!REC)return;const s=(Date.now()-REC.t0)/1e3;composer.querySelector('.rt').textContent=mss(s);
+  let v=.15;if(REC.an){REC.an.getByteTimeDomainData(REC.buf);let sum=0;for(const x of REC.buf){const d=(x-128)/128;sum+=d*d}v=Math.min(1,Math.sqrt(sum/REC.buf.length)*4)}
+  REC.lv.push(v);const bars=REC.lv.slice(-40);composer.querySelector('.rlv').innerHTML=bars.map(x=>`<i style="height:${Math.max(10,x*100)}%"></i>`).join('');
+  if(s>=120){stopRec(true);return}REC.timer=setTimeout(recTick,100)}
+function stopRec(send){const R=REC;if(!R)return;REC=null;clearTimeout(R.timer);syncComposer();
+  const dur=(Date.now()-R.t0)/1e3;
+  R.mr.onstop=()=>{R.st.getTracks().forEach(t=>t.stop());try{R.ac?.close()}catch{}
+    if(!send)return;if(dur<1){toast('Çok kısa; göndermek için en az 1 saniye konuş.');return}
+    const blob=new Blob(R.ch,{type:(R.mr.mimeType||R.mime||'audio/mp4').split(';')[0]});
+    const n=32,lv=R.lv.length?R.lv:[.2],wf=Array.from({length:n},(_,i)=>{const a=Math.floor(i*lv.length/n),b=Math.max(a+1,Math.floor((i+1)*lv.length/n));let m=0;for(let j=a;j<b;j++)m=Math.max(m,lv[j]||0);return Math.max(1,Math.min(10,Math.round(m*10)))});
+    sendMedia(R.k,'aud',blob,{dur:Math.round(dur*10)/10,wf})};
+  try{R.mr.state!=='inactive'?R.mr.stop():R.mr.onstop()}catch{R.mr.onstop()}}
+
+/* audio playback */
+const AUD={el:new Audio(),id:null,playing:false};AUD.el.preload='auto';
+function audUI(){document.querySelectorAll('.aud').forEach(box=>{const id=box.dataset.aid,on=id===AUD.id,el=AUD.el;
+  const btn=box.querySelector('.pb');const want=on&&AUD.playing?'pause':'play';if(btn.dataset.ic!==want){btn.dataset.ic=want;btn.innerHTML=ic(want,18,1)}
+  const bars=box.querySelectorAll('.wf i'),d=on&&isFinite(el.duration)&&el.duration>0?el.duration:0,p=on&&d?el.currentTime/d:0,cut=Math.round(p*bars.length);
+  bars.forEach((b,i)=>b.classList.toggle('on',on&&i<cut));
+  const m=allMsgs().find(x=>x.id===id)||(S.mpend||[]).find(x=>x.id===id);box.querySelector('.cur').textContent=on&&(AUD.playing||el.currentTime>0)?mss(el.currentTime):mss(m?.dur)})}
+['timeupdate','play','pause','ended','loadedmetadata'].forEach(ev=>AUD.el.addEventListener(ev,()=>{if(ev==='ended'){AUD.playing=false;AUD.el.currentTime=0;AUD.id=null}else if(ev==='play')AUD.playing=true;else if(ev==='pause')AUD.playing=false;audUI()}));
+async function playAud(id,path){if(AUD.id===id){if(AUD.playing)AUD.el.pause();else AUD.el.play().catch(()=>{});return}
+  AUD.el.pause();AUD.id=id;AUD.playing=false;audUI();
+  let u=murl(path);if(!u){mediaBusy.delete(path);await resolveMedia();u=murl(path)}
+  if(!u){toast('Ses dosyası açılamadı.');AUD.id=null;audUI();return}
+  if(AUD.id!==id)return;AUD.el.src=u;AUD.el.play().catch(e=>{console.error(e);toast('Ses çalınamadı.');AUD.id=null;audUI()})}
+
 document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
-  if(a==='chat')openChat(el.dataset.k);else if(a==='msgsend'){ev.preventDefault();sendMsg();cmp.focus()}else if(a==='msgpush')enablePush()});
+  if(a==='chat')openChat(el.dataset.k);
+  else if(a==='msgsend'){ev.preventDefault();sendMsg();cmp.focus()}
+  else if(a==='msgpush')enablePush();
+  else if(a==='msgphoto')cmpFile.click();
+  else if(a==='msgrec')startRec();
+  else if(a==='reccancel')stopRec(false);
+  else if(a==='recsend')stopRec(true);
+  else if(a==='aplay')playAud(el.dataset.id,el.dataset.sp);
+  else if(a==='mview'){const u=murl(el.dataset.sp);if(u)showMV(u,false)}
+  else if(a==='mvclose')closeMV();
+  else if(a==='mvsend'&&MV){const cap=(mview.querySelector('#mvcap')?.value||'').trim().slice(0,500);const{k,blob,w,h}=MV;closeMV();sendMedia(k,'img',blob,{w,h,...(cap?{text:cap}:{})})}});
+addEventListener('popstate',()=>{if(!mview.hidden)closeMV()});
 
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
 function memDB(){const st=new Map(),ls=new Set();const snapDoc=(p)=>({id:p.split('/').pop(),exists:st.has(p),data:()=>st.get(p),metadata:{fromCache:false,hasPendingWrites:false}});
