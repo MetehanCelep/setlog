@@ -741,7 +741,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
     go_();break}
   }
 });
-const inviteCard=()=>S.demo?'':`<div class="card" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını davet et</h3><p class="sub" style="margin:6px 0 10px">Bu sitenin adresini ve davet kodunu gönder. Kayıt olup kodu girdiğinde, üstteki isim seçicisinden onun takvimini, gelişimini, programlarını, beslenme planını ve uyum skorunu görebilirsin.</p>${S.invite?`<div class="row wrap"><span class="num sp" style="font-size:24px;font-weight:800;letter-spacing:.04em">${esc(S.invite)}</span><button class="btn sm pri" data-a="invcopy">${ic('copy',16)} Davet metnini kopyala</button></div>`:'<button class="btn sm" data-a="invget">Davet kodunu göster</button>'}</div>`;
+const inviteCard=()=>S.demo?'':`<div class="card" style="margin-top:18px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)"><h3>Arkadaşını davet et</h3><p class="sub" style="margin:6px 0 12px">Bağlantıyı WhatsApp’tan ya da istediğin yerden gönder. Arkadaşın bağlantıya tıklayıp hesap oluşturunca otomatik olarak ekibe katılır; kod girmesine gerek yok.</p><button class="btn pri block" data-a="invshare">${ic('share',18)} Davet bağlantısını gönder</button></div>`;
 
 /* ---------- render ---------- */
 let rq=0,pendingRender=false;
@@ -1696,14 +1696,15 @@ function sbDB(){
 /* ---------- auth screens ---------- */
 const brand=()=>`<div class="card hero" style="padding:26px">${heroDeco()}<div class="k">Setlog</div><div class="t" style="font-size:50px;text-transform:none">Her seti kaydet. Gelişimini gör.</div><div class="m" style="margin:0">Ağırlık ve tekrarlarını kaydet, ilerlemeni grafiklerle takip et, programlarını arkadaşınla paylaş.</div></div>`;
 const authMsg=()=>S.authMsg?`<p class="sub" style="margin:14px 2px 0;color:${S.authOk?'var(--good)':'var(--acc)'};font-weight:600">${esc(S.authMsg)}</p>`:'';
-function viewAuth(){const m=S.authMode||'in';
+const invBanner=()=>{const iv=pendInv();return iv?`<div class="card" style="background:var(--accSoft);box-shadow:none;display:flex;gap:12px;align-items:center">${ic('spark',24)}<div><b style="font-size:15.5px">${iv.n?esc(iv.n)+' seni Setlog’a davet etti':'Setlog’a davet edildin'}</b><div class="sub" style="font-size:13px;margin-top:2px">E-posta ve parolanla hesap oluşturman yeterli; kod girmene gerek yok.</div></div></div>`:''};
+function viewAuth(){const m=S.authMode||(pendInv()?'up':'in');
   if(m==='newpw')return`<div style="padding-top:24px">${brand()}<div class="card"><h2>Yeni parola belirle</h2><form id="af" data-m="newpw"><label class="l" for="ap">Yeni parola</label><input class="f" id="ap" type="password" autocomplete="new-password" required minlength="6" placeholder="En az 6 karakter"><button class="btn pri block" style="margin-top:16px;min-height:52px" type="submit">Parolayı kaydet</button></form>${authMsg()}</div></div>`;
-  return`<div style="padding-top:24px">${brand()}<div class="card"><div class="chips" style="margin-bottom:4px"><button class="chip ${m==='in'?'on':''}" data-a="amode" data-m="in">Giriş yap</button><button class="chip ${m==='up'?'on':''}" data-a="amode" data-m="up">Kayıt ol</button></div>
+  return`<div style="padding-top:24px">${brand()}${invBanner()}<div class="card"><div class="chips" style="margin-bottom:4px"><button class="chip ${m==='in'?'on':''}" data-a="amode" data-m="in">Giriş yap</button><button class="chip ${m==='up'?'on':''}" data-a="amode" data-m="up">Kayıt ol</button></div>
   <form id="af" data-m="${m}"><label class="l" for="ae">E-posta</label><input class="f" id="ae" type="email" autocomplete="email" inputmode="email" required value="${esc(S.authEmail||'')}">
   <label class="l" for="ap">Parola</label><input class="f" id="ap" type="password" autocomplete="${m==='up'?'new-password':'current-password'}" required minlength="6" placeholder="${m==='up'?'En az 6 karakter':''}">
   <button class="btn pri block" style="margin-top:16px;min-height:52px" type="submit">${m==='up'?'Hesap oluştur':'Giriş yap'}</button></form>
   ${m==='in'?'<button class="btn ghost block" style="margin-top:6px" data-a="aforgot">Parolamı unuttum</button>':''}${authMsg()}</div></div>`}
-function viewInvite(){return`<div style="padding-top:24px">${brand()}<div class="card"><h2>Davet kodu</h2><p class="sub" style="margin:6px 0 0">Setlog yalnızca davetli kişilere açık. Seni davet eden kişiden aldığın kodu gir.</p>
+function viewInvite(){return`<div style="padding-top:24px">${brand()}<div class="card"><h2>Davet kodu</h2><p class="sub" style="margin:6px 0 0">Setlog yalnızca davetli kişilere açık. Seni davet eden kişinin gönderdiği bağlantıya tıklarsan otomatik katılırsın; elinde kod varsa buraya da yazabilirsin.</p>
   <form id="jf"><label class="l" for="jc">Kod</label><input class="f" id="jc" autocomplete="off" autocapitalize="characters" required placeholder="SET-XXXXXXXX" style="text-transform:uppercase;letter-spacing:.06em"><button class="btn pri block" style="margin-top:16px;min-height:52px" type="submit">Devam et</button></form>${authMsg()}
   <button class="btn ghost block" style="margin-top:6px" data-a="logout">Farklı hesapla giriş yap</button></div></div>`}
 const trErr=m=>/already registered|already been registered/i.test(m)?'Bu e-posta zaten kayıtlı. Giriş yap sekmesini kullan.':/invalid login/i.test(m)?'E-posta veya parola hatalı.':/not confirmed/i.test(m)?'E-postanı henüz onaylamadın. Gelen kutundaki bağlantıya tıkla.':/at least 6|weak/i.test(m)?'Parola en az 6 karakter olmalı.':/rate limit|too many|seconds/i.test(m)?'Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.':/invalid.*email|email.*invalid/i.test(m)?'Geçerli bir e-posta adresi gir.':'Bir sorun oluştu: '+m;
@@ -1715,7 +1716,7 @@ document.addEventListener('submit',async ev=>{const f=ev.target;if(f.id!=='af'&&
     const m=f.dataset.m,pw=$('#ap').value;
     if(m==='newpw'){const{data,error}=await sb.auth.updateUser({password:pw});if(error)throw error;S.authMode='in';S.authMsg='';history.replaceState(null,'',backTo());await afterLogin(data.user);return}
     const email=$('#ae').value.trim();S.authEmail=email;
-    if(m==='up'){const{data,error}=await sb.auth.signUp({email,password:pw,options:{emailRedirectTo:backTo()}});if(error)throw error;
+    if(m==='up'){const{data,error}=await sb.auth.signUp({email,password:pw,options:{emailRedirectTo:(()=>{const iv=pendInv();return iv?backTo()+'?davet='+encodeURIComponent(iv.c)+(iv.n?'&k='+encodeURIComponent(iv.n):''):backTo()})()}});if(error)throw error;
       if(data.session){S.authMsg='';await afterLogin(data.user)}else{S.authMode='in';setMsg('Hesabın oluşturuldu. E-postana gelen onay bağlantısına tıkla, sonra buradan giriş yap.',true)}return}
     const{data,error}=await sb.auth.signInWithPassword({email,password:pw});if(error)throw error;S.authMsg='';await afterLogin(data.user);
   }catch(e){setMsg(trErr(e?.message||String(e)))}finally{if(document.body.contains(btn)){btn.disabled=false;btn.textContent=txt}}
@@ -1724,8 +1725,10 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   if(a==='amode'){S.authMode=el.dataset.m;S.authMsg='';render()}
   else if(a==='aforgot'){const email=($('#ae')?.value||'').trim();if(!email){setMsg('Önce e-posta adresini yaz.');return}S.authEmail=email;const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:backTo()});setMsg(error?trErr(error.message):'Parola sıfırlama bağlantısı e-postana gönderildi.',!error)}
   else if(a==='logout'){if(sb)await sb.auth.signOut();location.replace(backTo())}
-  else if(a==='invget'){const{data}=await sb.rpc('get_invite_code');if(data){S.invite=data;render()}else toast('Kod alınamadı.')}
-  else if(a==='invcopy'){const t=`Setlog'a katıl: ${backTo()}\nKayıt olduktan sonra davet kodunu gir: ${S.invite}`;try{await navigator.clipboard.writeText(t);toast('Davet metni kopyalandı')}catch{toast('Kopyalanamadı.')}}
+  else if(a==='invshare'){if(!S.invite){const{data}=await sb.rpc('get_invite_code');if(!data){toast('Bağlantı oluşturulamadı, tekrar dene.');return}S.invite=data}
+    const url=backTo()+'?davet='+encodeURIComponent(S.invite)+'&k='+encodeURIComponent(nameOf(S.me)||'');const text=`${nameOf(S.me)||'Arkadaşın'} seni Setlog'a davet ediyor. Antrenmanlarını birlikte takip edelim:`;
+    if(navigator.share){try{await navigator.share({title:'Setlog daveti',text,url});return}catch(e){if(e?.name==='AbortError')return}}
+    try{await navigator.clipboard.writeText(text+' '+url);toast('Davet bağlantısı kopyalandı')}catch{prompt('Bu bağlantıyı kopyalayıp gönder:',url)}}
 });
 
 /* ---------- boot ---------- */
@@ -1743,12 +1746,16 @@ async function boot(){
   await afterLogin(session.user);
 }
 let started=false;
+try{const q=new URLSearchParams(location.search),c=q.get('davet');if(c){localStorage.setItem('setlog_inv',JSON.stringify({c,n:q.get('k')||''}));S.authMode='up';const u=new URL(location.href);u.searchParams.delete('davet');u.searchParams.delete('k');history.replaceState(null,'',u.pathname+u.search+u.hash)}}catch{}
+const pendInv=()=>{try{return JSON.parse(localStorage.getItem('setlog_inv')||'null')}catch{return null}};
+const clearInv=()=>{try{localStorage.removeItem('setlog_inv')}catch{}};
 try{const q=new URLSearchParams(location.search).get('chat');if(q){S.pendingChat=q;history.replaceState(null,'',location.pathname+location.hash)}}catch{}
 async function afterLogin(user){
   if(started)return;S.email=user.email;
   const{data,error}=await sb.rpc('is_member');
   if(error){S.phase='error';S.err='Sunucuya ulaşılamadı. Biraz sonra sayfayı yenile.';render();return}
-  if(!data){S.phase='invite';render();return}
+  if(!data){const iv=pendInv();if(iv?.c){const r=await sb.rpc('join_with_code',{code:iv.c});if(!r.error&&r.data){clearInv();return afterLogin(user)}S.authMsg='Davet bağlantısı geçersiz ya da eskimiş. Seni davet eden kişiden yeni bir bağlantı iste.';S.authOk=false}S.phase='invite';render();return}
+  clearInv();
   try{const r=await sb.rpc('is_admin');S.admin=!!r.data}catch{S.admin=false}
   started=true;S.phase='loading';S.err='';render();
   const db=sbDB();
