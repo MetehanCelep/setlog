@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Setlog</title>
 <meta name="theme-color" content="#e5352a">
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Setlog">
@@ -202,6 +203,24 @@ body.resting main{padding-bottom:110px!important}
 .edg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
 .edg2 label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin:0 0 4px 2px}
 
+.tabs .in{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+.mbadge{min-width:22px;height:22px;border-radius:11px;background:var(--acc);color:#fff;font:800 12px/22px var(--f);text-align:center;padding:0 6px}
+.chathead{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);margin:0 -16px;padding:calc(8px + env(safe-area-inset-top)) 16px 10px}
+.chat{display:flex;flex-direction:column;gap:3px;padding:6px 0 4px}
+.cday{align-self:center;font-size:12px;font-weight:700;color:var(--mute);background:var(--card2);padding:4px 10px;border-radius:999px;margin:12px 0 6px}
+.bub{max-width:80%;align-self:flex-start;background:var(--card);border-radius:18px 18px 18px 6px;padding:8px 12px 6px;box-shadow:0 1px 2px rgba(0,0,0,.05);margin-top:6px;display:flex;flex-direction:column}
+.bub.grp{margin-top:0}
+.bub.me{align-self:flex-end;background:var(--acc);color:#fff;border-radius:18px 18px 6px 18px}
+.bub span{white-space:pre-wrap;word-break:break-word;font-size:15.5px;line-height:1.35}
+.bub small{align-self:flex-end;font-size:10.5px;opacity:.6;margin-top:2px}
+.bub .bn{font-size:12px;color:var(--acc);margin-bottom:2px}
+.seen{align-self:flex-end;font-size:11.5px;color:var(--mute);margin:2px 4px 0}
+body.chatting main{padding-bottom:calc(90px + env(safe-area-inset-bottom))!important}
+#composer{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:8px;align-items:flex-end;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+#composer[hidden]{display:none}
+#composer textarea{flex:1;resize:none;border:0;outline:0;background:var(--card2);border-radius:20px;padding:10px 14px;font:16px/1.3 var(--f);color:var(--ink);max-height:120px}
+#composer button{width:42px;height:42px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;flex:none}
+
 .bodyfig figcaption{text-align:center;font-size:12px;color:var(--mute);font-weight:600}
 .bodyfig path,.bodyfig ellipse,.bodyfig rect{stroke:var(--card);stroke-width:1.4;transition:fill .4s}
 .legend{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--mute);justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
@@ -243,9 +262,10 @@ body.resting main{padding-bottom:110px!important}
 <div class="app" id="main"><div class="empty">Yükleniyor…</div></div>
 <nav class="tabs" id="nav" hidden><div class="in">
   <button data-a="tab" data-t="cal"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Takvim</button>
-  <button data-a="tab" data-t="prog"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg>Programlar</button>
+  <button data-a="tab" data-t="prog"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg>Program</button>
   <button data-a="tab" data-t="gel"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg>Gelişim</button>
   <button data-a="tab" data-t="nutr"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.5c-1.6-1.6-5.2-1.9-6.6 1-1.3 2.7-.6 6.6 1.4 9.4 1.6 2.3 3.4 2.6 5.2 1.6 1.8 1 3.6.7 5.2-1.6 2-2.8 2.7-6.7 1.4-9.4-1.4-2.9-5-2.6-6.6-1z"/><path d="M12 7.5c0-2 .9-3.6 3-4.5"/></svg>Beslenme</button>
+  <button data-a="tab" data-t="msg"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12z"/></svg>Mesaj</button>
   <button data-a="tab" data-t="prof"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Profil</button>
 </div></nav>
 <div id="sheet"></div>
@@ -346,7 +366,7 @@ function heatBlock(items,sc,opts={}){
 
 /* ---------- state ---------- */
 const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false,tab:'cal',route:null,view:null,month:null,metric:'w',cmp:{},exq:'',hsel:{},nt:null,nd:null,mf:'weight',open:{},ai:{},loadSlow:false};
-const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],requests:[],nutrition:null,nplans:[],nact:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
+const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],requests:[],messages:[],msgread:[],nutrition:null,nplans:[],nact:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
 const progOf=(uid,pid)=>U(uid).programs.find(p=>p.id===pid);
 const doneSessions=uid=>U(uid).sessions.filter(s=>s.done).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.startedAt||0)-(b.startedAt||0));
 const rirOn=uid=>!!U(uid).profile?.rir;
@@ -648,12 +668,14 @@ function render(){
   if(S.phase&&S.phase!=='app'){nav.hidden=true;main.innerHTML=S.phase==='auth'?viewAuth():S.phase==='invite'?viewInvite():`<div class="empty" style="padding-top:38vh">${esc(S.err||'Yükleniyor…')}</div>`;return}
   if(!S.ready){main.innerHTML=`<div class="empty" style="padding-top:40vh">${S.loadSlow?'Veriler henüz alınamadı. Bağlantını kontrol et; geldiğinde sayfa kendiliğinden güncellenir.':'Yükleniyor…'}</div>`;return}
   if(S.onboard){nav.hidden=true;main.innerHTML=viewOnboard();return}
+  if(S.pendingChat&&userIds().includes(S.pendingChat)||S.pendingChat==='all'){const k=S.pendingChat;S.pendingChat=null;S.tab='msg';S.route={name:'chat',k}}
   const r=S.route;let h;
-  try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():r?.name==='bal'?viewBal():({cal:viewCal,prog:viewProg,gel:viewGel,nutr:viewNutr,prof:viewProf}[S.tab]||viewCal)()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
-  nav.hidden=r?.name==='live';
-  nav.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.t===S.tab);if(b.dataset.t==='prof')b.classList.toggle('dot',typeof unreadReq==='function'&&unreadReq()>0)});
+  try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():r?.name==='bal'?viewBal():r?.name==='chat'?viewChat():({cal:viewCal,prog:viewProg,gel:viewGel,nutr:viewNutr,msg:viewMsg,prof:viewProf}[S.tab]||viewCal)()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
+  nav.hidden=r?.name==='live'||r?.name==='chat';
+  nav.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.t===S.tab);if(b.dataset.t==='prof')b.classList.toggle('dot',typeof unreadReq==='function'&&unreadReq()>0);if(b.dataset.t==='msg')b.classList.toggle('dot',typeof unreadMsgs==='function'&&unreadMsgs()>0)});
   main.innerHTML=(S.demo?'<div class="banner">Önizleme modu: veriler kaydedilmez.</div>':'')+h;
   mountCharts();
+  if(typeof chatAfterRender==='function')chatAfterRender();
 }
 function soft(){if(S.route?.name==='live')return;const a=document.activeElement;if(a&&main.contains(a)&&/INPUT|TEXTAREA/.test(a.tagName)){pendingRender=true;return}cancelAnimationFrame(rq);rq=requestAnimationFrame(render)}
 main.addEventListener('focusout',()=>{if(pendingRender){pendingRender=false;setTimeout(soft,50)}});
@@ -1338,6 +1360,64 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'reqrep':{const t=(ED.rep[ds.u+'__'+ds.r]||'').trim();if(!t){toast('Yanıtını yaz.');break}if(await saveDoc(P(S.me,'requests','rp_'+ds.r),{to:ds.u,rid:ds.r,read:true,reply:t.slice(0,2000),at:Date.now()})){toast('Yanıt gönderildi');drawSheet()}break}
   }});
 
+
+/* ---------- messaging ---------- */
+const allMsgs=()=>userIds().flatMap(id=>(U(id).messages||[]).map(m=>({...m,_u:id})));
+const msgsWith=k=>allMsgs().filter(m=>k==='all'?m.to==='all':(m._u===S.me&&m.to===k)||(m._u===k&&m.to===S.me)).sort((a,b)=>(a.at||0)-(b.at||0));
+const readAt=k=>(U(S.me).msgread||[]).find(r=>r.id===k)?.at||0;
+const unreadOf=k=>msgsWith(k).filter(m=>m._u!==S.me&&(m.at||0)>readAt(k)).length;
+const unreadMsgs=()=>['all',...userIds().filter(u=>u!==S.me)].reduce((a,k)=>a+unreadOf(k),0);
+const chatName=k=>k==='all'?'Ekip sohbeti':nameOf(k);
+const hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const isStandalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+const pushSupported=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let swReg=null;
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(r=>{swReg=r;r.pushManager?.getSubscription?.().then(sb_=>{S.pushOn=!!sb_&&window.Notification?.permission==='granted';soft()}).catch(()=>{})}).catch(()=>{});
+  navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='open'){try{const k=new URL(e.data.url).searchParams.get('chat');if(k)openChat(k)}catch{}}})}
+const b64u=s=>{const b=atob((s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+async function enablePush(){
+  if(!pushSupported()){toast(isIOS&&!isStandalone()?'Önce Setlog’u ana ekrana ekleyip oradan açmalısın.':'Bu cihaz bildirimleri desteklemiyor.');return}
+  try{const perm=await Notification.requestPermission();if(perm!=='granted'){toast('Bildirim izni verilmedi.');soft();return}
+    const reg=swReg||await navigator.serviceWorker.ready;const{data,error}=await sb.functions.invoke('push',{body:{action:'key'}});if(error||!data?.key)throw error||new Error('key');
+    let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(data.key)});
+    const j=sub.toJSON();const{error:e2}=await sb.from('push_subs').upsert({endpoint:j.endpoint,user_id:S.me,p256dh:j.keys.p256dh,auth:j.keys.auth});if(e2)throw e2;
+    S.pushOn=true;toast('Bildirimler açıldı');soft()}catch(e){console.error(e);toast('Bildirimler açılamadı; biraz sonra tekrar dene.')}}
+function pushCard(){if(S.pushOn)return'';
+  if(isIOS&&!isStandalone())return`<div class="card" style="background:var(--accSoft)"><h3>Bildirim almak için</h3><p class="sub" style="margin:6px 0 0;font-size:13.5px">1. Safari’de alttaki <b style="color:var(--ink)">Paylaş</b> düğmesine dokun.<br>2. <b style="color:var(--ink)">Ana Ekrana Ekle</b>’yi seç.<br>3. Setlog’u ana ekrandaki simgeden aç ve buradan bildirimleri aç.</p></div>`;
+  if(!pushSupported())return'';
+  if(window.Notification?.permission==='denied')return`<div class="card"><h3>Bildirimler kapalı</h3><p class="sub" style="margin:6px 0 0;font-size:13.5px">iPhone’da Ayarlar → Bildirimler → Setlog’dan izin verebilirsin.</p></div>`;
+  return`<button class="card row press" style="width:100%;text-align:left;background:var(--accSoft)" data-a="msgpush">${ic('spark',22)}<div class="sp"><h3>Bildirimleri aç</h3><div class="sub" style="font-size:13px">Yeni mesaj gelince telefonuna bildirim düşsün</div></div>${ic('chev',18)}</button>`}
+function viewMsg(){const ks=['all',...userIds().filter(u=>u!==S.me)];const last=k=>msgsWith(k).at(-1);
+  ks.sort((a,b)=>a==='all'?-1:b==='all'?1:(last(b)?.at||0)-(last(a)?.at||0));
+  return`<div class="top"><h1>Mesajlar</h1></div>${pushCard()}
+  <div class="card list" style="padding:0 14px">${ks.map(k=>{const m=last(k),n=unreadOf(k);return`<button class="li press" data-a="chat" data-k="${k}" style="text-align:left;gap:12px">${k==='all'?`<span class="av" style="width:44px;height:44px;background:var(--ink)">${ic('copy',20)}</span>`:av(k,44)}<span class="sp" style="min-width:0"><h3 style="font-size:15.5px">${esc(chatName(k))}</h3><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;${n?'color:var(--ink);font-weight:600':''}">${m?`${m._u===S.me?'Sen: ':k==='all'?esc(nameOf(m._u))+': ':''}${esc(m.text)}`:k==='all'?'Herkesin olduğu grup':'Henüz mesaj yok'}</span></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${m?`<span class="sub" style="font-size:12px">${m.at>Date.now()-864e5?hm(m.at):dShort(ymd(new Date(m.at)))}</span>`:''}${n?`<span class="mbadge">${n}</span>`:''}</span></button>`}).join('')}</div>`}
+const composer=document.createElement('div');composer.id='composer';composer.hidden=true;composer.innerHTML=`<textarea id="cmp" rows="1" maxlength="2000" placeholder="Mesaj yaz" aria-label="Mesaj"></textarea><button data-a="msgsend" aria-label="Gönder">${ic('up',22)}</button>`;document.body.appendChild(composer);
+const cmp=composer.querySelector('#cmp');
+cmp.addEventListener('input',()=>{cmp.style.height='auto';cmp.style.height=Math.min(120,cmp.scrollHeight)+'px';if(S.route?.name==='chat')(S.drafts||(S.drafts={}))[S.route.k]=cmp.value});
+let readT=0;
+function viewChat(){const k=S.route.k,ms=msgsWith(k);let h='',lastDay='';
+  ms.forEach((m,i)=>{const d=ymd(new Date(m.at));if(d!==lastDay){lastDay=d;h+=`<div class="cday">${d===todayS()?'Bugün':d===addDays(todayS(),-1)?'Dün':dLong(d)}</div>`}
+    const mine=m._u===S.me,prev=ms[i-1],grp=prev&&prev._u===m._u&&m.at-prev.at<5*6e4&&ymd(new Date(prev.at))===d;
+    h+=`<div class="bub ${mine?'me':''} ${grp?'grp':''}">${!mine&&k==='all'&&!grp?`<b class="bn">${esc(nameOf(m._u))}</b>`:''}<span>${esc(m.text)}</span><small>${hm(m.at)}</small></div>`});
+  const lastMine=[...ms].reverse().find(m=>m._u===S.me);
+  const seen=k!=='all'&&lastMine&&((U(k).msgread||[]).find(r=>r.id===S.me)?.at||0)>=lastMine.at;
+  const inc=ms.filter(m=>m._u!==S.me).at(-1);if(inc&&inc.at>readAt(k)){clearTimeout(readT);readT=setTimeout(()=>saveDoc(P(S.me,'msgread',k),{to:k,at:Date.now()}),400)}
+  return`<div class="top chathead"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button><div class="sp row" style="gap:10px;min-width:0">${k==='all'?`<span class="av" style="width:38px;height:38px;background:var(--ink)">${ic('copy',18)}</span>`:av(k,38)}<h2 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(chatName(k))}</h2></div></div>
+  <div class="chat" id="chatlist">${h||'<p class="sub" style="text-align:center;padding:40px 0">İlk mesajı sen gönder.</p>'}${seen?'<div class="seen">Görüldü</div>':''}</div>`}
+function openChat(k){if(k!=='all'&&!userIds().includes(k))return;closeSheet();S.tab='msg';S.route={name:'chat',k};render();requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}
+function chatAfterRender(){const on=S.route?.name==='chat';composer.hidden=!on;document.body.classList.toggle('chatting',on);
+  if(on){const k=S.route.k;if(composer.dataset.k!==k){composer.dataset.k=k;cmp.value=S.drafts?.[k]||'';cmp.dispatchEvent(new Event('input'))}
+    if(S._stick!==false)requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}}
+addEventListener('scroll',()=>{if(S.route?.name==='chat')S._stick=innerHeight+scrollY>=document.body.scrollHeight-80},{passive:true});
+async function sendMsg(){const k=S.route?.name==='chat'?S.route.k:null;const t=cmp.value.trim();if(!k||!t)return;
+  const id='m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);cmp.value='';cmp.dispatchEvent(new Event('input'));S._stick=true;
+  if(!(await saveDoc(P(S.me,'messages',id),{to:k,text:t.slice(0,2000),at:Date.now()}))){cmp.value=t;return}
+  try{sb?.functions?.invoke('push',{body:{action:'send',to:k,body:t}}).catch(()=>{})}catch{}}
+cmp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!isIOS){e.preventDefault();sendMsg()}});
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
+  if(a==='chat')openChat(el.dataset.k);else if(a==='msgsend'){ev.preventDefault();sendMsg();cmp.focus()}else if(a==='msgpush')enablePush()});
+
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
 function memDB(){const st=new Map(),ls=new Set();const snapDoc=(p)=>({id:p.split('/').pop(),exists:st.has(p),data:()=>st.get(p),metadata:{fromCache:false,hasPendingWrites:false}});
   const colDocs=c=>[...st.keys()].filter(k=>k.startsWith(c+'/')&&k.split('/').length===c.split('/').length+1).sort().map(snapDoc);
@@ -1419,6 +1499,7 @@ async function boot(){
   await afterLogin(session.user);
 }
 let started=false;
+try{const q=new URLSearchParams(location.search).get('chat');if(q){S.pendingChat=q;history.replaceState(null,'',location.pathname+location.hash)}}catch{}
 async function afterLogin(user){
   if(started)return;S.email=user.email;
   const{data,error}=await sb.rpc('is_member');
@@ -1445,6 +1526,8 @@ function subUser(uid){const u=U(uid);if(u.subs)return;u.subs=true;const map=s=>s
   S.db.collection(`ud/${uid}/sessions`).onSnapshot(s=>{u.sessions=map(s);soft()},onErr);
   S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{u.nplans=s.docs.filter(x=>x.id==='plan'||x.id.startsWith('p_')).map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.created||0)-(b.created||0));const ac=s.docs.find(x=>x.id==='active')?.data()?.pid;u.nact=u.nplans.some(p=>p.id===ac)?ac:(u.nplans[0]?.id||null);const ap=u.nplans.find(p=>p.id===u.nact);u.nutrition=ap?{...ap}:null;const sc=s.docs.find(x=>x.id==='score');u.nscore=sc?{...sc.data()}:null;soft()},onErr);
   S.db.collection(`ud/${uid}/foods`).onSnapshot(s=>{u.foods=map(s);soft()},onErr);
+  S.db.collection(`ud/${uid}/messages`).onSnapshot(s=>{u.messages=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
+  S.db.collection(`ud/${uid}/msgread`).onSnapshot(s=>{u.msgread=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
   S.db.collection(`ud/${uid}/requests`).onSnapshot(s=>{u.requests=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
   if(uid===S.me){S.db.collection(`ud/${uid}/nlog`).onSnapshot(s=>{u.nlog=Object.fromEntries(s.docs.map(d=>[d.id,{...d.data()}]));if(!u._sc){u._sc=1;setTimeout(saveScore,4000)}soft()},onErr);S.db.collection(`ud/${uid}/nmeta`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='me');u.nmeta=d?{...d.data()}:null;soft()},onErr)}
   S.db.collection(`ud/${uid}/measures`).onSnapshot(s=>{u.measures=map(s).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);soft()},onErr);
