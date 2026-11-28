@@ -187,6 +187,20 @@ button.mbar{width:100%;text-align:left;border-radius:10px;padding:5px 6px;margin
 .kbars em span{position:absolute;right:0;top:-17px;font:650 10.5px var(--f);font-style:normal;color:var(--ink)}
 
 .bfig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bfig .bodyfig{gap:2px}.bfh{text-align:center;font-size:12.5px;font-weight:700;color:var(--mute);margin-bottom:4px}
+body.resting main{padding-bottom:110px!important}
+#rest{position:fixed;left:12px;right:12px;z-index:40;max-width:560px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:18px;padding:10px 10px 10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+#rest.done{background:var(--good);color:#fff}
+#rest .rbar{position:absolute;left:0;top:0;right:0;height:3px;background:color-mix(in srgb,currentColor 18%,transparent)}
+#rest .rbar i{display:block;height:100%;background:var(--acc);transition:width .25s linear}
+#rest.done .rbar i{background:#fff}
+#rest .rl{font-size:11.5px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.05em}
+#rest .rn{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rest .rt{font:850 28px/1 var(--d);font-variant-numeric:tabular-nums;margin-right:4px}
+#rest.done .rt{font-size:17px}
+#rest .rb{min-width:44px;height:40px;border-radius:12px;background:color-mix(in srgb,currentColor 14%,transparent);color:inherit;font-weight:750;font-size:13.5px;display:grid;place-items:center;padding:0 6px}
+.edg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.edg2 label{display:block;font-size:12px;font-weight:600;color:var(--mute);margin:0 0 4px 2px}
+
 .bodyfig figcaption{text-align:center;font-size:12px;color:var(--mute);font-weight:600}
 .bodyfig path,.bodyfig ellipse,.bodyfig rect{stroke:var(--card);stroke-width:1.4;transition:fill .4s}
 .legend{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--mute);justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
@@ -462,7 +476,7 @@ function viewWorkout(){
   if(pending&&!S.ai[pid])setTimeout(()=>ensureMap(uid,pid),0);
   return`<div class="top"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back')}</button>${mine?`<button class="ibtn bg" data-a="wedit" data-p="${pid}" data-w="${wid}" aria-label="Düzenle">${ic('edit',20)}</button>`:''}</div>
   <h1 style="text-transform:lowercase">${esc(w.name)}</h1><p class="sub" style="margin:6px 0 16px">${esc(p.name)}${w.day!=null?' · '+DAYS_FULL[w.day]:''} · ${w.exercises.length} hareket · ${workoutSets(w)} set${mine?'':' · '+esc(nameOf(uid))}</p>
-  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e,w.id),lx=libOf(e);return`<div class="exi">${lx?.img?thumb(lx,42):`<span class="exn">${i+1}</span>`}<div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${rirOn(uid)&&e.rir!=null?` · ${fmt(e.rir)} RIR`:''}${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(hk(e))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
+  <div class="card list" style="padding:2px 16px">${w.exercises.map((e,i)=>{const lt=lastTop(uid,e,w.id),lx=libOf(e);return`<div class="exi">${lx?.img?thumb(lx,42):`<span class="exn">${i+1}</span>`}<div class="sp"><h3>${esc(e.name)}</h3><div class="sub">${e.sets} set · ${e.min===e.max?e.min:e.min+'–'+e.max} tekrar${rirOn(uid)&&e.rir!=null?` · ${fmt(e.rir)} RIR`:''}${e.rest?` · ${fmtRest(e.rest)} dinlenme`:''}${lt?` · Son: <b style="color:var(--ink)">${fmt(lt.w)} kg × ${lt.r}</b>`:''}</div></div><button class="ibtn" data-a="ex" data-k="${esc(hk(e))}" data-u="${uid}" aria-label="Gelişim" style="color:var(--mute)">${ic('chart',19)}</button></div>`}).join('')||'<p class="sub">Hareket yok.</p>'}</div>
   <div class="card"><div class="row" style="margin-bottom:12px"><h2 class="sp">Bu antrenmanda çalışan kaslar</h2></div>${heatBlock(hitems,'w',{id:'w'})}</div>
   <div class="row" style="position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));gap:8px">${mine?`<button class="btn pri block" style="flex:1;min-height:54px;font-size:17px;box-shadow:0 8px 24px rgba(229,53,42,.35)" data-a="startw" data-p="${pid}" data-w="${wid}" data-d="${ymd(new Date())}">${ic('play',18,1)} Antrenmana Başla</button>`:`<button class="btn pri block" data-a="pcopy" data-u="${uid}" data-p="${pid}">${ic('copy',18)} Programı kopyala</button>`}</div>`;
 }
@@ -481,7 +495,7 @@ function viewLive(){
   const s=LIVE.doc;
   const RIR=rirOn(S.me),rc=RIR?' rir':'';
   const ex=s.exercises.map((e,ei)=>{const pv=prevSets(e,LIVE.id,s.workoutId);
-    return`<div class="card"><div class="row" style="margin-bottom:6px"><div class="sp"><h3 style="font-size:17px">${esc(e.name)}</h3><div class="sub">${e.target?`Hedef: ${e.target.sets} × ${e.target.min===e.target.max?e.target.min:e.target.min+'–'+e.target.max}${RIR&&e.target.rir!=null?` · ${fmt(e.target.rir)} RIR`:''}`:'Serbest'}</div></div><button class="ibtn" data-a="lexdel" data-i="${ei}" aria-label="Hareketi kaldır" style="color:var(--mute)">${ic('x',19)}</button></div>
+    return`<div class="card"><div class="row" style="margin-bottom:6px"><div class="sp"><h3 style="font-size:17px">${esc(e.name)}</h3><div class="sub">${e.target?`Hedef: ${e.target.sets} × ${e.target.min===e.target.max?e.target.min:e.target.min+'–'+e.target.max}${RIR&&e.target.rir!=null?` · ${fmt(e.target.rir)} RIR`:''} · ${fmtRest(e.target.rest||REST_DEF)} dinlenme`:`Serbest · ${fmtRest(REST_DEF)} dinlenme`}</div></div><button class="ibtn" data-a="lexdel" data-i="${ei}" aria-label="Hareketi kaldır" style="color:var(--mute)">${ic('x',19)}</button></div>
     <div class="st${rc}"><span class="h">Set</span><span class="h">Önceki</span><span class="h" style="text-align:center">kg</span><span class="h" style="text-align:center">Tekrar</span>${RIR?'<span class="h" style="text-align:center">RIR</span>':''}<span></span></div>
     ${e.sets.map((x,si)=>{const p=pv?.[si]||pv?.at(-1);return`<div class="st${rc} ${x.d?'ok':''}"><span class="num" style="font-weight:700;color:var(--mute)">${si+1}</span><span class="pv">${pv?.[si]?`${fmt(pv[si].w)} × ${pv[si].r}`:'—'}</span><input inputmode="decimal" enterkeyhint="next" aria-label="Set ${si+1} kilo" data-lv="${ei}:${si}:w" value="${x.w??''}" placeholder="${p?p.w:''}"><input inputmode="numeric" enterkeyhint="done" aria-label="Set ${si+1} tekrar" data-lv="${ei}:${si}:r" value="${x.r??''}" placeholder="${p?p.r:(e.target?.max||'0')}">${RIR?`<input inputmode="decimal" enterkeyhint="done" aria-label="Set ${si+1} RIR" data-lv="${ei}:${si}:rir" value="${x.rir??''}" placeholder="${e.target?.rir!=null?fmt(e.target.rir):''}">`:''}<button class="ck" data-a="lck" data-i="${ei}" data-j="${si}" aria-label="Seti tamamla">${ic('check',20)}</button></div>`}).join('')}
     <div class="row" style="margin-top:8px"><button class="btn sm" data-a="lsadd" data-i="${ei}">${ic('plus',16)} Set ekle</button>${e.sets.length>1?`<button class="btn sm" data-a="lsdel" data-i="${ei}" style="background:transparent;color:var(--mute)">Son seti sil</button>`:''}</div></div>`}).join('');
@@ -610,7 +624,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'nnew':if(await savePlan({name:'Beslenme planım',target:{kcal:2000,p:130,c:250,f:60},note:'',meals:['Kahvaltı','Öğle','Akşam'].map(n=>({id:uidGen(),name:n,note:'',items:[]}))}))toast('Plan oluşturuldu');break;
   case'nitem':openNItem(+ds.i,+ds.j);break;
   case'nitemsave':{const it=ED.it;it.name=(it.name||'').trim();if(!it.name){toast('Besin adını gir.');break}for(const x of['g','kcal','p','c','f'])it[x]=r1(it[x]);const pl=myPlan(),items=pl.meals[ED.mi].items;if(ED.j>=0)items[ED.j]=it;else items.push(it);if(await savePlan(pl)){closeSheet();toast('Kaydedildi')}break}
-  case'nitemdel':{const pl=myPlan();pl.meals[ED.mi].items.splice(ED.j,1);if(await savePlan(pl)){closeSheet();toast('Besin silindi')}break}
+  case'nitemdel':{const mi=ED.mi,j=ED.j;askConfirm('Besin silinsin mi?','Bu besin plandan kaldırılacak.','Sil',async()=>{const pl=myPlan();pl.meals[mi].items.splice(j,1);if(await savePlan(pl)){closeSheet();toast('Besin silindi')}});break}
   case'nmeal':openNMeal(+ds.i);break;
   case'nmealnew':openNMeal(-1);break;
   case'nmealsave':{const n=(ED.name||'').trim();if(!n){toast('Öğün adını gir.');break}const pl=myPlan();if(ED.mi>=0)Object.assign(pl.meals[ED.mi],{name:n,note:(ED.note||'').trim()});else pl.meals.push({id:uidGen(),name:n,note:(ED.note||'').trim(),items:[]});if(await savePlan(pl))closeSheet();break}
@@ -675,13 +689,13 @@ function openShare(pid){const p=progOf(S.me,pid);const data={n:p.name,w:p.workou
   <div class="row" style="margin-top:12px"><button class="btn block" style="flex:1" data-a="cpy" data-x="code">${ic('copy',18)} Kodu kopyala</button><button class="btn pri block" style="flex:1" data-a="cpy" data-x="text">${ic('copy',18)} Metni kopyala</button></div>`)}
 function openImport(){ED={kind:'imp',txt:''};openSheet(()=>`${sheetHead('Programı içe aktar')}<p class="sub">Sana gönderilen metni ya da SETLOG1: ile başlayan kodu yapıştır.</p><textarea class="f" data-ed="txt" placeholder="SETLOG1:..." style="margin-top:10px"></textarea><button class="btn pri block" style="margin-top:12px" data-a="impgo">İçe aktar</button>`)}
 
-function openWkEditor(pid,wid){const p=progOf(S.me,pid);const w=wid?clone(p.workouts.find(x=>x.id===wid)):{id:uidGen(),name:'',day:null,exercises:[]};ED={kind:'wk',pid,isNew:!wid,w};loadEx();
+function openWkEditor(pid,wid){const p=progOf(S.me,pid);const w=wid?clone(p.workouts.find(x=>x.id===wid)):{id:uidGen(),name:'',day:null,exercises:[]};w.exercises.forEach(e=>{if(e.rest>0)e._restm=r1(e.rest/60)});ED={kind:'wk',pid,isNew:!wid,w};loadEx();
   openSheet(()=>{const w=ED.w,R=rirOn(S.me);return`${sheetHead(ED.isNew?'Gün ekle':'Antrenmanı düzenle',esc(p.name))}
   <label class="l" for="wn">Antrenman adı</label><input class="f" id="wn" data-ed="w.name" value="${esc(w.name)}" placeholder="Örn. push">
   <label class="l">Gün</label><div class="chips">${DAYS.map((d,i)=>`<button class="chip ${w.day===i?'on':''}" data-a="edday" data-v="${i}">${d}</button>`).join('')}<button class="chip ${w.day==null?'on':''}" data-a="edday" data-v="">Yok</button></div>
   <label class="l">Hareketler</label>
   ${w.exercises.map((e,i)=>{const x=libOf(e);const mm=(x?x.m:(e.m?.length?e.m:mapOf(e.name).p)).map(k=>MUS[k]).join(', ');return`<div class="edrow"><div class="row" style="gap:10px"><span class="exn">${i+1}</span><button class="row sp press" data-a="edswap" data-i="${i}" style="gap:10px;text-align:left;min-width:0" aria-label="Hareketi değiştir">${thumb(x,42)}<span class="sp" style="min-width:0"><b style="display:block;font-size:15px;line-height:1.25">${esc(e.name)}</b><span class="sub" style="font-size:12px">${esc(mm||'Özel hareket')}</span></span><span class="sub" style="font-size:12px;font-weight:600">Değiştir</span></button></div>
-  <div class="edg${R?' rir':''}"><div><label>Set</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.sets" data-num="1" value="${e.sets??''}"></div><div><label>Min tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.min" data-num="1" value="${e.min??''}"></div><div><label>Maks tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.max" data-num="1" value="${e.max??''}"></div>${R?`<div><label>RIR</label><input class="f" inputmode="decimal" data-ed="w.exercises.${i}.rir" data-num="1" value="${e.rir??''}" placeholder="—"></div>`:''}</div>
+  <div class="edg"><div><label>Set</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.sets" data-num="1" value="${e.sets??''}"></div><div><label>Min tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.min" data-num="1" value="${e.min??''}"></div><div><label>Maks tekrar</label><input class="f" inputmode="numeric" data-ed="w.exercises.${i}.max" data-num="1" value="${e.max??''}"></div></div><div class="edg" style="grid-template-columns:repeat(2,minmax(0,1fr))">${R?`<div><label>Hedef RIR</label><input class="f" inputmode="decimal" data-ed="w.exercises.${i}.rir" data-num="1" value="${e.rir??''}" placeholder="—"></div>`:''}<div><label>Dinlenme (dk)</label><input class="f" inputmode="decimal" data-ed="w.exercises.${i}._restm" data-num="1" value="${e._restm??''}" placeholder="${fmt(REST_DEF/60)}"></div></div>
   <div class="row" style="margin-top:6px;justify-content:flex-end;gap:2px"><button class="ibtn" data-a="edmv" data-i="${i}" data-v="-1" aria-label="Yukarı" ${i?'':'disabled style="opacity:.3"'}>${ic('up',19)}</button><button class="ibtn" data-a="edmv" data-i="${i}" data-v="1" aria-label="Aşağı" ${i<w.exercises.length-1?'':'disabled style="opacity:.3"'}>${ic('down',19)}</button><button class="ibtn" data-a="edrm" data-i="${i}" aria-label="Kaldır" style="color:var(--acc)">${ic('trash',19)}</button></div></div>`}).join('')||'<p class="sub" style="padding:4px 2px 10px">Henüz hareket yok. Kütüphaneden arayıp birden fazlasını tek seferde ekleyebilirsin.</p>'}
   <button class="btn block" data-a="edadd">${ic('plus',18)} Hareket ekle</button>
   <p class="sub" style="margin:10px 2px 0">${ic('spark',13)} Çalışan kaslar seçtiğin hareketlerden otomatik belirlenir.</p>
@@ -700,11 +714,11 @@ function liveSave(now){clearTimeout(liveT);const run=()=>LIVE&&saveDoc(P(S.me,'s
 async function startWorkout(pid,wid,date){const act=U(S.me).sessions.find(s=>!s.done);
   if(act){toast('Önce devam eden antrenmanı bitir ya da iptal et.');resume(act.id);return}
   const p=pid?progOf(S.me,pid):null,w=p?.workouts.find(x=>x.id===wid);
-  const doc={date,programId:p?.id||null,programName:p?.name||'',workoutId:w?.id||null,workoutName:w?.name||'Serbest antrenman',startedAt:Date.now(),done:false,exercises:(w?.exercises||[]).map(e=>({name:e.name,xid:exId(e),target:{sets:+e.sets||1,min:e.min,max:e.max,rir:rirN(e.rir)},sets:Array.from({length:Math.max(1,+e.sets||1)},()=>({w:null,r:null,d:false}))}))};
+  const doc={date,programId:p?.id||null,programName:p?.name||'',workoutId:w?.id||null,workoutName:w?.name||'Serbest antrenman',startedAt:Date.now(),done:false,exercises:(w?.exercises||[]).map(e=>({name:e.name,xid:exId(e),target:{sets:+e.sets||1,min:e.min,max:e.max,rir:rirN(e.rir),rest:e.rest||null},sets:Array.from({length:Math.max(1,+e.sets||1)},()=>({w:null,r:null,d:false}))}))};
   LIVE={id:uidGen(),doc};closeSheet();S.route={name:'live'};render();scrollTo(0,0);liveSave(true);
 }
 function resume(sid){const s=U(S.me).sessions.find(x=>x.id===sid);if(!s)return;if(!LIVE||LIVE.id!==sid)LIVE={id:sid,doc:clone(s)};delete LIVE.doc.id;closeSheet();S.route={name:'live'};render();scrollTo(0,0)}
-async function finishLive(){const d=LIVE.doc;
+async function finishLive(){stopRest();const d=LIVE.doc;
   const valid=d.exercises.map(e=>({...e,sets:e.sets.filter(x=>x.r>0&&(x.w!=null||x.d)).map(x=>({...x,w:x.w??0}))})).filter(e=>e.sets.length);
   if(!valid.length){toast('En az bir set için tekrar gir (vücut ağırlığı hareketlerinde kg boş kalabilir).');return}
   const before=hist(S.me);const prs=valid.filter(e=>{const h=before[hk(e)];if(!h)return false;const best=Math.max(...h.ents.map(x=>x.top.w));return Math.max(...e.sets.map(x=>x.w))>best});
@@ -760,23 +774,23 @@ document.addEventListener('click',async ev=>{
   case'edday':ED.w.day=ds.v===''?null:+ds.v;drawSheet();break;
   case'edadd':openExPicker({multi:true,title:'Hareket ekle',onDone:items=>{for(const it of items)ED.w.exercises.push({id:uidGen(),name:it.name,xid:it.xid||null,sets:3,min:8,max:12,...(rirOn(me)?{rir:1}:{}),...(it.m?{m:it.m}:{})});drawSheet()}});break;
   case'edswap':{const i=+ds.i;openExPicker({multi:false,title:'Hareketi değiştir',onDone:([it])=>{const e=ED.w.exercises[i];if(!e||!it)return;e.name=it.name;e.xid=it.xid||null;if(it.m)e.m=it.m;else delete e.m;drawSheet()}});break}
-  case'edrm':ED.w.exercises.splice(+ds.i,1);drawSheet();break;
+  case'edrm':{const i=+ds.i,n=ED.w.exercises[i]?.name||'Bu hareket';askConfirm('Hareket silinsin mi?',`“${esc(n)}” bu günden kaldırılacak. Değişiklik “Kaydet”e bastığında uygulanır.`,'Sil',()=>{ED.w.exercises.splice(i,1);drawSheet()});break}
   case'edmv':{const i=+ds.i,j=i+(+ds.v),x=ED.w.exercises;if(j<0||j>=x.length)break;[x[i],x[j]]=[x[j],x[i]];drawSheet();break}
-  case'edsave':{const w=ED.w;w.name=(w.name||'').trim();if(!w.name){toast('Antrenmana bir ad ver.');break}const cm={};w.exercises=w.exercises.filter(e=>(e.name||'').trim()).map(e=>({...e,name:e.name.trim(),sets:Math.max(1,Math.round(+e.sets||1)),min:Math.max(1,Math.round(+e.min||1)),max:Math.max(Math.round(+e.min||1),Math.round(+e.max||+e.min||1)),rir:rirN(e.rir)}));w.exercises.forEach(e=>{if(!e.xid&&e.m?.length)cm[key(e.name)]={p:e.m,s:[]};delete e.m;if(!e.xid)delete e.xid});
+  case'edsave':{const w=ED.w;w.name=(w.name||'').trim();if(!w.name){toast('Antrenmana bir ad ver.');break}const cm={};w.exercises=w.exercises.filter(e=>(e.name||'').trim()).map(e=>({...e,name:e.name.trim(),sets:Math.max(1,Math.round(+e.sets||1)),min:Math.max(1,Math.round(+e.min||1)),max:Math.max(Math.round(+e.min||1),Math.round(+e.max||+e.min||1)),rir:rirN(e.rir)}));w.exercises.forEach(e=>{if(e._restm!=null&&e._restm!=='')e.rest=Math.max(0,Math.min(900,Math.round(+e._restm*60)))||null;else if('_restm' in e)e.rest=null;delete e._restm;if(e.rest==null)delete e.rest;if(!e.xid&&e.m?.length)cm[key(e.name)]={p:e.m,s:[]};delete e.m;if(!e.xid)delete e.xid});
     const p=progOf(me,ED.pid);const ws=p.workouts.slice();const i=ws.findIndex(x=>x.id===w.id);if(i<0)ws.push(w);else ws[i]=w;const pid=ED.pid,isNew=ED.isNew;
     if(await saveDoc(P(me,'programs',pid),{...strip(p),workouts:ws,map:{...(p.map||{}),...cm}})){closeSheet();if(isNew){S.route={name:'w',uid:me,pid,wid:w.id};render()}toast('Kaydedildi');ensureMap(me,pid)}break}
   case'wdel':{const pid=ED.pid,wid=ED.w.id;confirmSheet('Bu gün silinsin mi?','Antrenman programdan kaldırılacak. Geçmiş kayıtların korunur.','Sil',async()=>{const p=progOf(me,pid);await saveDoc(P(me,'programs',pid),{...strip(p),workouts:p.workouts.filter(x=>x.id!==wid)});S.route=null;S.tab='prog';render()});break}
   case'hsel':S.hsel[ds.b]=S.hsel[ds.b]===ds.k?null:ds.k;render();break;
   case'cyes':{const fn=ED?.fn;closeSheet();fn&&fn();break}
   /* live */
-  case'lck':{const x=LIVE.doc.exercises[ds.i].sets[ds.j];if(!x.d){const row=el.closest('.st');const ins=row.querySelectorAll('input');if(x.w==null&&ins[0].placeholder)x.w=Number(ins[0].placeholder);if(x.r==null&&ins[1].placeholder)x.r=Number(ins[1].placeholder);if(!(x.r>0)){toast('Tekrar sayısını gir.');break}x.d=true}else x.d=false;liveSave();render();break}
+  case'lck':{const x=LIVE.doc.exercises[ds.i].sets[ds.j];if(!x.d){const row=el.closest('.st');const ins=row.querySelectorAll('input');if(x.w==null&&ins[0].placeholder)x.w=Number(ins[0].placeholder);if(x.r==null&&ins[1].placeholder)x.r=Number(ins[1].placeholder);if(!(x.r>0)){toast('Tekrar sayısını gir.');break}x.d=true;const ex=LIVE.doc.exercises[ds.i];const left=LIVE.doc.exercises.some(e=>e.sets.some(z=>!z.d));if(left){const nx=ex.sets.some(z=>!z.d)?ex.name:(LIVE.doc.exercises.find(e=>e.sets.some(z=>!z.d))?.name||'');startRest(ex.target?.rest||REST_DEF,'Sıradaki: '+nx)}else stopRest()}else x.d=false;liveSave();render();break}
   case'lsadd':{const e=LIVE.doc.exercises[ds.i];const l=e.sets.at(-1);e.sets.push({w:l?.w??null,r:null,d:false});liveSave();render();break}
-  case'lsdel':LIVE.doc.exercises[ds.i].sets.pop();liveSave();render();break;
-  case'lexdel':LIVE.doc.exercises.splice(+ds.i,1);liveSave();render();break;
+  case'lsdel':{const ss=LIVE.doc.exercises[ds.i].sets,l=ss.at(-1);const go_=()=>{ss.pop();liveSave();render()};if(l&&(l.d||l.w!=null||l.r!=null))askConfirm('Son set silinsin mi?','Bu sete girdiğin kilo ve tekrar silinecek.','Sil',go_);else go_();break}
+  case'lexdel':{const i=+ds.i,e=LIVE.doc.exercises[i];askConfirm('Hareket kaldırılsın mı?',`“${esc(e?.name||'')}” bu antrenmandan kaldırılacak${e?.sets?.some(x=>x.d||x.r!=null)?' ve girdiğin setler silinecek':''}.`,'Kaldır',()=>{LIVE.doc.exercises.splice(i,1);liveSave();render()});break}
   case'lexadd':openExPicker({multi:true,title:'Hareket ekle',onDone:items=>{if(!items.length||!LIVE)return;for(const it of items)LIVE.doc.exercises.push({name:it.name,xid:it.xid||null,target:null,sets:Array.from({length:3},()=>({w:null,r:null,d:false}))});rememberCustom(LIVE.doc.programId,items);liveSave();render();setTimeout(()=>scrollTo(0,document.body.scrollHeight),50)}});break;
   case'lmin':liveSave(true);S.route=null;S.tab='cal';render();break;
   case'lfin':finishLive();break;
-  case'lcancel':confirmSheet('Antrenman iptal edilsin mi?','Bu antrenmanda girdiğin setler silinecek.','İptal et',async()=>{const id=LIVE.id;clearTimeout(liveT);LIVE=null;S.route=null;S.tab='cal';render();await delDoc(P(me,'sessions',id))});break;
+  case'lcancel':confirmSheet('Antrenman iptal edilsin mi?','Bu antrenmanda girdiğin setler silinecek.','İptal et',async()=>{stopRest();const id=LIVE.id;clearTimeout(liveT);LIVE=null;S.route=null;S.tab='cal';render();await delDoc(P(me,'sessions',id))});break;
   /* progress */
   case'ex':{if(ds.u)S.view=ds.u;S.route={name:'ex',k:ds.k,from:S.route};render();scrollTo(0,0);break}
   case'metric':S.metric=ds.m;render();break;
@@ -946,7 +960,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'fadd':{const g=fGrams();if(!(g>0))break;const u=E.unit>=0?`${fmt(E.qty)} × ${E.sel.u[E.unit][0]}`:null;
     if(E.edit){const fn=E.ctx.onPick;const it=reItem(E.edit,g,u);popSheet();fn([it]);break}
     const it=itemOf(E.sel,g,u);if(!String(E.sel.id).startsWith('man'))pushRecent(E.sel);fFinish([it]);break}
-  case'fdel':{const fn=E.ctx.onPick;popSheet();fn([]);break}
+  case'fdel':{const fn=E.ctx.onPick;askConfirm('Besin silinsin mi?','Bu besin öğünden kaldırılacak.','Sil',()=>{popSheet();fn([])});break}
   case'fext':{const k=ds.k,q=(E.q||'').trim();if(q.length<2)break;E.ext[k]='loading';const l=$('#flist');if(l)l.innerHTML=fListHTML();
     try{E.ext[k]=k==='off'?await offSearch(q):await usdaSearch(q)}catch{E.ext[k]={err:1}}
     if(ED===E&&E.view==='list'){const l2=$('#flist');if(l2)l2.innerHTML=fListHTML()}break}
@@ -980,7 +994,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
     const t=recTot(),raw=E.ings.reduce((x,i)=>x+(+i.g||0),0),w=+E.cooked||raw;if(!(w>0)){toast('Malzeme gramajlarını kontrol et.');break}const s=100/w;
     const doc={n:n.slice(0,60),k:Math.round(t.kcal*s),p:r1(t.p*s),c:r1(t.c*s),f:r1(t.f*s),u:E.por>0?[['1 porsiyon',r1(w/E.por)]]:[],cat:'Tarif',ing:E.ings.map(i=>({name:i.name,g:i.g,kcal:i.kcal,p:i.p,c:i.c,f:i.f,fid:i.fid||null})),cooked:E.cooked||null,por:E.por||null,s:'Kendi tarifin: '+E.ings.map(i=>`${fmt(i.g)} g ${i.name}`).join(', ')+` → ${fmtK(w)} g`};
     const id=E.fid||'my'+uidGen();if(await saveDoc(P(S.me,'foods',id),doc)){toast('Tarif kaydedildi');popSheet();if(ED?.kind==='fpk'){fSelect({...doc,id,own:S.me})}}break}
-  case'rdel':{const id=E.fid;if(await delDoc(P(S.me,'foods',id))){toast('Tarif silindi');popSheet()}break}
+  case'rdel':{const id=E.fid;askConfirm('Tarif silinsin mi?','Bu tarif besinlerinden kalıcı olarak silinecek.','Sil',async()=>{if(await delDoc(P(S.me,'foods',id))){toast('Tarif silindi');popSheet()}});break}
   }});
 
 /* ---------- daily log ---------- */
@@ -1119,7 +1133,7 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
   case'nitplan':{if(ED?.kind!=='nitem')break;const {mi,j}=ED;openFoodPicker({title:'Plandaki besini değiştir',sub:myPlan()?.meals[mi]?.items[j]?.name+' yerine',onPick:async items=>{closeSheet();if(!items.length)return;const pl=myPlan();pl.meals[mi].items[j]={...items[0]};if(await savePlan(pl))toast('Plan güncellendi')}});break}
   case'nmsave':{const pl=dPlan(d),c=dayCalc(pl,logOf(S.me,d),d),m=c.meals.find(x=>x.id===ds.m);const items=m.base.concat(m.extra).map(i=>{const o={...i};delete o.mid;return o});const mm=clone(meta());mm.saved=[{id:uidGen(),name:`${m.name} · ${dShort(d)}`,items},...(mm.saved||[])];await saveMeta(mm);closeSheet();toast('Öğün kaydedildi; besin eklerken “Kayıtlı öğünler”de görünür');break}
   case'nmcopyplan':{const pl=dPlan(d),pm=pl.meals.find(x=>x.id===ds.m);const L=curLog(d);L.m[ds.m].items=(L.m[ds.m].items||[]).concat(pm.items.map(i=>({...clone(i),id:uidGen()})));closeSheet();await saveLog(d,L);render();break}
-  case'nmclrx':{const L=curLog(d);L.x=(L.x||[]).filter(x=>x.mid!==ds.m);closeSheet();await saveLog(d,L);render();break}
+  case'nmclrx':{const mid=ds.m;askConfirm('Plan dışı eklenenler silinsin mi?','Bu öğüne plan dışı eklediğin tüm besinler silinecek.','Sil',async()=>{const L=curLog(d);L.x=(L.x||[]).filter(x=>x.mid!==mid);closeSheet();await saveLog(d,L);render()});break}
   case'ndmenu':{const L=logOf(S.me,d),pl=dPlan(d);openSheet(()=>`${sheetHead('Gün seçenekleri',dLong(d))}<div class="card list" style="padding:0 14px">
     ${pl?.meals?.length?`<button class="li press" data-a="nfree">${ic('flame',20)}<span class="sp">${L?.free?'Serbest günü kapat (plana dön)':'Serbest gün yap (planı bugün kapat)'}</span></button>`:''}
     <button class="li press" data-a="ncopyy">${ic('copy',20)}<span class="sp">Önceki günü bu güne kopyala</span></button>
@@ -1261,6 +1275,35 @@ document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a
     const doc={name:n.slice(0,60),star:false,created:Date.now(),map:{...(p.map||{})},from:p.name,reviewAt:Date.now()+28*864e5,workouts:balClean(balFinal())};
     if(await saveDoc(P(S.me,'programs',id),doc)){S.bal=null;S.view=S.me;S.open[id]=true;go('prog');toast('Yeni program oluşturuldu; aktif yapmak için yıldıza dokun')}break}
   }});
+
+
+/* ---------- stacked confirm ---------- */
+function askConfirm(title,text,yes,fn){pushSheet(()=>`<div class="row" style="margin-bottom:6px"><h2 class="sp">${title}</h2></div><p class="sub" style="margin:0">${text}</p><div class="row" style="margin-top:18px;gap:8px"><button class="btn block" style="flex:1" data-a="askno">Vazgeç</button><button class="btn danger block" style="flex:1" data-a="askyes">${yes}</button></div>`,{kind:'ask',fn});document.body.style.overflow='hidden'}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el||ED?.kind!=='ask')return;const a=el.dataset.a;if(a==='askno'){popSheet();return}if(a==='askyes'){const fn=ED.fn;popSheet();fn()}});
+/* ---------- rest timer ---------- */
+const REST_DEF=120;
+const fmtRest=s=>s%60?`${fmt(s/60)} dk`:`${s/60} dk`;
+const restEl=document.createElement('div');restEl.id='rest';restEl.hidden=true;restEl.setAttribute('role','timer');document.body.appendChild(restEl);
+let REST=null,restIv=0,audioCtx=null;
+try{const r=JSON.parse(localStorage.getItem('setlog-rest')||'null');if(r&&r.end>Date.now()-8000)REST=r}catch{}
+const fmtT=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+function restSave(){try{REST?localStorage.setItem('setlog-rest',JSON.stringify(REST)):localStorage.removeItem('setlog-rest')}catch{}}
+function unlockAudio(){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}catch{}}
+function beep(){try{unlockAudio();const t=audioCtx.currentTime;[0,.28,.56].forEach(d=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=880;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.35,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.2);o.connect(g).connect(audioCtx.destination);o.start(t+d);o.stop(t+d+.22)})}catch{}try{navigator.vibrate?.([250,120,250])}catch{}}
+function restBuild(){const done=REST.end<=Date.now();restEl.className=done?'done':'';
+  restEl.innerHTML=`<div class="rbar"><i></i></div><div class="row" style="gap:6px"><div class="sp" style="min-width:0"><div class="rl">${done?'Dinlenme bitti':'Dinlenme'}</div><div class="rn">${esc(REST.name||'')}</div></div><b class="rt num"></b>${done?'':`<button class="rb" data-a="rest" data-v="-15" aria-label="15 saniye azalt">−15</button><button class="rb" data-a="rest" data-v="15" aria-label="15 saniye artır">+15</button>`}<button class="rb x" data-a="rest" data-v="0" aria-label="Dinlenmeyi bitir">${ic('x',16)}</button></div>`;REST._b=done?2:1}
+function restTick(){if(!REST){restEl.hidden=true;clearInterval(restIv);return}const left=(REST.end-Date.now())/1000,done=left<=0;
+  if(done&&!REST.rang){REST.rang=true;restSave();beep()}
+  if(left<-10){stopRest();return}
+  if(REST._b!==(done?2:1))restBuild();
+  restEl.hidden=false;document.body.classList.add('resting');restEl.style.bottom=nav.hidden?'calc(12px + env(safe-area-inset-bottom))':`${nav.offsetHeight+10}px`;
+  const t=restEl.querySelector('.rt');if(t)t.textContent=done?'Sıradaki set':fmtT(left);
+  const b=restEl.querySelector('.rbar i');if(b)b.style.width=Math.min(100,Math.max(0,(1-left/REST.dur)*100))+'%'}
+function startRest(sec,name){if(!(sec>0))return;unlockAudio();REST={end:Date.now()+sec*1000,dur:sec,name,rang:false};restSave();clearInterval(restIv);restTick();restIv=setInterval(restTick,250)}
+function stopRest(){REST=null;restSave();clearInterval(restIv);restEl.hidden=true;document.body.classList.remove('resting')}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a="rest"]');if(!el||!REST)return;const v=+el.dataset.v;if(!v){stopRest();return}REST.end=Math.max(Date.now()+1000,REST.end+v*1000);REST.dur=Math.max(1,REST.dur+v);REST.rang=false;restSave();restTick()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&REST){clearInterval(restIv);restTick();restIv=setInterval(restTick,250)}});
+if(REST)restIv=setInterval(restTick,250);
 
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
 function memDB(){const st=new Map(),ls=new Set();const snapDoc=(p)=>({id:p.split('/').pop(),exists:st.has(p),data:()=>st.get(p),metadata:{fromCache:false,hasPendingWrites:false}});
