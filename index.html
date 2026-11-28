@@ -187,6 +187,7 @@ button.mbar{width:100%;text-align:left;border-radius:10px;padding:5px 6px;margin
 .kbars em span{position:absolute;right:0;top:-17px;font:650 10.5px var(--f);font-style:normal;color:var(--ink)}
 
 .bfig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bfig .bodyfig{gap:2px}.bfh{text-align:center;font-size:12.5px;font-weight:700;color:var(--mute);margin-bottom:4px}
+#nav button{position:relative}#nav button.dot::after{content:'';position:absolute;top:6px;left:calc(50% + 8px);width:9px;height:9px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px var(--card)}
 body.resting main{padding-bottom:110px!important}
 #rest{position:fixed;left:12px;right:12px;z-index:40;max-width:560px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:18px;padding:10px 10px 10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
 #rest.done{background:var(--good);color:#fff}
@@ -345,7 +346,7 @@ function heatBlock(items,sc,opts={}){
 
 /* ---------- state ---------- */
 const S={db:null,user:null,me:null,demo:false,users:{},ready:false,onboard:false,tab:'cal',route:null,view:null,month:null,metric:'w',cmp:{},exq:'',hsel:{},nt:null,nd:null,mf:'weight',open:{},ai:{},loadSlow:false};
-const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],nutrition:null,nplans:[],nact:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
+const U=uid=>S.users[uid]||(S.users[uid]={profile:null,programs:[],sessions:[],measures:[],requests:[],nutrition:null,nplans:[],nact:null,nscore:null,foods:[],nlog:{},nmeta:null,subs:false});
 const progOf=(uid,pid)=>U(uid).programs.find(p=>p.id===pid);
 const doneSessions=uid=>U(uid).sessions.filter(s=>s.done).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.startedAt||0)-(b.startedAt||0));
 const rirOn=uid=>!!U(uid).profile?.rir;
@@ -561,6 +562,7 @@ function viewProf0(){
   return`<div class="top"><h1>Profil</h1>${mine?`<button class="ibtn bg" data-a="nick" aria-label="Profili düzenle">${ic('edit',20)}</button>`:''}</div>${whoBar()}
   <div class="card row">${av(uid,56)}<div class="sp"><h2>${esc(nameOf(uid))}</h2><div class="sub">${pr.height?pr.height+' cm':''}${bmi?' · VKİ '+fmt(bmi):''}${mine?(pr.height?' · ':'')+esc(S.email||''):''}</div></div></div>
   ${mine?`<div class="card row"><div class="sp"><h3>RIR kullan</h3><div class="sub">Programda hedef RIR, antrenmanda her set için RIR sütunu</div></div><button class="sw ${pr.rir?'on':''}" data-a="rirtog" role="switch" aria-checked="${!!pr.rir}" aria-label="RIR kullan"><i></i></button></div>`:''}
+  ${mine?(S.admin?`<button class="card row press" style="width:100%;text-align:left" data-a="reqinbox">${ic('copy',22)}<div class="sp"><h3>Gelen talepler</h3><div class="sub">Arkadaşlarının uygulama istekleri</div></div>${unreadReq()?`<span class="zp z3">${unreadReq()} yeni</span>`:''}${ic('chev',18)}</button>`:`<button class="card row press" style="width:100%;text-align:left" data-a="reqopen">${ic('edit',22)}<div class="sp"><h3>Uygulama için talepte bulun</h3><div class="sub">Öneri, hata bildirimi ya da istek gönder</div></div>${ic('chev',18)}</button>`):''}
   <div class="sec"><h2>Vücut ölçüleri</h2>${mine?`<button class="btn pri sm" data-a="madd">${ic('plus',16)} Ölçü ekle</button>`:''}</div>
   ${tiles.length?`<div class="mg">${tiles.map(([k,n,un])=>{const d=first[k]!=null&&ms.length>1?latest[k]-first[k]:null;return`<button class="mtile press ${S.mf===k?'on':''}" data-a="mf" data-f="${k}"><small>${n}</small><b>${fmt(latest[k])}</b> <span class="sub">${un}</span>${d?` <span class="delta">${d>0?'+':''}${fmt(d)}</span>`:''}</button>`}).join('')}</div>
   <div class="card" style="margin-top:12px"><div class="row" style="margin-bottom:8px"><h2 class="sp">${f[1]}</h2><span class="sub">${pts.length} ölçüm</span></div><div class="fig" data-c="meas" style="height:210px"><svg></svg></div><p class="sub" style="margin:6px 0 0">Değişim ilk ölçüme göre gösterilir.</p></div>
@@ -648,7 +650,7 @@ function render(){
   const r=S.route;let h;
   try{h=r?.name==='live'&&LIVE?viewLive():r?.name==='w'?viewWorkout():r?.name==='ph'?viewPHeat():r?.name==='ex'?viewEx():r?.name==='bal'?viewBal():({cal:viewCal,prog:viewProg,gel:viewGel,nutr:viewNutr,prof:viewProf}[S.tab]||viewCal)()}catch(e){console.error(e);h=`<div class="empty">Bir hata oluştu: ${esc(e.message)}</div>`}
   nav.hidden=r?.name==='live';
-  nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
+  nav.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.t===S.tab);if(b.dataset.t==='prof')b.classList.toggle('dot',typeof unreadReq==='function'&&unreadReq()>0)});
   main.innerHTML=(S.demo?'<div class="banner">Önizleme modu: veriler kaydedilmez.</div>':'')+h;
   mountCharts();
 }
@@ -1305,6 +1307,35 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a="rest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&REST){clearInterval(restIv);restTick();restIv=setInterval(restTick,250)}});
 if(REST)restIv=setInterval(restTick,250);
 
+
+/* ---------- requests (feedback to admin) ---------- */
+const REQCAT=[['oneri','Öneri'],['hata','Hata'],['diger','Diğer']];
+const allReqDocs=()=>userIds().flatMap(id=>(U(id).requests||[]).map(r=>({...r,_u:id})));
+const reqReply=rid=>allReqDocs().find(r=>r.id==='rp_'+rid)||null;
+const inbox=()=>allReqDocs().filter(r=>!String(r.id).startsWith('rp_')&&r._u!==S.me).sort((a,b)=>(b.created||0)-(a.created||0));
+const unreadReq=()=>S.admin?inbox().filter(r=>!reqReply(r.id)).length:0;
+const reqStatus=r=>{const rp=reqReply(r.id);return rp?.reply?['Yanıtlandı','ok']:rp?['Okundu','sw']:['Gönderildi','pe']};
+function openReq(){ED={kind:'req',cat:'oneri',text:''};openSheet(()=>{const mine=(U(S.me).requests||[]).filter(r=>!String(r.id).startsWith('rp_')).sort((a,b)=>(b.created||0)-(a.created||0));
+  return`${sheetHead('Talepte bulun','İsteğin doğrudan Metehan’a iletilir')}
+  <div class="chips">${REQCAT.map(([k,n])=>`<button class="chip ${ED.cat===k?'on':''}" data-a="reqcat" data-k="${k}">${n}</button>`).join('')}</div>
+  <label class="l" for="rq_t">Mesajın</label><textarea class="f" id="rq_t" data-ed="text" style="font-family:var(--f);min-height:120px" maxlength="2000" placeholder="${ED.cat==='hata'?'Ne yaparken oldu, ne bekliyordun, ne oldu?':'Uygulamada ne görmek istersin?'}">${esc(ED.text)}</textarea>
+  <button class="btn pri block" style="margin-top:12px;min-height:52px" data-a="reqsend">Gönder</button>
+  ${mine.length?`<div class="sec" style="margin-top:18px"><h2>Gönderdiklerin</h2></div><div class="list card" style="padding:0 14px">${mine.map(r=>{const st=reqStatus(r),rp=reqReply(r.id);return`<div class="li" style="display:block;padding:12px 0"><div class="row" style="gap:8px"><b class="sp" style="font-size:14px">${esc((REQCAT.find(c=>c[0]===r.cat)||REQCAT[2])[1])} · <span class="sub" style="font-weight:500">${dShort(ymd(new Date(r.created)))}</span></b><span class="zp s${st[1]}">${st[0]}</span></div><p style="margin:6px 0 0;font-size:14px;white-space:pre-wrap">${esc(r.text)}</p>${rp?.reply?`<div class="hdet" style="margin-top:8px"><b style="font-size:12.5px">Metehan’ın yanıtı</b><p style="margin:4px 0 0;font-size:14px;white-space:pre-wrap">${esc(rp.reply)}</p></div>`:''}</div>`}).join('')}</div>`:''}`})}
+function openInbox(){ED={kind:'inbox',rep:{}};openSheet(()=>{const L=inbox();return`${sheetHead('Gelen talepler',L.length?`${L.length} talep`:'')}
+  ${L.length?L.map(r=>{const rp=reqReply(r.id),st=reqStatus(r);return`<div class="card" style="margin:0 0 10px"><div class="row" style="gap:8px"><b class="sp" style="font-size:15px">${esc(nameOf(r._u))} <span class="sub" style="font-weight:500">· ${esc((REQCAT.find(c=>c[0]===r.cat)||REQCAT[2])[1])} · ${dShort(ymd(new Date(r.created)))}</span></b><span class="zp s${st[1]}">${st[0]}</span></div>
+   <p style="margin:8px 0 0;font-size:14.5px;white-space:pre-wrap">${esc(r.text)}</p>
+   ${rp?.reply?`<div class="hdet" style="margin-top:8px"><b style="font-size:12.5px">Yanıtın</b><p style="margin:4px 0 0;font-size:14px;white-space:pre-wrap">${esc(rp.reply)}</p></div>`:`<textarea class="f" data-ed="rep.${r._u}__${r.id}" style="font-family:var(--f);min-height:70px;margin-top:10px" placeholder="Yanıt yaz (isteğe bağlı)">${esc(ED.rep[r._u+'__'+r.id]||'')}</textarea>
+   <div class="row" style="gap:8px;margin-top:8px">${rp?'':`<button class="btn sm" style="flex:1" data-a="reqread" data-u="${r._u}" data-r="${esc(r.id)}">Okundu</button>`}<button class="btn sm pri" style="flex:1" data-a="reqrep" data-u="${r._u}" data-r="${esc(r.id)}">Yanıtla</button></div>`}</div>`}).join(''):'<div class="card empty">Henüz talep yok.</div>'}`})}
+document.addEventListener('click',async ev=>{const el=ev.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,ds=el.dataset;if(!a.startsWith('req'))return;
+  switch(a){
+  case'reqopen':openReq();break;
+  case'reqinbox':openInbox();break;
+  case'reqcat':ED.cat=ds.k;drawSheet();break;
+  case'reqsend':{const t=(ED.text||'').trim();if(t.length<3){toast('Mesajını yaz.');break}const id='q'+uidGen();if(await saveDoc(P(S.me,'requests',id),{cat:ED.cat,text:t.slice(0,2000),created:Date.now(),name:nameOf(S.me)})){ED.text='';drawSheet();toast('Talebin Metehan’a iletildi')}break}
+  case'reqread':await saveDoc(P(S.me,'requests','rp_'+ds.r),{to:ds.u,rid:ds.r,read:true,at:Date.now()});drawSheet();break;
+  case'reqrep':{const t=(ED.rep[ds.u+'__'+ds.r]||'').trim();if(!t){toast('Yanıtını yaz.');break}if(await saveDoc(P(S.me,'requests','rp_'+ds.r),{to:ds.u,rid:ds.r,read:true,reply:t.slice(0,2000),at:Date.now()})){toast('Yanıt gönderildi');drawSheet()}break}
+  }});
+
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
 function memDB(){const st=new Map(),ls=new Set();const snapDoc=(p)=>({id:p.split('/').pop(),exists:st.has(p),data:()=>st.get(p),metadata:{fromCache:false,hasPendingWrites:false}});
   const colDocs=c=>[...st.keys()].filter(k=>k.startsWith(c+'/')&&k.split('/').length===c.split('/').length+1).sort().map(snapDoc);
@@ -1391,6 +1422,7 @@ async function afterLogin(user){
   const{data,error}=await sb.rpc('is_member');
   if(error){S.phase='error';S.err='Sunucuya ulaşılamadı. Biraz sonra sayfayı yenile.';render();return}
   if(!data){S.phase='invite';render();return}
+  try{const r=await sb.rpc('is_admin');S.admin=!!r.data}catch{S.admin=false}
   started=true;S.phase='loading';S.err='';render();
   const db=sbDB();
   try{await db.load()}catch(e){started=false;S.phase='error';S.err='Veriler yüklenemedi. Sayfayı yenile.';render();return}
@@ -1411,6 +1443,7 @@ function subUser(uid){const u=U(uid);if(u.subs)return;u.subs=true;const map=s=>s
   S.db.collection(`ud/${uid}/sessions`).onSnapshot(s=>{u.sessions=map(s);soft()},onErr);
   S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{u.nplans=s.docs.filter(x=>x.id==='plan'||x.id.startsWith('p_')).map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.created||0)-(b.created||0));const ac=s.docs.find(x=>x.id==='active')?.data()?.pid;u.nact=u.nplans.some(p=>p.id===ac)?ac:(u.nplans[0]?.id||null);const ap=u.nplans.find(p=>p.id===u.nact);u.nutrition=ap?{...ap}:null;const sc=s.docs.find(x=>x.id==='score');u.nscore=sc?{...sc.data()}:null;soft()},onErr);
   S.db.collection(`ud/${uid}/foods`).onSnapshot(s=>{u.foods=map(s);soft()},onErr);
+  S.db.collection(`ud/${uid}/requests`).onSnapshot(s=>{u.requests=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
   if(uid===S.me){S.db.collection(`ud/${uid}/nlog`).onSnapshot(s=>{u.nlog=Object.fromEntries(s.docs.map(d=>[d.id,{...d.data()}]));if(!u._sc){u._sc=1;setTimeout(saveScore,4000)}soft()},onErr);S.db.collection(`ud/${uid}/nmeta`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='me');u.nmeta=d?{...d.data()}:null;soft()},onErr)}
   S.db.collection(`ud/${uid}/measures`).onSnapshot(s=>{u.measures=map(s).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);soft()},onErr);
 }
