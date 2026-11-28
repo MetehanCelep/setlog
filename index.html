@@ -290,6 +290,17 @@ body.chatting main{padding-bottom:calc(84px + env(safe-area-inset-bottom))!impor
 #mview .mvb textarea::placeholder{color:rgba(255,255,255,.6)}
 #mview .mvb button{width:44px;height:44px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;flex:none}
 @keyframes fade{from{opacity:0}}
+.tk{display:inline-flex;vertical-align:-3px;margin-left:3px;opacity:.75}
+.tk.rd{opacity:1;color:#bfe8ff}
+.mr:not(.me) .tk.rd,.tk.rd.ink{color:#2f9be6}.tk.ink{opacity:1}
+.bub[data-a=minfo]{cursor:pointer}
+button.seen{display:block}
+#ibanner{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 8px);z-index:90;max-width:520px;margin:0 auto;transform:translateY(calc(-100% - 40px));transition:transform .35s cubic-bezier(.2,.9,.3,1);pointer-events:none}
+#ibanner.on{transform:none;pointer-events:auto}
+#ibanner .ib{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 14px 10px 10px;border-radius:20px;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:saturate(1.6) blur(20px);-webkit-backdrop-filter:saturate(1.6) blur(20px);box-shadow:0 10px 30px rgba(0,0,0,.18),0 0 0 1px var(--line)}
+#ibanner .ibt{flex:1;min-width:0;display:flex;flex-direction:column}
+#ibanner .ibt b{font-size:14.5px}
+#ibanner .ibt span{font-size:13.5px;color:var(--mute);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .bodyfig figcaption{text-align:center;font-size:12px;color:var(--mute);font-weight:600}
 .bodyfig path,.bodyfig ellipse,.bodyfig rect{stroke:var(--card);stroke-width:1.4;transition:fill .4s}
@@ -1437,6 +1448,8 @@ Object.assign(ICONS,{
   mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
   send:'<path d="M12 19V6M6.5 11.5L12 6l5.5 5.5"/>',
   pause:'<path d="M8.5 5.5v13M15.5 5.5v13"/>',
+  tick:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  tick2:'<path d="M1.8 12.8l4.3 4.3L15.3 7.8"/><path d="M11.6 16.4l.7.7L22 7.8"/>',
   users:'<circle cx="9" cy="8.5" r="3.2"/><path d="M3.2 19.5c.7-3.3 3-5.2 5.8-5.2s5.1 1.9 5.8 5.2"/><path d="M15.5 5.4a3.1 3.1 0 0 1 0 6.1M17.6 14.6c1.7.7 2.8 2.3 3.2 4.9"/>'
 });
 const allMsgs=()=>userIds().flatMap(id=>(U(id).messages||[]).map(m=>({...m,_u:id})));
@@ -1488,25 +1501,33 @@ async function resolveMedia(){const els=[...document.querySelectorAll('[data-sp]
   if(need.length&&sb?.storage){need.forEach(p=>mediaBusy.add(p));try{const{data}=await sb.storage.from('chat').createSignedUrls(need,3600);(data||[]).forEach(d=>{if(d?.signedUrl)mediaURL.set(d.path,{u:d.signedUrl,exp:Date.now()+3500e3})})}catch(e){console.error(e)}need.forEach(p=>mediaBusy.delete(p))}
   document.querySelectorAll('img[data-sp]').forEach(e=>{const u=murl(e.dataset.sp);if(u&&e.getAttribute('src')!==u)e.src=u})}
 
-function bubbleHTML(m,k,mine,grp){const nm=!mine&&k==='all'&&!grp?`<b class="bn" style="color:${HUES[[...m._u].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,0)%HUES.length]}">${esc(nameOf(m._u))}</b>`:'';const t=`<time>${hm(m.at)}</time>`;
+function bubbleHTML(m,k,mine,grp){const tk=mine?tickHTML(m,k):'';const nm=!mine&&k==='all'&&!grp?`<b class="bn" style="color:${HUES[[...m._u].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,0)%HUES.length]}">${esc(nameOf(m._u))}</b>`:'';const t=`<time>${hm(m.at)}${tk}</time>`;
   if(m.kind==='img'){const W=m.w||800,H=m.h||800,bw=Math.min(240,W>=H?240:Math.round(240*W/H)),bh=Math.round(bw*H/W),ch=Math.min(bh,320),u=murl(m.path);
-    return`<div class="bub img ${m.pend?'pend':''}">${nm}<span class="ph" data-a="mview" data-sp="${esc(m.path)}" style="width:${bw}px;height:${ch}px"><img alt="Fotoğraf" data-sp="${esc(m.path)}" ${u?`src="${u}"`:''}></span>${m.text?`<div class="cap"><span class="tx">${esc(m.text)}</span>${t}</div>`:t}${m.pend?'<span class="spin"></span>':''}</div>`}
+    return`<div class="bub img ${m.pend?'pend':''}" ${mine&&!m.pend?`data-a="minfo" data-id="${m.id}"`:''}>${nm}<span class="ph" data-a="mview" data-sp="${esc(m.path)}" style="width:${bw}px;height:${ch}px"><img alt="Fotoğraf" data-sp="${esc(m.path)}" ${u?`src="${u}"`:''}></span>${m.text?`<div class="cap"><span class="tx">${esc(m.text)}</span>${t}</div>`:t}${m.pend?'<span class="spin"></span>':''}</div>`}
   if(m.kind==='aud'){const wf=(m.wf&&m.wf.length?m.wf:Array(32).fill(3));
-    return`<div class="bub ${m.pend?'pend':''}">${nm}<div class="aud" data-aid="${m.id}"><button class="pb" data-a="aplay" data-sp="${esc(m.path)}" data-id="${m.id}" aria-label="Oynat">${ic(AUD.id===m.id&&AUD.playing?'pause':'play',18,1)}</button><div class="ac"><div class="wf">${wf.map(v=>`<i style="height:${Math.max(12,Math.min(100,v*10))}%"></i>`).join('')}</div><div class="ad"><span class="cur">${mss(m.dur)}</span><span>${hm(m.at)}</span></div></div></div></div>`}
-  return`<div class="bub">${nm}<span class="tx">${esc(m.text)}</span>${t}</div>`}
+    return`<div class="bub ${m.pend?'pend':''}" ${mine&&!m.pend?`data-a="minfo" data-id="${m.id}"`:''}>${nm}<div class="aud" data-aid="${m.id}"><button class="pb" data-a="aplay" data-sp="${esc(m.path)}" data-id="${m.id}" aria-label="Oynat">${ic(AUD.id===m.id&&AUD.playing?'pause':'play',18,1)}</button><div class="ac"><div class="wf">${wf.map(v=>`<i style="height:${Math.max(12,Math.min(100,v*10))}%"></i>`).join('')}</div><div class="ad"><span class="cur">${mss(m.dur)}</span><span>${hm(m.at)}${tk}</span></div></div></div></div>`}
+  return`<div class="bub" ${mine&&!m.pend?`data-a="minfo" data-id="${m.id}"`:''}>${nm}<span class="tx">${esc(m.text)}</span>${t}</div>`}
 let readT=0;
+const rdDoc=(u,k)=>(U(u).msgread||[]).find(r=>r.id===(k==='all'?'all':S.me));
+function readTime(u,k,t){const d=rdDoc(u,k);if(!d||(d.at||0)<t)return 0;const hs=(d.h||[]).filter(x=>x>=t);return hs.length?Math.min(...hs):d.at}
+function readers(m,k){const who=k==='all'?userIds().filter(u=>u!==S.me):[k];return who.map(u=>({u,t:readTime(u,k,m.at)}))}
+function tickHTML(m,k){if(m.pend)return'';const r=readers(m,k),n=r.filter(x=>x.t).length;const all=r.length&&n===r.length;
+  return`<span class="tk ${all?'rd':''}">${ic(n?'tick2':'tick',15)}</span>`}
+function markRead(k){if(document.visibilityState!=='visible')return;const now=Date.now(),prev=(U(S.me).msgread||[]).find(r=>r.id===k);
+  saveDoc(P(S.me,'msgread',k),{to:k,at:now,h:[...(prev?.h||(prev?.at?[prev.at]:[])),now].slice(-80)})}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')soft();presence()});
 function viewChat(){const k=S.route.k,ms=msgsWith(k);let h='',lastDay='';
   ms.forEach((m,i)=>{const d=ymd(new Date(m.at));if(d!==lastDay){lastDay=d;h+=`<div class="cday">${d===todayS()?'Bugün':d===addDays(todayS(),-1)?'Dün':dLong(d)}</div>`}
     const mine=m._u===S.me,prev=ms[i-1],next=ms[i+1],same=(a,b)=>a&&b&&a._u===b._u&&Math.abs(a.at-b.at)<5*6e4&&ymd(new Date(a.at))===ymd(new Date(b.at));
     const grp=same(prev,m),lastOfRun=!same(m,next);
     const side=!mine&&k==='all'?(lastOfRun?`<span class="avs">${av(m._u,28)}</span>`:'<span class="avs"></span>'):'';
     h+=`<div class="mr ${mine?'me':''} ${grp?'grp':''}">${side}${bubbleHTML(m,k,mine,grp)}</div>`});
-  const lastMine=[...ms].reverse().find(m=>m._u===S.me&&!m.pend);
-  const seen=k!=='all'&&lastMine&&ms.at(-1)===lastMine&&((U(k).msgread||[]).find(r=>r.id===S.me)?.at||0)>=lastMine.at;
-  const inc=ms.filter(m=>m._u!==S.me).at(-1);if(inc&&inc.at>readAt(k)){clearTimeout(readT);readT=setTimeout(()=>saveDoc(P(S.me,'msgread',k),{to:k,at:Date.now()}),400)}
+  const lastMine=ms.at(-1)?._u===S.me&&!ms.at(-1).pend?ms.at(-1):null;let seen='';
+  if(lastMine){const r=readers(lastMine,k).filter(x=>x.t);if(k!=='all'){if(r.length)seen=`Görüldü · ${whenShort(r[0].t)}`}else if(r.length){const tot=userIds().length-1;seen=r.length===tot?'Herkes gördü':'Görenler: '+r.map(x=>esc(nameOf(x.u))).join(', ')}}
+  const inc=ms.filter(m=>m._u!==S.me).at(-1);if(inc&&inc.at>readAt(k)&&document.visibilityState==='visible'){clearTimeout(readT);readT=setTimeout(()=>markRead(k),400)}
   const others=userIds().filter(u=>u!==S.me);
   return`<div class="chathead"><div class="in"><button class="ibtn bg" data-a="back" aria-label="Geri">${ic('back',20)}</button>${chatAv(k,38)}<div class="nm"><h2>${esc(chatName(k))}</h2>${k==='all'?`<div class="st">${esc(['Sen',...others.map(nameOf)].join(', '))}</div>`:''}</div></div></div>
-  <div class="chat" id="chatlist">${h||`<div class="cempty">${chatAv(k,64)}<b style="color:var(--ink);font-size:16px">${esc(chatName(k))}</b>İlk mesajı sen gönder. Fotoğraf ve sesli mesaj da atabilirsin.</div>`}${seen?'<div class="seen">Görüldü</div>':''}</div>`}
+  <div class="chat" id="chatlist">${h||`<div class="cempty">${chatAv(k,64)}<b style="color:var(--ink);font-size:16px">${esc(chatName(k))}</b>İlk mesajı sen gönder. Fotoğraf ve sesli mesaj da atabilirsin.</div>`}${seen?`<button class="seen" data-a="minfo" data-id="${lastMine.id}">${seen}</button>`:''}</div>`}
 function openChat(k){if(k!=='all'&&!userIds().includes(k))return;closeSheet();S.tab='msg';S.route={name:'chat',k};S._stick=true;render();requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}
 
 /* composer */
@@ -1518,7 +1539,8 @@ function syncComposer(){const rec=!!REC;composer.classList.toggle('rec',rec);
   const lA=rec?'reccancel':'msgphoto';if(cbL.dataset.a!==lA){cbL.dataset.a=lA;cbL.innerHTML=ic(rec?'trash':'img',21);cbL.setAttribute('aria-label',rec?'Kaydı sil':'Fotoğraf gönder')}
   const rA=rec?'recsend':cmp.value.trim()?'msgsend':'msgrec';if(cbR.dataset.a!==rA){cbR.dataset.a=rA;cbR.innerHTML=ic(rA==='msgrec'?'mic':'send',21);cbR.setAttribute('aria-label',rA==='msgrec'?'Sesli mesaj':'Gönder')}}
 cmp.addEventListener('input',()=>{cmp.style.height='auto';cmp.style.height=Math.min(120,cmp.scrollHeight)+'px';if(S.route?.name==='chat')(S.drafts||(S.drafts={}))[S.route.k]=cmp.value;syncComposer()});
-function chatAfterRender(){const on=S.route?.name==='chat';composer.hidden=!on;document.body.classList.toggle('chatting',on);
+let presStarted=false;
+function chatAfterRender(){checkIncoming();if(S.me&&!presStarted){presStarted=true;presence()}const on=S.route?.name==='chat';composer.hidden=!on;document.body.classList.toggle('chatting',on);
   if(!on){if(REC)stopRec(false);return}
   const k=S.route.k;if(composer.dataset.k!==k){composer.dataset.k=k;cmp.value=S.drafts?.[k]||'';cmp.dispatchEvent(new Event('input'))}
   syncComposer();audUI();resolveMedia();
@@ -1606,8 +1628,39 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if
   else if(a==='aplay')playAud(el.dataset.id,el.dataset.sp);
   else if(a==='mview'){const u=murl(el.dataset.sp);if(u)showMV(u,false)}
   else if(a==='mvclose')closeMV();
+  else if(a==='minfo'&&!ev.target.closest('[data-a=aplay],[data-a=mview]'))openMsgInfo(el.dataset.id);
+  else if(a==='ibanner'){hideBanner();openChat(el.dataset.k)}
   else if(a==='mvsend'&&MV){const cap=(mview.querySelector('#mvcap')?.value||'').trim().slice(0,500);const{k,blob,w,h}=MV;closeMV();sendMedia(k,'img',blob,{w,h,...(cap?{text:cap}:{})})}});
 addEventListener('popstate',()=>{if(!mview.hidden)closeMV()});
+
+/* message info (who saw) */
+function openMsgInfo(id){const k=S.route?.name==='chat'?S.route.k:null;const m=allMsgs().find(x=>x.id===id&&x._u===S.me);if(!k||!m)return;
+  openSheet(()=>{const r=readers(m,k),yes=r.filter(x=>x.t).sort((a,b)=>a.t-b.t),no=r.filter(x=>!x.t);
+    const pv=m.kind==='img'?`${ic('img',16)} ${m.text?esc(m.text):'Fotoğraf'}`:m.kind==='aud'?`${ic('mic',16)} Sesli mesaj · ${mss(m.dur)}`:esc(m.text);
+    const row=(x,ok)=>`<div class="li">${av(x.u,36)}<span class="sp"><h3 style="font-size:15px">${esc(nameOf(x.u))}</h3></span><span class="sub" style="font-size:13px;${ok?'color:var(--ink)':''}">${ok?whenLong(x.t):'Henüz görmedi'}</span></div>`;
+    return`${sheetHead('Mesaj bilgisi',`${dShort(ymd(new Date(m.at)))} · ${hm(m.at)} gönderildi`)}
+    <div class="card" style="background:var(--card2);box-shadow:none;font-size:14.5px;display:flex;gap:6px;align-items:center;white-space:pre-wrap;word-break:break-word;max-height:120px;overflow:hidden">${pv}</div>
+    <div class="card list" style="padding:0 14px"><div class="li" style="padding:12px 0 8px"><span class="tk rd ink">${ic('tick2',18)}</span><b style="font-size:14px">Görenler</b><span class="sub" style="margin-left:auto;font-size:13px">${yes.length}/${r.length}</span></div>${yes.length?yes.map(x=>row(x,1)).join(''):'<p class="sub" style="padding:10px 0 14px;font-size:13.5px">Henüz kimse görmedi.</p>'}</div>
+    ${no.length?`<div class="card list" style="padding:0 14px"><div class="li" style="padding:12px 0 8px"><span class="tk ink">${ic('tick',18)}</span><b style="font-size:14px">Görmeyenler</b></div>${no.map(x=>row(x,0)).join('')}</div>`:''}`})}
+const whenLong=t=>{const d=ymd(new Date(t));return(d===todayS()?'Bugün':d===addDays(todayS(),-1)?'Dün':dShort(d))+' '+hm(t)};
+
+/* in-app banner instead of system notification while app is open */
+const banner=document.createElement('div');banner.id='ibanner';document.body.appendChild(banner);
+const T0=Date.now();const bannered=new Set();let bT=0;
+function hideBanner(){banner.classList.remove('on');clearTimeout(bT)}
+function checkIncoming(){if(!S.me)return;const fresh=allMsgs().filter(m=>m._u!==S.me&&(m.to===S.me||m.to==='all')&&(m.at||0)>T0&&!bannered.has(m.id));if(!fresh.length)return;
+  fresh.forEach(m=>bannered.add(m.id));const m=fresh.sort((a,b)=>a.at-b.at).at(-1);const k=m.to==='all'?'all':m._u;
+  if(S.route?.name==='chat'&&S.route.k===k)return;if(document.visibilityState!=='visible')return;
+  banner.innerHTML=`<button class="ib press" data-a="ibanner" data-k="${k}">${k==='all'?gav(40):av(m._u,40)}<span class="ibt"><b>${esc(k==='all'?nameOf(m._u)+' · Ekip':nameOf(m._u))}</b><span>${pvText({...m,_u:'x'},'')}</span></span></button>`;
+  banner.classList.add('on');clearTimeout(bT);bT=setTimeout(hideBanner,4500);try{navigator.vibrate?.(30)}catch{}}
+let bsy=0;banner.addEventListener('touchstart',e=>{bsy=e.touches[0].clientY},{passive:true});banner.addEventListener('touchmove',e=>{if(e.touches[0].clientY-bsy<-12)hideBanner()},{passive:true});
+
+/* presence: while the app is visible, the server does not send phone notifications */
+let presT=0;
+async function presence(){clearTimeout(presT);if(!S.me||!sb?.from)return;
+  try{if(document.visibilityState==='visible'){await sb.from('presence').upsert({user_id:S.me,at:new Date().toISOString()});presT=setTimeout(presence,20000)}
+    else await sb.from('presence').delete().eq('user_id',S.me)}catch{}}
+addEventListener('pagehide',()=>{try{sb?.from('presence').delete().eq('user_id',S.me)}catch{}});
 
 /* ---------- demo store (used only when the page is opened outside claude.ai) ---------- */
 function memDB(){const st=new Map(),ls=new Set();const snapDoc=(p)=>({id:p.split('/').pop(),exists:st.has(p),data:()=>st.get(p),metadata:{fromCache:false,hasPendingWrites:false}});
@@ -1717,7 +1770,7 @@ function subUser(uid){const u=U(uid);if(u.subs)return;u.subs=true;const map=s=>s
   S.db.collection(`ud/${uid}/sessions`).onSnapshot(s=>{u.sessions=map(s);soft()},onErr);
   S.db.collection(`ud/${uid}/nutrition`).onSnapshot(s=>{u.nplans=s.docs.filter(x=>x.id==='plan'||x.id.startsWith('p_')).map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.created||0)-(b.created||0));const ac=s.docs.find(x=>x.id==='active')?.data()?.pid;u.nact=u.nplans.some(p=>p.id===ac)?ac:(u.nplans[0]?.id||null);const ap=u.nplans.find(p=>p.id===u.nact);u.nutrition=ap?{...ap}:null;const sc=s.docs.find(x=>x.id==='score');u.nscore=sc?{...sc.data()}:null;soft()},onErr);
   S.db.collection(`ud/${uid}/foods`).onSnapshot(s=>{u.foods=map(s);soft()},onErr);
-  S.db.collection(`ud/${uid}/messages`).onSnapshot(s=>{u.messages=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
+  S.db.collection(`ud/${uid}/messages`).onSnapshot(s=>{u.messages=s.docs.map(d=>({id:d.id,...d.data()}));soft();if(S.route?.name==='live')checkIncoming()},onErr);
   S.db.collection(`ud/${uid}/msgread`).onSnapshot(s=>{u.msgread=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
   S.db.collection(`ud/${uid}/requests`).onSnapshot(s=>{u.requests=s.docs.map(d=>({id:d.id,...d.data()}));soft()},onErr);
   if(uid===S.me){S.db.collection(`ud/${uid}/nlog`).onSnapshot(s=>{u.nlog=Object.fromEntries(s.docs.map(d=>[d.id,{...d.data()}]));if(!u._sc){u._sc=1;setTimeout(saveScore,4000)}soft()},onErr);S.db.collection(`ud/${uid}/nmeta`).onSnapshot(s=>{const d=s.docs.find(x=>x.id==='me');u.nmeta=d?{...d.data()}:null;soft()},onErr)}
